@@ -1,0 +1,11 @@
+{
+  "categories": [
+    { "id": "vulnerabilities", "label": "Vulnerabilities" },
+    { "id": "supply-chain", "label": "Supply Chain" },
+    { "id": "ai-security", "label": "AI & Agent Security" },
+    { "id": "appsec", "label": "AppSec" },
+    { "id": "cloud", "label": "Cloud & Kubernetes" },
+    { "id": "research", "label": "Research" },
+    { "id": "security-engineering", "label": "Security Engineering" }
+  ]
+}

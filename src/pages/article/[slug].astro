@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EditionHeader from '../../components/EditionHeader.astro';
+import EditionFooter from '../../components/EditionFooter.astro';
+import { findStory, getLatestEdition, getStories } from '../../lib/content';
+import { articlePath, cvePath } from '../../lib/routes';
+import { formatShortDate } from '../../lib/format';
+import { findMarkdownArticle } from '../../lib/articles';
+export function getStaticPaths() { return getStories().map((story) => ({ params: { slug: story.slug }, props: { story } })); }
+const { story } = Astro.props;
+if (!findStory(story.slug)) throw new Error('Unknown article');
+const edition = getLatestEdition();
+const markdownArticle = findMarkdownArticle(story.slug);
+---
+<BaseLayout title={story.title} description={story.summary} canonical={articlePath(story.slug)}>
+  <EditionHeader date={edition.date} count={edition.stories.length} />
+  <main id="main" class="article">
+    <p class="eyebrow">{story.type} · {story.category.replaceAll('-', ' ')}</p>
+    <h1>{story.title}</h1>
+    <p class="dek">{story.summary}</p>
+    <p class="signal">{formatShortDate(story.published_at)}{story.author ? ` · By ${story.author}` : ''} · Fixture preview</p>
+    <div class="article-panel"><strong>Why it matters</strong><p>{story.why_it_matters}</p><strong>What to do</strong><p>{story.action}</p></div>
+    <div class="article-body">{(markdownArticle?.paragraphs ?? story.body).map((paragraph) => <p>{paragraph}</p>)}</div>
+    {story.vulnerabilities.length > 0 && <section class="article-panel"><h2>Vulnerabilities</h2>{story.vulnerabilities.map((vulnerability) => <p><a href={cvePath(vulnerability.cve)}>{vulnerability.cve}</a> · CVSS {vulnerability.cvss ?? 'Not available'} · KEV {vulnerability.kev == null ? 'Unknown' : vulnerability.kev ? 'Yes' : 'No'}</p>)}</section>}
+    <section><h2>Sources</h2><ul>{story.sources.map((source) => <li><a href={source.url} rel="noreferrer">{source.name}</a> · retrieved {formatShortDate(source.retrieved_at)}</li>)}</ul></section>
+  </main><EditionFooter />
+</BaseLayout>

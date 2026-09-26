@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EditionHeader from '../components/EditionHeader.astro';
+import EditionFooter from '../components/EditionFooter.astro';
+import { getEditions } from '../lib/content';
+import { editionPath } from '../lib/routes';
+import { formatEditionDate } from '../lib/format';
+const editions = getEditions();
+---
+<BaseLayout title="Archive" canonical="/archive">
+  <EditionHeader date={editions[0].date} count={editions.reduce((sum, edition) => sum + edition.stories.length, 0)} />
+  <main id="main" class="article"><p class="eyebrow">Archive</p><h1>Daily editions</h1><p class="dek">A permanent, dated record of what the publication showed readers.</p><ul class="archive-list">{editions.map((edition) => <li><a href={editionPath(edition.date)}>{formatEditionDate(edition.date)}</a><span>{edition.stories.length} {edition.stories.length === 1 ? 'story' : 'stories'}</span></li>)}</ul></main>
+  <EditionFooter />
+</BaseLayout>

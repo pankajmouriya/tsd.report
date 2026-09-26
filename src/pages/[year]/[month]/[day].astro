@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import EditionView from '../../../components/EditionView.astro';
+import { getEditions } from '../../../lib/content';
+import { editionPath } from '../../../lib/routes';
+export function getStaticPaths() {
+  return getEditions().map((edition, index, editions) => ({ params: { year: edition.date.slice(0, 4), month: edition.date.slice(5, 7), day: edition.date.slice(8, 10) }, props: { edition, previous: editions[index + 1]?.date, next: editions[index - 1]?.date } }));
+}
+const { edition, previous, next } = Astro.props;
+---
+<BaseLayout title={`Edition · ${edition.date}`} canonical={editionPath(edition.date)}><EditionView edition={edition} previous={previous} next={next} /></BaseLayout>

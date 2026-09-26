@@ -1,0 +1,21 @@
+---
+import type { Story } from '../lib/schema';
+import { articlePath } from '../lib/routes';
+interface Props { story: Story; }
+const { story } = Astro.props;
+---
+<article class="lead" data-lead data-story data-category={story.category} data-signal={story.signal.label}>
+  <p class="eyebrow">● Top story · {story.category.replaceAll('-', ' ')}</p>
+  <h2><a href={articlePath(story.slug)}>{story.title}</a></h2>
+  <div class="lead-grid">
+    <img class="lead-illustration" src={story.illustration} alt="A chain of evidence connecting source facts, engineering context, and action." width="800" height="600" />
+    <div class="lead-copy">
+      <p>{story.summary}</p>
+      <div class="fact-block"><h3>Why it matters</h3><p>{story.why_it_matters}</p></div>
+      <div class="fact-block"><h3>Affected</h3><p>{story.affected_technologies.join(' · ')}</p></div>
+      <div class="fact-block"><h3>What to do</h3><p>{story.action}</p></div>
+      <div class="fact-block"><span class="signal">{story.signal.label.replace('-', ' ')} · {story.signal.reasons.join(' · ')}</span></div>
+      <a class="read-more" href={articlePath(story.slug)}>Read the full brief →</a>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,5 @@
+{
+  "schema_version": 1, "date": "2026-09-25", "fixture": true, "lead_story": "previous-evidence",
+  "sections": { "briefs": [] },
+  "stories": [{ "id": "previous-evidence", "slug": "previous-evidence", "title": "Yesterday's edition: making evidence freshness visible", "type": "explainer", "category": "security-engineering", "published_at": "2026-09-25T06:00:00Z", "summary": "A fixture archive entry tests immutable dated editions.", "why_it_matters": "Historical pages should preserve what readers knew that day.", "action": "Display source and observation dates beside decision-relevant claims.", "affected_technologies": ["Security publishing"], "tags": ["evidence"], "sources": [{ "id": "tsd-editorial", "name": "The Security Diff", "url": "https://tsd.report/editorial-policy", "type": "editorial", "retrieved_at": "2026-09-25T06:00:00Z" }], "signal": { "score": 62, "label": "standard", "reasons": ["Archive semantics"] }, "vulnerabilities": [], "body": ["Fixture preview content."], "fixture": true }]
+}

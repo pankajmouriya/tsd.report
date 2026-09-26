@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EditionHeader from '../../components/EditionHeader.astro';
+import StoryCard from '../../components/StoryCard.astro';
+import EditionFooter from '../../components/EditionFooter.astro';
+import { categories } from '../../lib/schema';
+import { getLatestEdition, getStories } from '../../lib/content';
+import { categoryPath } from '../../lib/routes';
+export function getStaticPaths() { return categories.map((category) => ({ params: { category }, props: { category } })); }
+const { category } = Astro.props; const edition = getLatestEdition(); const stories = getStories().filter((story) => story.category === category);
+---
+<BaseLayout title={category.replaceAll('-', ' ')} canonical={categoryPath(category)}><EditionHeader date={edition.date} count={stories.length} /><main id="main"><section class="section"><div class="section-heading"><h2>{category.replaceAll('-', ' ')}</h2><p>{stories.length} stories</p></div><div class="story-grid">{stories.map((story) => <StoryCard story={story} />)}</div></section></main><EditionFooter /></BaseLayout>

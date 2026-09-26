@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EditionView from '../components/EditionView.astro';
+import { getEditions, getLatestEdition } from '../lib/content';
+const edition = getLatestEdition(); const editions = getEditions();
+---
+<BaseLayout canonical="/"><EditionView edition={edition} previous={editions[1]?.date} /></BaseLayout>

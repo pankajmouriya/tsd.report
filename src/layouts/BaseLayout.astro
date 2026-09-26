@@ -1,0 +1,26 @@
+---
+import '../styles/global.css';
+interface Props { title?: string; description?: string; canonical?: string; }
+const { title = 'The Security Diff', description = 'Security engineering, without the noise.', canonical = '/' } = Astro.props;
+const canonicalUrl = new URL(canonical, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title === 'The Security Diff' ? title : `${title} · The Security Diff`}</title>
+    <script is:inline>try{const t=localStorage.getItem('tsd-theme');if(t)document.documentElement.dataset.theme=t;else if(matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.dataset.theme='dark'}catch{}</script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="paper">
+      <div class="fixture-notice">Fixture preview</div>
+      <slot />
+    </div>
+  </body>
+</html>

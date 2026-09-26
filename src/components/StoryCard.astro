@@ -1,0 +1,13 @@
+---
+import type { Story } from '../lib/schema';
+import { articlePath } from '../lib/routes';
+interface Props { story: Story; }
+const { story } = Astro.props;
+---
+<article class="story-card" data-story data-category={story.category} data-signal={story.signal.label}>
+  <p class="eyebrow">{story.type} · {story.category.replaceAll('-', ' ')}</p>
+  <h3><a href={articlePath(story.slug)}>{story.title}</a></h3>
+  <p>{story.summary}</p>
+  <span class="signal">{story.signal.label.replace('-', ' ')}</span><br />
+  <a class="read-more" href={articlePath(story.slug)}>Read the full brief →</a>
+</article>

@@ -1,0 +1,30 @@
+---
+import { editionPath } from '../lib/routes';
+import { formatEditionDate } from '../lib/format';
+interface Props { date: string; count: number; previous?: string; next?: string; }
+const { date, count, previous, next } = Astro.props;
+---
+<header>
+  <div class="edition-topline">
+    <div><a href="/archive">← Archive</a> · <em>tsd.report</em></div>
+    <div class="date-nav">
+      {previous ? <a href={editionPath(previous)} aria-label="Previous edition">‹</a> : <span aria-hidden="true">‹</span>}
+      <time datetime={date}>{formatEditionDate(date)}</time>
+      {next ? <a href={editionPath(next)} aria-label="Next edition">›</a> : <span aria-hidden="true">›</span>}
+    </div>
+    <div>{count} {count === 1 ? 'story' : 'stories'} <button class="theme-toggle" type="button" aria-label="Toggle dark mode">◐</button></div>
+  </div>
+  <h1 class="masthead"><a href="/">The Security Diff</a></h1>
+  <p class="tagline">Security engineering, without the noise.</p>
+  <div class="double-rule" aria-hidden="true"></div>
+</header>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+  button?.addEventListener('click', () => {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    button.setAttribute('aria-label', `Use ${theme === 'dark' ? 'light' : 'dark'} mode`);
+    try { localStorage.setItem('tsd-theme', theme); } catch {}
+  });
+</script>

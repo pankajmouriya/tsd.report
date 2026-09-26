@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Evidence chain</title><desc id="desc">Source evidence flows into engineering context and a supported action.</desc>
+  <rect width="800" height="600" fill="#f0e9d5"/>
+  <g fill="none" stroke="#201e19" stroke-width="6"><path d="M170 300h150M480 300h150"/><path d="m300 270 30 30-30 30M610 270l30 30-30 30"/></g>
+  <g fill="#faf6ea" stroke="#962c1d" stroke-width="5"><rect x="45" y="205" width="210" height="190"/><rect x="295" y="205" width="210" height="190"/><rect x="545" y="205" width="210" height="190"/></g>
+  <g fill="#201e19" font-family="Georgia, serif" text-anchor="middle"><text x="150" y="276" font-size="26" font-weight="700">SOURCE</text><text x="150" y="316" font-size="20">facts + date</text><text x="400" y="276" font-size="26" font-weight="700">CONTEXT</text><text x="400" y="316" font-size="20">exposure + impact</text><text x="650" y="276" font-size="26" font-weight="700">ACTION</text><text x="650" y="316" font-size="20">supported step</text></g>
+  <text x="400" y="100" fill="#962c1d" font-family="Georgia, serif" font-size="36" font-weight="700" text-anchor="middle">Evidence before prose</text>
+</svg>

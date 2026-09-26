@@ -1,0 +1,4 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'; import EditionHeader from '../components/EditionHeader.astro'; import EditionFooter from '../components/EditionFooter.astro'; import { getLatestEdition } from '../lib/content'; const edition = getLatestEdition();
+---
+<BaseLayout title="About" canonical="/about"><EditionHeader date={edition.date} count={edition.stories.length} /><main id="main" class="article"><p class="eyebrow">About</p><h1>Security engineering, without the noise.</h1><p class="dek">The Security Diff is a planned daily newspaper combining curated reporting, vulnerability intelligence, and practical engineering context.</p><div class="article-body"><p>This site is a fixture-backed design preview. It does not represent a live publication or current vulnerability feed.</p><p>The product is built around one question: what changed, and does a security engineer need to care?</p></div></main><EditionFooter /></BaseLayout>

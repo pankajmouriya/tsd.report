@@ -1,0 +1,369 @@
+# The Security Diff Implementation Plan
+
+> **For agentic workers:** Use `superpowers:executing-plans` to implement the authorized milestone task by task. Work inline by default. Steps use checkbox syntax for tracking; do not mark them complete without verification evidence.
+
+**Goal:** Deliver a source-backed security newspaper, beginning with a coherent static prototype that can be reviewed before ingestion is built.
+
+**Architecture:** Astro consumes validated JSON edition snapshots and trusted Markdown/MDX. A later Python pipeline collects and enriches evidence, applies optional editorial processing, and prepares editions for review. Publication remains independent of external API availability.
+
+**Tech Stack:** Astro, TypeScript, plain CSS, Markdown/MDX, runtime content schemas, a compatible unit test runner, Playwright; later Python, Pydantic, httpx, feedparser, and GitHub Actions.
+
+**Spec:** [design baseline](../specs/2026-09-26-tsd-design.md), [product specification](../../../the-security-diff-implementation-spec.md), [agent rules](../../../AGENTS.md).
+
+**Status:** Milestone A implemented locally on 2026-09-26. No deployment has been performed. Milestones B–H remain dependency-ordered delivery definitions; expand each into its own executable plan against the code that exists when it starts.
+
+## Global constraints
+
+- `/article/[slug]` is the canonical route for every story type, including original writing.
+- Use Astro static generation, TypeScript, plain CSS, and JSON plus Markdown/MDX for the frontend. Use Python and Pydantic for ingestion when that milestone begins.
+- Unknown is `null`, never a default zero, false, or "safe".
+- AI-generated data must never overwrite deterministically sourced vulnerability intelligence.
+- Frontend rendering never calls security APIs.
+- Public production builds reject fixture/synthetic content.
+- No accounts, database, CMS, subscriptions, watchlists, or runtime backend in the initial release.
+- Build the mobile and dark variants alongside the desktop components.
+- Published editions retain snapshots and explicit correction history.
+- A failed pipeline run preserves the last good publication.
+
+## 1. Milestones and dependencies
+
+| Milestone | Original spec phases | Deliverable | Depends on |
+| --- | --- | --- | --- |
+| A | 0–1; fixture route shells from 6 | Complete static fixture prototype | Design baseline |
+| B | 2 | Reproducible collection, normalization, clustering | A contract |
+| C | 3 | Field-level vulnerability enrichment and ranking | B |
+| D | 4 | Optional evidence-constrained editorial provider | C |
+| E | 5 | Complete original publishing and editorial review | A; publication joins C/D |
+| F | 6 | Static search, related coverage, production indexes | A/C/E |
+| G | V1 release | Reviewed daily generation, security CI, hosting, feeds, operations | A–F; D may run with provider none |
+| H | 7–8 | Future intelligence and personalization proposals | Validated usage after G |
+
+Milestone A is a reviewable prototype, not V1 acceptance. CVE pages and feeds initially use fixture data so later pipeline work does not require redesigning the site. Search implementation follows in F. Markdown support starts in A and expands in E.
+
+## 2. Planned repository boundaries
+
+```text
+AGENTS.md                              Repository-wide rules
+the-security-diff-implementation-spec.md Product scope
+docs/superpowers/specs/                 Design decisions
+docs/superpowers/plans/                 Milestone plans and evidence
+config/taxonomy.json                    Canonical category and tag definitions
+config/sources.yml                      Later: configured source registry
+config/ranking.yml                      Later: versioned ranking rules
+schemas/                               Generated interchange JSON Schema
+data/fixtures/                         Labeled prototype editions
+data/fixtures/evidence/                Attributed source snapshots
+data/editions/                         Production edition snapshots only
+content/articles/                     Trusted Markdown/MDX originals
+src/lib/schema.ts                     Runtime frontend content validation
+src/lib/content.ts                    Validated loading and page indexes
+src/lib/routes.ts                     Central canonical route helpers
+src/lib/filter.ts                     Pure topic/signal selection
+src/lib/format.ts                     Dates, numbers, unknown-value display
+src/components/                       Reusable editorial components
+src/layouts/                          Edition and article layouts
+src/pages/                            Static routes and feeds
+src/scripts/                          Progressive filter/theme enhancements
+src/styles/                           Tokens, typography, layout, components
+public/                               Original/licensed static assets
+pipeline/                             Later: collection and publishing stages
+tests/unit/                           Contract and pure-function tests
+tests/e2e/                            Reader journeys and accessibility checks
+scripts/                              Validation and build helpers
+.github/workflows/                    CI added with milestone A; pipeline jobs later
+```
+
+Do not create empty future pipeline modules during A. Add files when their milestone produces behavior. `content/articles/` is a storage directory; its public URL remains singular `/article/`.
+
+## 3. Milestone A — implementation tasks
+
+### A1. Establish a reproducible static project
+
+**Create:** `package.json`, lockfile, `astro.config.mjs`, `tsconfig.json`, `.gitignore`, `README.md`, `.node-version`, `src/pages/index.astro`, test-runner config, and `.github/workflows/validate.yml`.
+
+**Interface:** all later tasks use the scripts `dev`, `check`, `test`, `test:e2e`, `build`, and `preview`. Use npm unless an existing package-manager decision is discovered when implementation starts. Runtime versions and package versions are selected and pinned together after checking official compatibility documentation.
+
+- [ ] Recheck repository state; initialize Git if still absent. Preserve the existing specification and planning files.
+- [ ] Scaffold Astro with strict TypeScript, static output, plain CSS, and a minimal semantic page titled The Security Diff.
+- [ ] Set site origin to `https://tsd.report`, canonical trailing-slash policy to never, and define explicit `CONTENT_MODE=fixture|production` handling. Unknown mode values fail validation.
+- [ ] Set up unit tests and Playwright, document local setup, and ignore build output, dependencies, environment secrets, browser reports, and temporary artifacts.
+- [ ] Add a read-only validation workflow with pinned actions that installs from the lockfile, checks types, runs tests, and builds the fixture preview. Do not deploy from this workflow.
+- [ ] Run the available scaffold checks and production compilation in fixture mode. Record the exact runtime and package versions selected.
+
+Expected Astro configuration shape; adapt imports only to the version actually installed:
+
+```js
+export default defineConfig({
+  site: 'https://tsd.report',
+  output: 'static',
+  trailingSlash: 'never',
+});
+```
+
+**Exit:** a fresh install can reproduce a static build; no dependency on APIs or secrets. Configure all named scripts before later tasks use them; until browser tests exist, document that gate as pending rather than claiming it passes.
+
+### A2. Define and validate the content contract
+
+**Create:** `src/lib/schema.ts`, `src/lib/content.ts`, `src/lib/routes.ts`, `src/lib/format.ts`, `config/taxonomy.json`, `schemas/edition.schema.json`, `tests/unit/content.test.ts`, `tests/unit/routes.test.ts`, `scripts/validate-content.ts`.
+
+**Consumes:** the entities and rules in design sections 7–8.  
+**Produces:** runtime schemas and inferred `Story`, `Vulnerability`, `Source`, `SecuritySignal`, `Edition`; `loadContent(mode)`, `getLatestEdition(editions)`, `articlePath(slug)`, `editionPath(date)`, `cvePath(cve)`, and `formatProbability(value)`.
+
+- [ ] Specify `Claim<T>`, evidence states, source provenance, content origin, review status, and edition snapshots. Distinguish a story's publication date from an edition date.
+- [ ] Write failing tests for invalid CVE syntax, out-of-range scores, invalid dates, missing provenance, duplicate story ids/slugs, missing section references, and production fixtures.
+- [ ] Implement validation and deterministic indexes. Only index real validated CVEs into `/cve/` routes; reject an edition whose lead id is missing.
+- [ ] Make formatted zero display as zero, null as unavailable, and EPSS probability/percentile use separate labels. Validate strings before putting them into route paths.
+- [ ] Export the versioned interchange schema. Document how it is regenerated; do not hand-edit generated output.
+- [ ] Run unit tests and content validation on the positive and negative cases.
+
+Contract tests should contain assertions such as:
+
+```ts
+expect(articlePath('monitor-ai-agents')).toBe('/article/monitor-ai-agents');
+expect(editionPath('2026-09-26')).toBe('/2026/09/26');
+expect(() => editionPath('2026-02-30')).toThrow();
+expect(formatProbability(null)).toBe('Not available');
+expect(formatProbability(0)).toBe('0%');
+expect(() => articlePath('../archive')).toThrow();
+```
+
+**Exit:** malformed or fixture-contaminated production data fails before rendering. Historical edition loading requires no network calls.
+
+### A3. Create an honest, representative fixture edition
+
+**Create:** `data/fixtures/editions/2026/09/24.json`, `25.json`, `26.json` in the same directory; `data/fixtures/evidence/manifest.json`, attributed evidence snapshots, `content/articles/monitoring-ai-agents.md`, and `tests/unit/fixtures.test.ts`.
+
+**Consumes:** A2 schemas.  
+**Produces:** three deterministic preview editions; at least 15 unique stories across all categories and all types.
+
+- [ ] Select a small real advisory sample from primary sources when implementing this task; record retrieval and effective dates, URLs, and fixture labeling. Never invent scores for a real CVE.
+- [ ] Write clearly labeled synthetic briefs for layout coverage using example organizations/non-CVE ids; never imply a real vendor suffered an invented incident.
+- [ ] Include zero/null scores, unknown fixes, differing source assessments, long titles, multiple vulnerabilities, an original article, research commentary, and an empty filter combination.
+- [ ] Assign stable ids, slugs, category/tag values, references, deterministic signal reasons, and ordered edition sections.
+- [ ] Validate coverage, uniqueness, source metadata, route eligibility, and all fixtures' preview flags.
+
+**Exit:** fixture data can exercise the complete UI without pretending to be live intelligence. Future public publication cannot accidentally consume it.
+
+### A4. Build the newspaper shell and visual system
+
+**Create:** `src/styles/tokens.css`, `global.css`, `edition.css`, `article.css`; `src/layouts/BaseLayout.astro`, `EditionLayout.astro`; `src/components/EditionHeader.astro`, `EditionFooter.astro`, `ThemeToggle.astro`, `FixtureNotice.astro`; `src/scripts/theme.ts`; licensed font assets and license records if used.
+
+**Consumes:** design tokens, A2 date/route helpers, A3 edition data.  
+**Produces:** shared accessible light/dark layouts and edition navigation.
+
+- [ ] Implement the cream sheet, top metadata row, masthead, subtitle, double rule, semantic landmarks, and skip link.
+- [ ] Load only the selected local fonts and reserve their intended fallback metrics where practical. Record font licenses.
+- [ ] Implement theme preference, early application, storage-error fallback, and reduced-motion behavior.
+- [ ] Implement available-edition navigation, ensuring the latest/oldest ends cannot link to nonexistent dates.
+- [ ] Render a visible preview notice and `noindex` metadata for fixture mode. Production mode must omit the preview assets/data entirely.
+- [ ] Inspect the shell at 320, 390, 768, 1024, and 1440 px in both themes. Check contrast, keyboard focus, and 200% zoom.
+
+**Exit:** the shell has the screenshot's visual hierarchy and reads correctly at every review size. Capture local screenshots for the evidence record.
+
+### A5. Render the lead, story grid, and evidence sections
+
+**Create:** `src/components/LeadStory.astro`, `StorySummary.astro`, `SignalLabel.astro`, `VulnerabilityWatch.astro`, `EvidenceList.astro`, `OriginalWriting.astro`, `ResearchSection.astro`; an original SVG lead diagram in `public/images/`; homepage data integration.
+
+**Consumes:** validated edition/story snapshots; ordered section ids.  
+**Produces:** full edition layout with derived counts and data-driven content.
+
+- [ ] Render the wide headline, split illustration/summary lead, impact, affected technology, source links, and supported action.
+- [ ] Render the ruled three/two/one-column grid with no duplicate lead or repeated section entries.
+- [ ] Add a compact Vulnerability Watch keyed by unique CVE, with separate probability/percentile semantics and dated evidence links.
+- [ ] Render original and research sections using the shared story model and explicit content labels.
+- [ ] Create an original technical SVG with readable labels and equivalent text. Do not trace or copy the reference illustration.
+- [ ] Inspect dense/long/null fixtures in both themes; confirm no clipped text or accidental page overflow.
+
+**Exit:** all visible editorial content comes from data, and the newspaper remains readable without JavaScript.
+
+### A6. Implement accessible topic and signal filters
+
+**Create:** `src/lib/filter.ts`, `src/components/EditionFilters.astro`, `src/scripts/filters.ts`, `tests/unit/filter.test.ts`, `tests/e2e/filters.spec.ts`.
+
+**Interface:** `filterStories(stories: Story[], filters: { topic: Category | 'all'; signal: 'all' | 'recommended' | 'must-read' }): Story[]`. Preserve input ordering; never mutate the edition.
+
+- [ ] Write failing unit cases for All, topic-only, signal-only, combined selection, Recommended inclusion of Must Read, and zero matches.
+- [ ] Implement the pure filter and URL parameter parsing with an allowlist of values.
+- [ ] Add progressive controls, selected-state semantics, a polite result-count announcement, and an empty-state reset.
+- [ ] On active filters, render one results list covering every section. Restore the full editorial layout when cleared.
+- [ ] Verify direct URL loading, Back/Forward, reset, invalid parameters, keyboard operation, and focus retention.
+- [ ] Disable JavaScript and confirm that the full edition plus category navigation remains usable.
+
+Browser test shape:
+
+```ts
+await page.goto('/?topic=ai-security&signal=must-read');
+await expect(page.getByRole('button', { name: 'Must Read', exact: true }))
+  .toHaveAttribute('aria-pressed', 'true');
+await page.getByRole('button', { name: 'Reset filters', exact: true }).click();
+await expect(page).not.toHaveURL(/topic=|signal=/);
+await expect(page.getByRole('heading', { name: "Today's Vulnerability Watch" }))
+  .toBeVisible();
+```
+
+**Exit:** filter combinations match validated fixture expectations and state survives browser history navigation.
+
+### A7. Generate article, archive, and intelligence routes
+
+**Create:** `src/pages/today.astro`, `archive.astro`, `[year]/[month]/[day].astro`, `article/[slug].astro`, `category/[category].astro`, `tag/[tag].astro`, `cve/[cve].astro`, `404.astro`, `about.astro`, `editorial-policy.astro`; `src/layouts/ArticleLayout.astro`; `src/components/ArticleBody.astro`; `tests/e2e/routes.spec.ts`; Astro content collection configuration appropriate to the installed version.
+
+**Consumes:** A2 loader/indexes, A3 editions and Markdown article, A4–A5 components.  
+**Produces:** every initial route from the original implementation prompt, using the singular article route.
+
+- [ ] Generate routes from validated content; centralize canonical URL creation and reject collisions before build.
+- [ ] Render dated editions as snapshots, archive groups/counts, and category/tag indexes with chronological stable ordering.
+- [ ] Render all story types through the singular article route; integrate trusted Markdown with the same metadata/provenance layout.
+- [ ] Build CVE pages with dated intelligence, missing/conflict states, source references, affected/fixed ranges, and coverage links.
+- [ ] Add title, description, canonical, social metadata, and appropriate structured article metadata derived from content. Do not fabricate author identities.
+- [ ] Add editorial/about copy describing the preview, source policy, and correction behavior; defer unconfirmed biography/contact fields.
+- [ ] Crawl generated internal links, check every fixture route, and check the missing-page state on the actual preview server.
+
+**Exit:** readers can follow homepage → article → CVE → related article and archive → prior edition without dead ends.
+
+### A8. Add feeds and close prototype validation
+
+**Create:** `src/pages/rss.xml.ts`, `feed.json.ts`, `markdown.ts`; `src/lib/feeds.ts`; `tests/unit/feeds.test.ts`; `tests/e2e/accessibility.spec.ts`, `edition.spec.ts`; `scripts/check-links.ts`; extend `README.md` and CI.
+
+**Consumes:** validated publication indexes and canonical route helpers.  
+**Produces:** well-formed escaped feeds, repeatable checks, visual evidence, and a prototype handoff.
+
+- [ ] Produce RSS, JSON Feed, and Markdown representations with stable ids, correct dates, canonical article links, and clear preview labeling in fixture mode.
+- [ ] Test feed escaping and source attribution; ensure summaries do not republish source articles. Test production rejection of fixture content independently of network access.
+- [ ] Add internal-link checks and automated accessibility checks; complete manual keyboard/theme/zoom review.
+- [ ] Run the full command sequence below after configuring the named scripts. Report failures, never silently skip a gate.
+- [ ] Measure asset sizes and the performance target defined in the design; record settings, results, and justified deviations.
+- [ ] Compare screenshots against the screenshot-derived composition and record any design changes. Complete the milestone evidence entry.
+
+```sh
+npm ci
+npm run check
+npm test
+CONTENT_MODE=fixture npm run build
+npm run test:e2e
+```
+
+Configure Playwright's web server to serve the fixture production build. The content-validation tests must explicitly exercise production mode rejection. A fixture build passing does not mean a production build can yet publish.
+
+**Exit:** prototype checks pass, all required views have browser evidence, and the user has a concrete site to review. Do not label this V1 or enable publishing.
+
+## 4. Milestone B — collection and event normalization
+
+**Primary paths:** `pyproject.toml`, Python lockfile, `pipeline/models/`, `collectors/`, `processing/`, `validators/`, `main.py`, `config/sources.yml`, `tests/pipeline/`, `.github/workflows/ingest.yml`.
+
+- [ ] Create a CLI accepting explicit edition date, source selection, output directory, and replay mode. Pin the Python environment and document reproducible installation.
+- [ ] Implement configured RSS/API adapters with bounded requests, source-specific failure reporting, retrieval times, and retained original records.
+- [ ] Normalize timestamps/URLs and extract CVE/GHSA identifiers; test tracking-parameter removal without changing meaningful URL parameters.
+- [ ] Deduplicate exact records and cluster corroborated events. Preserve provenance, cluster reasons, and manual split/merge overrides.
+- [ ] Persist each stage and a run manifest containing source status/counts, errors, durations, and schema/rule versions.
+- [ ] Add recorded-response tests for timeouts, malformed payloads, rate limits, duplicates, related-but-distinct CVE stories, and replay determinism. Keep ordinary CI independent of live APIs.
+
+**Gate:** replaying one captured input set produces the same normalized candidates; one failed source does not abort useful collection or delete existing editions. No editorial AI yet. Expand this milestone into a task-level plan before implementation.
+
+## 5. Milestone C — vulnerability intelligence
+
+**Primary paths:** `pipeline/collectors/{cisa_kev,epss,github_advisories,osv,nvd}.py`, `pipeline/enrichment/`, `pipeline/processing/rank.py`, `config/ranking.yml`, cross-language contract tests.
+
+- [ ] Integrate CISA KEV, FIRST EPSS, GitHub advisories, OSV, NVD, and supported vendor advisory adapters using documented primary APIs and cached recorded tests.
+- [ ] Preserve field provenance, effective dates, CVSS version/vector/issuer, package ecosystems and version-range semantics, and explicit unknown/conflict states.
+- [ ] Implement per-field authority rules and documented staleness thresholds per source. Preserve prior values as dated evidence when refreshes fail.
+- [ ] Compute explainable deterministic signals and deduplicated edition statistics; test zero/null distinctions and rule boundaries.
+- [ ] Validate Python output against the interchange contract and load it through the frontend validator in CI.
+
+**Gate:** a small reviewed advisory corpus agrees with its primary evidence; conflicting facts are visible; unavailable feeds cannot become false "not exploited" or fabricated fixes. No AI-produced facts enter the contract.
+
+## 6. Milestone D — optional editorial assistance
+
+**Primary paths:** `pipeline/editorial/`, `pipeline/validators/facts.py`, `config/editorial.yml`, recorded adversarial editorial fixtures.
+
+- [ ] Implement a provider interface and a working `none` provider that can render a reviewed edition without a model.
+- [ ] Define a strict editorial output schema and a minimal evidence input containing no secrets or executable instructions.
+- [ ] Reject unexpected fields, invented advisory URLs, unsupported versions/scores, and attempts to mutate authoritative data. Validate factual claims inside prose, not only JSON field names.
+- [ ] Add bounded retries, token/cost limits, failure fallback, prompt/version audit metadata, and explicit generated/unreviewed status.
+- [ ] Test malicious source instructions, invalid structured output, hallucinated fixes, provider outages, and attempts to mark content reviewed.
+
+**Gate:** both disabled and enabled modes build; unsupported claims are quarantined for review; model output cannot alter sourced facts. Select provider/cost ceiling only when this milestone is authorized.
+
+## 7. Milestone E — original publishing and editorial controls
+
+**Primary paths:** `content/{articles,research,explainers,incidents}/`, author/series data, `src/pages/authors/[slug].astro`, publication/override validation.
+
+- [ ] Extend the initial Markdown collection to MDX, real author profiles, series, related articles, research commentary, and incident templates.
+- [ ] Add publish/suppress, headline/summary, lead, category/tags, ordering, and cluster overrides with attributed changes.
+- [ ] Keep authoritative fact changes separate and require provenance; render correction notes and actual review status.
+- [ ] Implement preview → review → publish state transitions and validate that drafts cannot enter public routes or feeds.
+
+**Gate:** an editor can add and review original work or a brief through repository files/PRs; generated copy and original authorship remain distinguishable. Confirm public author details before creating real biographies.
+
+## 8. Milestone F — search and historical discovery
+
+**Primary paths:** static search build integration, `src/components/SearchDialog.astro`, client search script, related-coverage indexes, browser tests.
+
+- [ ] Choose Pagefind or an equivalent static engine against the built site size and content structure; record the decision.
+- [ ] Index CVE/GHSA, package, technology, vendor, title, author, tags, and article text; exclude drafts, fixture production content, and duplicate aliases.
+- [ ] Add keyboard-accessible search with Cmd/Ctrl+K, focus containment/restoration, Escape, meaningful empty results, and lazy-loaded assets.
+- [ ] Prioritize exact advisory matches, and connect CVE pages to related coverage with clear dates.
+
+**Gate:** reader journeys from search to a relevant article/CVE work with keyboard and mobile input; first-page budgets remain within the design targets. Package pages and watchlists stay in H.
+
+## 9. Milestone G — release engineering and public V1
+
+**Primary paths:** `.github/workflows/{publish-daily,deploy,security}.yml`, deployment configuration, `public/.well-known/security.txt`, publication CLI, operational documentation.
+
+- [ ] Select hosting and confirm account/domain access; build a deployment preview before requesting any missing production authorization.
+- [ ] Configure scheduled candidates and explicit editorial publication. Validate dates, concurrency locks, stable ids, and atomic promotion.
+- [ ] Keep the last good edition during empty, partial, and failed runs; expose reader-relevant source dates without leaking diagnostics.
+- [ ] Test replay, correction, and rollback using a previous verified edition/build. Preserve permanent editions and originals.
+- [ ] Enable least-privilege workflows, dependency/secret checks, applicable static analysis, action pinning, provenance/SBOM generation, and documented repository protection settings.
+- [ ] Configure HTTPS/canonical host, CSP and security headers, confirmed security contact, feed validation, SEO, and production fixture/draft rejection.
+- [ ] Run end-to-end generation from fresh real source inputs through review and the deployed static site. Verify domain, assets, routes, feeds, dark mode, mobile rendering, and dated evidence.
+
+**Public V1 release gate — all required:**
+
+- [ ] Every item in original spec section 82 has corresponding evidence.
+- [ ] Public content contains no fixture or synthetic records; evidence attribution is visible.
+- [ ] Current source facts are deterministically sourced, with freshness and unknown states tested.
+- [ ] Daily candidate generation requires no manual coding; editorial approval follows the chosen policy.
+- [ ] All required checks pass at the revision being deployed.
+- [ ] Public domain/HTTPS and site/feed navigation are verified after deployment.
+- [ ] Failed-run retention and rollback have been exercised, with recovery steps recorded.
+
+## 10. Milestone H — deferred proposals
+
+EPSS history, vulnerability timelines, package/technology pages, watchlists, email digests, topic feeds, trend charts, saved preferences, and accounts require separate designs justified by actual reader needs. Do not let these delay V1 or introduce placeholders into its UI.
+
+## 11. Requirement coverage
+
+| Requirement | Delivery |
+| --- | --- |
+| Screenshot-inspired newspaper, responsive, dark | A4–A5 |
+| Typed/schema-validated content, truthful fixtures | A2–A3 |
+| Topic and signal filters | A6 |
+| Article/edition/archive/category/tag/CVE routes | A7 |
+| Original articles | A3/A7, expanded E |
+| Vulnerability Watch, evidence, unknown states | A5/A7, live facts C |
+| RSS/JSON/Markdown and SEO | A7–A8, production G |
+| Collection and clustering | B |
+| CVSS/EPSS/KEV/fixes and provenance | C |
+| Explainable ranking and editorial diversity | C; layout A5 |
+| Optional AI and fact integrity | D |
+| Research/incident/author/series publishing | E |
+| Search and historical coverage | F |
+| Scheduling, retention, telemetry, corrections | B/E/G |
+| Security CI, hosting, rollback, daily publication | A1 baseline, G release |
+| Future intelligence/accounts | H; explicitly outside V1 |
+
+## 12. Evidence ledger
+
+| Milestone | Status | Evidence |
+| --- | --- | --- |
+| Planning | Written; awaiting implementation review | Product spec, design baseline, AGENTS.md, this plan |
+| A | Complete locally | 61 static pages; 15 unit tests; 11 Chromium journeys; type/build/content/link checks pass; light/dark desktop and mobile screenshots reviewed under `/private/tmp/tsd-*.png`; production fixture build rejection verified. Git commit unavailable because `.git` is read-only in this workspace. |
+| B | Not started | Depends on content contract |
+| C | Not started | Depends on recorded inputs and adapters |
+| D | Not started | Provider none is an acceptable V1 mode |
+| E | Not started | Initial Markdown covered in A |
+| F | Not started | Depends on generated content |
+| G | Not started | No deployment performed |
+| H | Deferred | Outside initial release |
+
+At each completed milestone, append the date/revision, changed paths, exact commands and outcomes, screenshot paths and viewport/theme coverage, deviations, and remaining limitations. Check off only verified work.

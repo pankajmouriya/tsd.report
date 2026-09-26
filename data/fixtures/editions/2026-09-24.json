@@ -1,0 +1,5 @@
+{
+  "schema_version": 1, "date": "2026-09-24", "fixture": true, "lead_story": "first-edition",
+  "sections": { "briefs": [] },
+  "stories": [{ "id": "first-edition", "slug": "first-edition", "title": "The first fixture edition establishes the newspaper rhythm", "type": "original", "category": "security-engineering", "published_at": "2026-09-24T06:00:00Z", "summary": "A compact archival fixture verifies navigation across available editions.", "why_it_matters": "Edition navigation must follow published dates rather than assume every calendar day exists.", "action": "Generate previous and next links from the validated edition index.", "affected_technologies": ["Static publishing"], "tags": ["editorial"], "sources": [{ "id": "tsd-editorial", "name": "The Security Diff", "url": "https://tsd.report/editorial-policy", "type": "editorial", "retrieved_at": "2026-09-24T06:00:00Z" }], "signal": { "score": 58, "label": "standard", "reasons": ["Archive navigation"] }, "vulnerabilities": [], "body": ["Fixture preview content."], "author": "Pankaj Mouriya", "fixture": true }]
+}

@@ -1,0 +1,6 @@
+{
+  "fixture": true,
+  "notice": "Historical and synthetic material used only to evaluate the interface.",
+  "retrieved_at": "2026-09-26T04:00:00Z",
+  "sources": ["https://logging.apache.org/log4j/2.x/security.html", "https://www.first.org/epss/"]
+}

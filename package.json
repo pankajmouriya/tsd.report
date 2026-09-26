@@ -1,0 +1,30 @@
+{
+  "name": "the-security-diff",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "check": "ASTRO_TELEMETRY_DISABLED=1 astro check && tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "validate:content": "node --import tsx scripts/validate-content.ts",
+    "generate:schema": "node --import tsx scripts/generate-schema.ts",
+    "check:links": "node --import tsx scripts/check-links.ts"
+  },
+  "dependencies": {
+    "astro": "7.3.5",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.20.4",
+    "tsx": "4.20.6",
+    "typescript": "6.0.3",
+    "vitest": "5.0.2"
+  }
+}
