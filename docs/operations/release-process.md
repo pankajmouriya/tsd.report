@@ -23,7 +23,7 @@ Create one Direct Upload Pages project:
 | --- | --- | --- |
 | `tsd-report` | Pull request previews on `pr-<number>` branches and reviewed production content on `main` | `tsd.report` and optionally `www.tsd.report` |
 
-Do not create a Git-integrated Cloudflare build. GitHub Actions builds the site and Wrangler uploads the generated directory. Preview branch uploads do not replace the production deployment. The deployment token needs Cloudflare Pages edit access for the account containing this project. DNS edit access is not required by the workflow.
+Do not create a Git-integrated Cloudflare build. GitHub Actions builds the site and Wrangler uploads the generated directory. Preview branch uploads do not replace the production deployment. The account API token needs Pages Read and Pages Write for the account containing this project: Wrangler reads the project list before creating or updating a deployment. DNS edit access is not required by the workflow.
 
 Create the empty project from GitHub Actions so fixture content is never uploaded as the initial production deployment:
 
@@ -36,7 +36,7 @@ Create the empty project from GitHub Actions so fixture content is never uploade
 
 Create GitHub environments named `preview` and `production` so GitHub records preview and production deployments.
 
-Add `CLOUDFLARE_API_TOKEN` as a repository secret. It must contain the restricted Cloudflare Pages API token, not the Cloudflare Global API Key.
+Add `CLOUDFLARE_API_TOKEN` as a repository secret. It must contain the restricted Cloudflare account API token with Pages Read and Pages Write, not the Cloudflare Global API Key.
 
 Add these repository variables:
 

@@ -254,10 +254,11 @@ Use a restricted Cloudflare API token. Do not use the Cloudflare Global API Key.
   GitHub Actions - tsd.report Pages
   ```
 
-- [ ] Add this permission:
+- [ ] Add these permissions:
 
   ```text
-  Account → Cloudflare Pages → Edit
+  Account → Pages → Read
+  Account → Pages → Write
   ```
 
 - [ ] Under **Account Resources**, select:
@@ -268,7 +269,7 @@ Use a restricted Cloudflare API token. Do not use the Cloudflare Global API Key.
 
 - [ ] Do not add Zone DNS permissions.
 - [ ] Select **Continue to summary**.
-- [ ] Confirm that the token grants only the required Cloudflare Pages permission for the selected account.
+- [ ] Confirm that the token grants only Pages Read and Pages Write for the selected account.
 - [ ] Select **Create Token**.
 - [ ] Copy the token immediately and store it in a password manager until it has been added to GitHub.
 
