@@ -13,16 +13,18 @@ export type ArticleDocument = {
     slug: string;
     title: string;
     structure: 'essay' | 'brief';
-    status: 'unreviewed-fixture' | 'reviewed-fixture';
-    fixture: true;
+    status: 'unreviewed-fixture' | 'reviewed-fixture' | 'published';
+    fixture?: true;
+    reviewed_by?: string;
+    reviewed_at?: string | Date;
     references: ArticleReference[];
     related_story_ids: string[];
   };
 };
 
-type StoryIdentity = { id: string; slug: string; title: string; fixture: boolean };
+type StoryIdentity = { id: string; slug: string; title: string; fixture?: boolean; status?: 'published' };
 
-export function validateArticleDocuments<T extends ArticleDocument>(documents: T[], stories: StoryIdentity[]): T[] {
+export function validateArticleDocuments<T extends ArticleDocument>(documents: T[], stories: StoryIdentity[], mode: 'fixture' | 'production' = 'fixture'): T[] {
   const slugs = new Set<string>();
   const storyIds = new Set<string>();
 
@@ -36,7 +38,14 @@ export function validateArticleDocuments<T extends ArticleDocument>(documents: T
     if (!story) throw new Error(`Unknown story id: ${document.data.story_id}`);
     if (story.slug !== document.data.slug) throw new Error(`Article slug does not match story ${story.id}`);
     if (story.title !== document.data.title) throw new Error(`Article title does not match story ${story.id}`);
-    if (!story.fixture || !document.data.fixture) throw new Error(`Article fixture status does not match story ${story.id}`);
+    const fixtureDocument = document.data.fixture === true;
+    const fixtureStory = story.fixture === true;
+    if ((mode === 'fixture' && (!fixtureStory || !fixtureDocument)) || (mode === 'production' && (fixtureStory || fixtureDocument))) {
+      throw new Error(`Article environment does not match story ${story.id}`);
+    }
+    if (mode === 'production' && (story.status !== 'published' || document.data.status !== 'published' || !document.data.reviewed_by || !document.data.reviewed_at)) {
+      throw new Error(`Production article is not reviewed and published: ${story.id}`);
+    }
 
     const references = new Set<string>();
     for (const reference of document.data.references) {

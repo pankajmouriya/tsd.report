@@ -13,6 +13,12 @@ Confirmed by the user: the attached Daily Diff screenshot is the visual referenc
 
 The remaining concrete choices below are proposed defaults. They make the first build executable and can be refined after seeing the prototype. They do not represent approval to publish publicly, purchase services, or enable unattended editorial publication.
 
+### Release automation decision — 2026-09-27
+
+The user selected semantic-release for automatic SemVer GitHub releases after reviewed code changes merge to `main`, followed by Cloudflare deployment gates. Code release identity is the stable Git tag and full source SHA; live publication status comes from deployment evidence. See the [release-process runbook](../../operations/release-process.md) for rules and implementation status.
+
+Production must implement the [content-environments design](../../design/content-environments.md): separate fixture and production JSON/Markdown, one selected source, genuine recorded review, no fixture fallback, and empty-production rejection. The workflow requires dedicated production build/validation and boundary tests before upload. Fixture seed content remains available locally. Initial launch retains explicit exact-artifact/DNS authorization; subsequent automatic promotion requires the documented standing policy, which has not yet been recorded. Candidate agents prepare PRs and cannot approve, merge, or publish them.
+
 ## 2. Design direction and alternatives
 
 | Approach | Benefit | Tradeoff |
@@ -273,4 +279,4 @@ The [authoring guide](../../editorial/authoring-guide.md), [recipes](../../edito
 
 The [agent workflow](../../editorial/agent-workflow.md) proposes a strict editorial draft output contract with title, summary, impact, action, Markdown body, claim links, and open questions. The drafter does not control authoritative facts, source identity/timestamps, ranking, bylines/review records, lead selection, or publication. Evidence is supplied separately and the integrator must copy approved fields explicitly. This contract and its evidence sidecar are documentation artifacts, not implemented pipeline enforcement. B–G retain their existing scope and gates.
 
-Current authoring limits are explicit: manual edition imports, collection-wide Markdown loading without a draft exclusion state, hardcoded lead artwork, incomplete field-level provenance, and older duplicate slug records overwriting newer records in the story index. These require scoped implementation before automated integration or production publishing. The documentation does not silently change those behaviors.
+Current authoring limits are explicit: fixture Markdown loads collection-wide without a draft exclusion state, lead artwork remains hardcoded, and field-level provenance remains incomplete. Edition JSON is now discovered within the selected environment, fixture and production content use separate schemas and roots, and duplicate story IDs or slugs fail validation instead of overwriting records. The remaining limits require scoped implementation before automated integration or production publishing.

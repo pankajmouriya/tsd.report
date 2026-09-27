@@ -98,7 +98,7 @@ These examples should be treated as an initial editorial backlog. Their current 
 
 The [edition renderer](../../src/components/EditionView.astro) groups the main edition into one lead, nine daily briefs, three original-writing entries, and two research entries. Vulnerability Watch summarizes the lead's vulnerability; it is not an additional story. “From the Editor” and “Research Worth Reading” are also section labels.
 
-The [Markdown agent article](../../content/articles/monitoring-ai-agents.md) contains two short paragraphs and uses the existing `agent-tool-boundaries` slug. It does not create an eighteenth story. Its frontmatter title, “How I Would Monitor an AI Coding Agent,” is an alternate working title: the [article template](../../src/pages/article/[slug].astro) displays the JSON story title and substitutes the Markdown paragraphs for the body.
+The [Markdown agent article](../../content/fixtures/articles/monitoring-ai-agents.md) contains two short paragraphs and uses the existing `agent-tool-boundaries` slug. It does not create an eighteenth story. Its frontmatter title, “How I Would Monitor an AI Coding Agent,” is an alternate working title: the [article template](../../src/pages/article/[slug].astro) displays the JSON story title and substitutes the Markdown paragraphs for the body.
 
 Routes below describe local content and generated pages, not public publication. Existing category and type labels are recorded accurately; the commissioned format may need to change when an article is researched. In particular, synthetic `news`, `advisory`, `incident`, and `research` labels do not establish real events or findings.
 

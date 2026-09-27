@@ -53,8 +53,9 @@ config/ranking.yml                      Later: versioned ranking rules
 schemas/                               Generated interchange JSON Schema
 data/fixtures/                         Labeled prototype editions
 data/fixtures/evidence/                Attributed source snapshots
-data/editions/                         Production edition snapshots only
-content/articles/                     Trusted Markdown/MDX originals
+data/production/editions/              Reviewed production edition snapshots only
+content/fixtures/articles/             Local fixture Markdown
+content/production/articles/           Reviewed production Markdown
 src/lib/schema.ts                     Runtime frontend content validation
 src/lib/content.ts                    Validated loading and page indexes
 src/lib/routes.ts                     Central canonical route helpers
@@ -73,7 +74,7 @@ scripts/                              Validation and build helpers
 .github/workflows/                    CI added with milestone A; pipeline jobs later
 ```
 
-Do not create empty future pipeline modules during A. Add files when their milestone produces behavior. `content/articles/` is a storage directory; its public URL remains singular `/article/`.
+Do not create empty future pipeline modules during A. Add files when their milestone produces behavior. The content storage directories do not determine public URLs; the canonical public route remains singular `/article/`.
 
 ## 3. Milestone A — implementation tasks
 
@@ -131,7 +132,7 @@ expect(() => articlePath('../archive')).toThrow();
 
 ### A3. Create an honest, representative fixture edition
 
-**Create:** `data/fixtures/editions/2026/09/24.json`, `25.json`, `26.json` in the same directory; `data/fixtures/evidence/manifest.json`, attributed evidence snapshots, `content/articles/monitoring-ai-agents.md`, and `tests/unit/fixtures.test.ts`.
+**Create:** `data/fixtures/editions/2026/09/24.json`, `25.json`, `26.json` in the same directory; `data/fixtures/evidence/manifest.json`, attributed evidence snapshots, `content/fixtures/articles/monitoring-ai-agents.md`, and `tests/unit/fixtures.test.ts`.
 
 **Consumes:** A2 schemas.
 **Produces:** three deterministic preview editions; at least 15 unique stories across all categories and all types.
@@ -363,7 +364,7 @@ EPSS history, vulnerability timelines, package/technology pages, watchlists, ema
 | D | Not started | Provider none is an acceptable V1 mode |
 | E | Not started | Initial Markdown covered in A |
 | F | Not started | Depends on generated content |
-| G | Not started | No deployment performed |
+| G | In progress — workflow definitions verified locally; production prerequisites blocked | SemVer release, security, candidate and Cloudflare deployment workflows added; see the 2026-09-28 workflow evidence below. No hosted deployment performed. |
 | H | Deferred | Outside initial release |
 
 At each completed milestone, append the date/revision, changed paths, exact commands and outcomes, screenshot paths and viewport/theme coverage, deviations, and remaining limitations. Check off only verified work.
@@ -414,3 +415,34 @@ Status: documentation and reusable templates complete; no pipeline or publishing
 The guide covers local preview authoring, all eight types, lead/section selection, Markdown customization, citation and attribution handling, unknown facts, edition registration, verification, and current limitations. Future agents receive an evidence-constrained drafting assignment; the proposed output schema does not give models control of authoritative facts or publication. No application logic, fixture editions, article bodies, dependencies, or publication state changed in this pass.
 
 Verification: parsed story and edition examples with the current `storySchema`/`editionSchema` through `node --import tsx` and confirmed their shared record matches. Built brief and essay templates separately with the installed Astro in `/private/tmp/tsd-authoring-template-check/`, using unchanged copies of `src/content.config.ts` and `src/lib/articles.ts`. Both one-page builds passed collection and identity/reference validation; generated citation and backlink targets resolve. Python `jsonschema` validated the proposed draft schema/example and rejected extra `fixture`, `vulnerabilities`, `author`, and nested `claim_links.source_url` fields. All 43 local document links checked resolve; `git diff --check` passes. The local evidence report is `/private/tmp/tsd-authoring-template-check/report.json` with both rendered sample HTML files. No full application regression, browser visual audit, real-source verification, or production integration is claimed for this documentation-only pass. No commit or deployment.
+
+
+### Milestone G workflow definitions and SemVer release policy — 2026-09-28
+
+Status: requested workflow files implemented and locally verified; production deployment and ingestion remain blocked by missing content/environment and publication-control implementations. No release, commit, deployment, or DNS mutation performed in this task.
+
+Changed paths: `.github/workflows/{validate,security,release,deploy,publish-daily}.yml`, `.github/dependabot.yml`, `.github/release/` (pinned tooling, configuration, runner and tests), `.github/scripts/release_control.py`, `tests/workflows/test_release_control.py`, `docs/operations/release-process.md`, documentation index, deployment plan, and design decision. The existing preview workflow is retained. The user-provided `docs/design/content-environments.md` is preserved and referenced as a production prerequisite.
+
+Verified commands/results:
+
+- `actionlint` 1.7.7: all six workflow definitions pass with no diagnostics.
+- `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/workflows -p 'test_*.py'`: 9 passed, including production-contract rejection and archive/source/content-manifest binding.
+- `npm test --prefix .github/release`: 17 passed; repeated with pinned Node 24.21.0 through `npm exec --yes --package=node@24.21.0 -- node --test .github/release/config.test.mjs`, also 17 passed. Tests cover major/minor/patch/no-release decisions, breaking-change precedence over custom patch rules, and generated content/maintenance release notes.
+- `npm test`: 19 application tests passed in 7 files.
+- Both root and release-tool `npm audit --audit-level=high`: zero vulnerabilities.
+- Missing `production-build`, `staging`, `release`, and `daily` prerequisites each return exit 1 with the missing commands listed; these are verified refusals, not completed deployment gates.
+- `git diff --check`: passed. Local evidence: `/private/tmp/tsd-release-workflows-verification.md`. Visual evidence: not applicable; no reader UI changed.
+
+Decisions/deviations: user selected semantic-release after eligible main merges instead of a separate release PR; first tag will be v1.0.0 without a historical baseline. Reviewed content commits can trigger patch releases. Automatic deployment is invoked through a reusable workflow to avoid GITHUB_TOKEN event suppression. Runtime/tooling are isolated from application dependencies. Production policies are compared after extraction rather than changed after packaging. GitHub Release assets supplement 90-day Actions retention. Initial public/DNS authorization remains explicit; subsequent unattended promotion requires a recorded policy. Preset 9.3.1 is pinned because the latest preset was incompatible with the release-notes writer.
+
+Remaining blockers/unverified after the content-environment implementation below: genuine reviewed production content, the agreed minimal Cloudflare deployment workflow, hosted workflow runs, repository secrets, Cloudflare project configuration, and the initial launch check. Semantic release, candidate automation, artifact inventories, extensive authorization evidence, and automated rollback rehearsal are deferred from the first publication path by the user's 2026-09-28 scope decision.
+
+### Fixture and production content environments — 2026-09-28
+
+Status: implemented and verified locally. Genuine production content remains intentionally empty, so production publication is blocked with `Production content requires at least one reviewed edition`.
+
+Changed paths: separate `content/{fixtures,production}/articles` and `data/{fixtures,production}/editions` roots; strict fixture/production schemas and loader selection; mode-aware layouts, feeds, articles, CVE pages, and route generation; explicit fixture/production build and validation scripts; focused boundary tests; generated fixture schema; and updated authoring/design documentation.
+
+Verification: `npm run check` reported zero diagnostics; `npm test` passed 25 tests in 7 files; `npm run validate:fixture` loaded 3 editions and 17 entries; `npm run build:fixture` generated 61 pages; `npm run check:links` passed; and `npm run test:e2e` passed 36 Chromium journeys. A temporary local production corpus passed validation and generated 10 pages, exposed only its own article/category/tag/date routes, used `index, follow`, and contained no fixture labels or fixture article route. The temporary corpus was removed and fixture output restored. Empty `npm run validate:production` returned the required nonzero result.
+
+Remaining blocker: add the first genuinely reviewed production edition and any associated Markdown under the production roots. Reviewer identity and evidence must come from the real editorial review; none was invented by this implementation.

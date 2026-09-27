@@ -10,7 +10,7 @@ const sourceSchema = z.object({
   type: z.enum(['vendor', 'government', 'research', 'community', 'editorial']),
   published_at: z.iso.datetime().nullable().optional(),
   retrieved_at: z.iso.datetime(),
-});
+}).strict();
 
 const vulnerabilitySchema = z.object({
   cve: z.string().regex(/^CVE-\d{4}-\d{4,}$/),
@@ -24,15 +24,15 @@ const vulnerabilitySchema = z.object({
   affected: z.array(z.string()).default([]),
   fixed_versions: z.array(z.string()).default([]),
   evidence_date: z.iso.date().nullable().optional(),
-});
+}).strict();
 
 const signalSchema = z.object({
   score: z.number().min(0).max(100),
   label: z.enum(['standard', 'recommended', 'must-read']),
   reasons: z.array(z.string()),
-});
+}).strict();
 
-export const storySchema = z.object({
+const storyFields = {
   id: z.string().min(1),
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   title: z.string().min(1),
@@ -51,34 +51,73 @@ export const storySchema = z.object({
   illustration: z.string().nullable().optional(),
   body: z.array(z.string()).default([]),
   author: z.string().nullable().optional(),
-  fixture: z.literal(true),
-});
+};
 
-export const editionSchema = z.object({
+export const fixtureStorySchema = z.object({
+  ...storyFields,
+  fixture: z.literal(true),
+}).strict();
+
+export const productionStorySchema = z.object({
+  ...storyFields,
+  sources: z.array(sourceSchema).min(1),
+  fixture: z.never().optional(),
+  status: z.literal('published'),
+  reviewed_by: z.string().min(1),
+  reviewed_at: z.iso.datetime(),
+}).strict();
+
+const editionFields = {
   schema_version: z.literal(1),
   date: z.iso.date(),
   generated_at: z.iso.datetime().optional(),
-  fixture: z.literal(true).optional(),
   lead_story: z.string(),
   sections: z.record(z.string(), z.array(z.string())),
-  stories: z.array(storySchema),
-}).superRefine((edition, context) => {
+};
+
+function validateEdition(
+  edition: { lead_story: string; sections: Record<string, string[]>; stories: Array<{ id: string }> },
+  context: z.core.$RefinementCtx,
+) {
   const ids = new Set(edition.stories.map((story) => story.id));
   if (!ids.has(edition.lead_story)) {
-    context.addIssue({ code: 'custom', path: ['lead_story'], message: 'Lead story must reference an edition story' });
+    context.addIssue({ code: 'custom', path: ['lead_story'], message: 'Lead story must reference an edition story', input: edition.lead_story });
   }
   if (ids.size !== edition.stories.length) {
-    context.addIssue({ code: 'custom', path: ['stories'], message: 'Story ids must be unique' });
+    context.addIssue({ code: 'custom', path: ['stories'], message: 'Story ids must be unique', input: edition.stories });
   }
   for (const [section, sectionIds] of Object.entries(edition.sections)) {
     for (const id of sectionIds) if (!ids.has(id)) {
-      context.addIssue({ code: 'custom', path: ['sections', section], message: `Unknown story id: ${id}` });
+      context.addIssue({ code: 'custom', path: ['sections', section], message: `Unknown story id: ${id}`, input: id });
     }
   }
-});
+}
+
+export const fixtureEditionSchema = z.object({
+  ...editionFields,
+  fixture: z.literal(true),
+  stories: z.array(fixtureStorySchema),
+}).strict().superRefine(validateEdition);
+
+export const productionEditionSchema = z.object({
+  ...editionFields,
+  fixture: z.never().optional(),
+  status: z.literal('published'),
+  reviewed_by: z.string().min(1),
+  reviewed_at: z.iso.datetime(),
+  stories: z.array(productionStorySchema).min(1),
+}).strict().superRefine(validateEdition);
+
+// Compatibility aliases for existing fixture authoring tools.
+export const storySchema = fixtureStorySchema;
+export const editionSchema = fixtureEditionSchema;
 
 export type Category = typeof categories[number];
-export type Story = z.infer<typeof storySchema>;
-export type Edition = z.infer<typeof editionSchema>;
+export type FixtureStory = z.infer<typeof fixtureStorySchema>;
+export type ProductionStory = z.infer<typeof productionStorySchema>;
+export type Story = FixtureStory | ProductionStory;
+export type FixtureEdition = z.infer<typeof fixtureEditionSchema>;
+export type ProductionEdition = z.infer<typeof productionEditionSchema>;
+export type Edition = FixtureEdition | ProductionEdition;
 export type Vulnerability = z.infer<typeof vulnerabilitySchema>;
 export type Source = z.infer<typeof sourceSchema>;

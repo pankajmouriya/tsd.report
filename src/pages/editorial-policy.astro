@@ -1,6 +1,8 @@
 ---
 import ArticleLayout from '../layouts/ArticleLayout.astro';
+import { getContentMode } from '../lib/content';
+const fixture = getContentMode() === 'fixture';
 ---
 <ArticleLayout title="Editorial policy" canonical="/editorial-policy" description="How The Security Diff separates facts, interpretation, and uncertainty.">
-  <main id="main" class="reading-article"><header class="article-opening"><h1>Evidence before prose</h1><p class="dek">How this preview separates sourced facts, interpretation, and uncertainty.</p></header><div class="article-body"><p>Authoritative security facts retain their source and observation date. CVSS, EPSS, KEV membership, confirmed exploitation, and public proof of concept status remain separate claims.</p><p>Automation may summarize validated evidence. It cannot create or overwrite vulnerability identifiers, scores, affected versions, fixed versions, exploitation claims, or source URLs.</p><p>This preview combines a historical advisory example with clearly synthetic layout scenarios. Unreviewed fixture copy remains labeled as such.</p></div></main>
+  <main id="main" class="reading-article"><header class="article-opening"><h1>Evidence before prose</h1><p class="dek">How The Security Diff separates sourced facts, interpretation, and uncertainty.</p></header><div class="article-body"><p>Authoritative security facts retain their source and observation date. CVSS, EPSS, KEV membership, confirmed exploitation, and public proof of concept status remain separate claims.</p><p>Automation may summarize validated evidence. It cannot create or overwrite vulnerability identifiers, scores, affected versions, fixed versions, exploitation claims, or source URLs.</p>{fixture && <p>This preview combines a historical advisory example with clearly synthetic layout scenarios. Unreviewed fixture copy remains labeled as such.</p>}</div></main>
 </ArticleLayout>

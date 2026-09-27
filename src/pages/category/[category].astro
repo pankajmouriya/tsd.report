@@ -1,10 +1,9 @@
 ---
 import BrowseLayout from '../../layouts/BrowseLayout.astro';
 import StoryCard from '../../components/StoryCard.astro';
-import { categories } from '../../lib/schema';
-import { getStories } from '../../lib/content';
+import { getStories, getStoryCategories } from '../../lib/content';
 import { categoryPath } from '../../lib/routes';
-export function getStaticPaths() { return categories.map((category) => ({ params: { category }, props: { category } })); }
+export function getStaticPaths() { return getStoryCategories().map((category) => ({ params: { category }, props: { category } })); }
 const { category } = Astro.props;
 const stories = getStories().filter((story) => story.category === category);
 const title = category.replaceAll('-', ' ');

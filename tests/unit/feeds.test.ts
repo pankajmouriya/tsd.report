@@ -10,4 +10,9 @@ describe('feed serialization', () => {
     const output = toMarkdownFeed({ date: '2026-09-26', stories: [{ slug: 'test-story', title: 'Test story', summary: 'Summary' }] });
     expect(output).toContain('[Test story](https://tsd.report/article/test-story)');
   });
+
+  it('does not label production feeds as fixture previews', () => {
+    const edition = { date: '2026-09-26', stories: [{ slug: 'test-story', title: 'Test story', summary: 'Summary' }] };
+    expect(toMarkdownFeed(edition, 'production')).not.toMatch(/fixture/i);
+  });
 });

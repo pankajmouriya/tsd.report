@@ -3,15 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "check": "ASTRO_TELEMETRY_DISABLED=1 astro check && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "build:fixture": "CONTENT_MODE=fixture npm run build",
+    "build:production": "CONTENT_MODE=production npm run build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "validate:content": "node --import tsx scripts/validate-content.ts",
+    "validate:fixture": "CONTENT_MODE=fixture npm run validate:content",
+    "validate:production": "CONTENT_MODE=production npm run validate:content",
+    "test:content-environments": "vitest run tests/unit/content.test.ts tests/unit/schema.test.ts tests/unit/articles.test.ts tests/unit/feeds.test.ts",
     "generate:schema": "node --import tsx scripts/generate-schema.ts",
     "check:links": "node --import tsx scripts/check-links.ts"
   },
@@ -25,6 +32,7 @@
     "@types/node": "22.20.4",
     "tsx": "4.20.6",
     "typescript": "6.0.3",
-    "vitest": "5.0.2"
+    "vitest": "5.0.2",
+    "wrangler": "4.142.0"
   }
 }

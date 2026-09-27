@@ -6,13 +6,13 @@ Use the same [authoring templates](authoring-guide.md) for people and agents. Be
 
 | Today | Still needed for unattended operation |
 | --- | --- |
-| Validated fixture edition JSON and repository Markdown | Real production content contract and loader |
+| Separate validated fixture and production JSON/Markdown loaders | Collection, candidate assembly, and publication automation |
 | Local preview, build, unit/browser tests, internal link checks | Source collectors with preserved snapshots and field-level provenance |
 | Manual choice of lead, sections, and fixture signal values | Versioned deterministic ranking and attributed overrides |
 | Draft assignment and JSON output schema in this kit | Enforced agent boundary, output validator, factual claim checks, quarantine |
 | Manual comparison of prose and sources | Recorded review identity/state, corrections, atomic publication and rollback |
 
-The new JSON output schema is a **proposed handoff contract**, stored with the templates. The running site does not consume or enforce it. A prompt is guidance, not a permission boundary. Production must not be enabled by changing fixture flags.
+The new JSON output schema is a **proposed handoff contract**, stored with the templates. The running site does not consume or enforce it. A prompt is guidance, not a permission boundary. Production records live in separate directories, require published and review metadata, and cannot be enabled by changing fixture flags.
 
 ## Proposed flow
 

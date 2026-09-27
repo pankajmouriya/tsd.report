@@ -2,7 +2,7 @@
 
 Start here when adding a brief, choosing a lead, writing an essay, or preparing an agent-assisted draft. You should customize content, not rebuild a page.
 
-Verified against the local implementation on 2026-09-27. This repository currently builds **fixture previews only**. These instructions prepare local content; they do not enable production publishing. Keep `fixture: true`. Setting it to false is not a publication workflow and fails the current schema.
+Verified against the local implementation on 2026-09-28. These instructions prepare **fixture previews** under the fixture directories. A separate production contract exists, but its directories remain empty and production release validation is blocked until genuinely reviewed content is added. Keep `fixture: true` in this workflow; removing it does not promote a fixture.
 
 ## 1. Choose your starting point
 
@@ -38,7 +38,7 @@ Current source of truth: [story/edition schema](../../src/lib/schema.ts), [Markd
 
 ## 3. Add a brief to a local preview
 
-1. Copy [story.json](templates/story.json) into a working draft outside `content/articles/`, for example `/private/tmp/tsd-editorial-drafts/my-story.json`. Files in the templates folder are not loaded into the site.
+1. Copy [story.json](templates/story.json) into a working draft outside `content/fixtures/articles/`, for example `/private/tmp/tsd-editorial-drafts/my-story.json`. Files in the templates folder are not loaded into the site.
 2. Replace its ID, slug, headline, timestamps, category, tags, prose, and sources. Keep its explicit preview status. Use a stable ID and a lowercase hyphenated slug. Never reuse an existing story's identity for unrelated reporting.
 3. Use a real source you inspected for sourced reporting. Record its actual retrieval time and publication time when known. For a wholly synthetic layout example, keep the synthetic label and do not attach invented vendor/CVE claims.
 4. Insert the complete object into `stories` in a deliberately editable preview edition under `data/fixtures/editions/`. For a new edition, follow section 5. Do not rewrite an archived snapshot just to change today's coverage.
@@ -67,7 +67,7 @@ An entry is a complete JSON object, not a separate auto-discovered story file. K
 | `body` | Array of paragraphs, plain text; JSON strings do not render Markdown |
 | `author` | Real, appropriate attribution or `null`; never assign a person's name to generated prose without agreement |
 | `illustration` | Currently accepted metadata but **not used to select the lead artwork** |
-| `fixture` | Must remain `true` in the current prototype |
+| `fixture` | Must remain `true` in the fixture authoring workflow |
 
 Category IDs: `vulnerabilities`, `supply-chain`, `ai-security`, `appsec`, `cloud`, `research`, `security-engineering`. See [taxonomy](../../config/taxonomy.json). Tags are not restricted to that category list.
 
@@ -76,7 +76,7 @@ Some defaults are permissive in the schema. In particular `sources: []` passes s
 ## 4. Add a full reading page
 
 1. Start with the same JSON story record.
-2. Copy either Markdown template to `content/articles/<slug>.md` only when ready to expose it in the local preview. Every `.md` file in this collection is loaded; there is no draft-exclusion status yet.
+2. Copy either Markdown template to `content/fixtures/articles/<slug>.md` only when ready to expose it in the local preview. Every `.md` file in this fixture collection is loaded; there is no draft-exclusion status yet.
 3. Match `story_id`, `slug`, and `title` exactly to the JSON. Set `structure: brief` or `essay` independently of type. For example, an incident investigation can be an essay.
 4. Keep `status: unreviewed-fixture`, `fixture: true`, and an honest `credit`. The schema accepts `reviewed-fixture`, but does not verify a real review record; do not use it as a shortcut.
 5. Add references in frontmatter **and** matching inline citations and footnote definitions. An entry with ID `vendor-advisory` uses `[^vendor-advisory]` in prose and a definition at the end. Use the same source URL and dates in both places. JSON story sources should include the relevant primary sources too.
@@ -89,7 +89,7 @@ Some defaults are permissive in the schema. In particular `sources: []` passes s
 - Briefs show the JSON `action` near the opening. Essays start with their narrative. Avoid duplicating that action paragraph verbatim in the body.
 - Endnotes are authored in Markdown. Frontmatter references are validated metadata; they do not automatically produce the rich article's full bibliography. Do not omit the footnote definitions.
 - For local original/licensed artwork, use a reviewed `<figure class="article-figure">` with an image, useful alt text, dimensions, and `<figcaption>`. Put the asset in `public/images/` and reference it as `/images/<file>`. Keep licensing and factual basis with the draft.
-- Optional source notes use the existing `evidence-note` pattern in [the historical brief](../../content/articles/patching-the-edge.md). Essential caveats stay in prose. Custom HTML/SVG is trusted repository code and requires review; agent/source HTML must not be pasted through automatically.
+- Optional source notes use the existing `evidence-note` pattern in [the historical brief](../../content/fixtures/articles/patching-the-edge.md). Essential caveats stay in prose. Custom HTML/SVG is trusted repository code and requires review; agent/source HTML must not be pasted through automatically.
 - Raw Markdown does not import Astro components. Do not paste `<ArticleFigure>` into `.md` and assume it is a registered component. Current templates do not require MDX or new CSS.
 
 The `cve` story type currently displays the fixed “Historical fixture” opening label. Other rich articles use `credit`. Changing `author` does not automatically change the rich article's credit. Check the homepage byline and article attribution together.
@@ -98,7 +98,7 @@ The `cve` story type currently displays the fixed “Historical fixture” openi
 
 Copy [edition.json](templates/edition.json) to a new `data/fixtures/editions/YYYY-MM-DD.json` preview file. Customize its date and generation time, replace the sample story, then add the other stories and their section IDs.
 
-The loader currently imports edition files explicitly. Register the new import in [src/lib/content.ts](../../src/lib/content.ts) and place it in the `editions` array in descending date order. The first item supplies `/` and `/today`; dropping a new file in the directory alone does nothing. Check date navigation and archive ordering after registration.
+The loader discovers JSON files under `data/fixtures/editions/`, validates them, and sorts them by date in descending order. The newest edition supplies `/` and `/today`. Check date navigation and archive ordering after adding a file.
 
 For example, with already-defined story IDs:
 
@@ -123,7 +123,7 @@ Lead placement is independent of the signal label. “Must Read” does not auto
 
 ### Reuse and corrections
 
-Use stable identity and consistent content when reusing a story across editions. The current loader deduplicates by slug while iterating newest to oldest, so an older record can overwrite a newer record for the canonical article. It is not a corrections/versioning system. Do not rely on a new edition to update an old article implicitly. Conflicting repeated slugs, correction records, and immutable publication snapshots need the later editorial/versioning implementation.
+Use stable identity and consistent content when reusing a story across editions. The loader rejects repeated story IDs or slugs across the selected corpus because it is not yet a corrections/versioning system. Do not rely on a new edition to update an old article implicitly. Correction records and immutable publication snapshots need the later editorial/versioning implementation.
 
 ## 6. Source hygiene
 
@@ -159,10 +159,10 @@ Use the exact current `vulnerabilities` shape from [the schema](../../src/lib/sc
 From the repository root:
 
 ```sh
-CONTENT_MODE=fixture npm run validate:content
+npm run validate:fixture
 npm run check
 npm test
-CONTENT_MODE=fixture npm run build
+npm run build:fixture
 npm run check:links
 npm run test:e2e
 ```
@@ -173,19 +173,19 @@ Browser tests use the generated preview and expect port 4322 to be free. The cur
 
 For manual reading, run `npm run preview -- --host 127.0.0.1 --port 4324` after building. Inspect at 320/390/768/1024/1440px and both themes for layout-affecting changes. Preserve useful before/after screenshots locally.
 
-Finally, production mode must still reject fixture content:
+Finally, production validation must remain blocked while the reviewed production corpus is empty:
 
 ```sh
-CONTENT_MODE=production npm run build
+npm run validate:production
 ```
 
-Expected: nonzero exit containing `Production builds reject fixture content`. An unrelated error is not success. Rebuild in fixture mode before further previewing. Passing preview checks is not authorization to deploy.
+Expected: nonzero exit containing `Production content requires at least one reviewed edition`. An unrelated error is not success. Run `npm run build:fixture` before further previewing. Passing preview checks is not authorization to deploy.
 
 ## 10. Troubleshooting
 
 | Symptom | Check |
 | --- | --- |
-| New edition absent | Explicit import and newest-first array in `src/lib/content.ts` |
+| New edition absent | Selected content mode, correct environment directory, filename ending in `.json`, and schema errors |
 | Story appears in filters, not the homepage | `sections` membership or `lead_story` |
 | Wrong visible section | Story type/category; section key is not a layout override |
 | Title/slug mismatch build error | Exact agreement between JSON and Markdown |
@@ -193,7 +193,7 @@ Expected: nonzero exit containing `Production builds reject fixture content`. An
 | Related story error | Existing story IDs, not slugs; at most three |
 | Lead crashes or shows wrong artwork | First source exists; embedded lead diagram still matches |
 | Draft unexpectedly has a route | All collection Markdown is loaded; keep work-in-progress outside it |
-| Changes to repeated story do not appear | Older duplicate slug may override newer metadata |
+| Duplicate story error | Story IDs and slugs must be unique across the selected edition corpus |
 | Extra JSON field has no effect | It is not part of the runtime contract; do not rely on unknown-key stripping as agent validation |
 
 For the next automation step, follow [the agent workflow](agent-workflow.md). It keeps the same authoring model and identifies the missing enforcement explicitly.

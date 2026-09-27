@@ -18,8 +18,15 @@ Read in this order:
 4. [Delivery plan](superpowers/plans/2026-09-26-tsd-delivery.md) — detailed prototype tasks, later milestones, release gates, and evidence ledger.
 5. [Production deployment plan](superpowers/plans/2026-09-27-tsd-production-deployment.md) — provider decision, preview and production CI/CD, security headers, DNS, release approval, daily candidate automation, smoke checks, and rollback.
 
+Supporting design notes:
+
+- [Fixture and production content environments](design/content-environments.md) — keeps local seed content separate from reviewed production content and defines the fail-closed build contract.
+- [Reading experience](design/reading-experience.md) — long-form article hierarchy and evidence placement.
+- [Typography comparison](design/typography-comparison.md) — typeface evaluation and adopted direction.
+
 The canonical article route is `/article/[slug]`. Milestone A is implemented locally as a fixture prototype, including the reading pages. Live ingestion and production publication remain future work; see the delivery ledger for verification and limitations. No deployment is recorded.
 
 ## Operations
 
+- [Release process and workflow setup](operations/release-process.md) — pull request validation and previews, main-branch Direct Upload, GitHub and Cloudflare settings, first-publication checks, and manual rollback.
 - [Cloudflare account and `tsd.report` DNS setup](operations/cloudflare-domain-setup.md) — exact Cloudflare onboarding, GoDaddy nameserver migration, DNS verification, and DNSSEC steps.

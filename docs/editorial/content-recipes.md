@@ -47,8 +47,8 @@ Separate the authors' demonstrated result from your engineering interpretation. 
 
 ## Local examples to learn from
 
-- [Historical patching brief](../../content/articles/patching-the-edge.md): dated context, action, sources, figure, and visible unknowns.
-- [Agent-boundary essay](../../content/articles/monitoring-ai-agents.md): sustained argument, technical diagram, illustrative example, limitations, and footnotes.
+- [Historical patching brief](../../content/fixtures/articles/patching-the-edge.md): dated context, action, sources, figure, and visible unknowns.
+- [Agent-boundary essay](../../content/fixtures/articles/monitoring-ai-agents.md): sustained argument, technical diagram, illustrative example, limitations, and footnotes.
 - [Editorial seed rationale](editorial-seed-rationale.md): existing seeds and further reading candidates, with maturity distinctions. A promising candidate is not automatically verified publication material.
 
 These local examples remain unreviewed fixtures. Their existing prose or metadata is not independent evidence for a new claim.

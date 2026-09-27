@@ -1,6 +1,8 @@
 ---
 import ArticleLayout from '../layouts/ArticleLayout.astro';
+import { getContentMode } from '../lib/content';
+const fixture = getContentMode() === 'fixture';
 ---
 <ArticleLayout title="About" canonical="/about" description="About The Security Diff.">
-  <main id="main" class="reading-article"><header class="article-opening"><h1>Security engineering, without the noise.</h1><p class="dek">The Security Diff is a planned daily newspaper combining curated reporting, vulnerability intelligence, and practical engineering context.</p></header><div class="article-body"><p>This site is a fixture-backed design preview. It does not represent a live publication or current vulnerability feed.</p><p>The product is built around one question: what changed, and does a security engineer need to care?</p></div></main>
+  <main id="main" class="reading-article"><header class="article-opening"><h1>Security engineering, without the noise.</h1><p class="dek">The Security Diff is a daily newspaper combining curated reporting, vulnerability intelligence, and practical engineering context.</p></header><div class="article-body">{fixture && <p>This site is a fixture-backed design preview. It does not represent a live publication or current vulnerability feed.</p>}<p>The publication is built around one question: what changed, and does a security engineer need to care?</p></div></main>
 </ArticleLayout>

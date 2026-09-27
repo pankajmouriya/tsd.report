@@ -21,14 +21,14 @@ Open `http://127.0.0.1:4321/`. Every page is visibly marked as a fixture preview
 ```sh
 npm run check
 npm test
-npm run validate:content
-CONTENT_MODE=fixture npm run build
+npm run validate:fixture
+npm run build:fixture
 npm run check:links
 npx playwright install chromium
 npm run test:e2e
 ```
 
-`CONTENT_MODE=production npm run build` deliberately fails while fixture data is present. This prevents prototype stories from entering a public build.
+`npm run validate:production` and `npm run build:production` deliberately fail until at least one reviewed production edition exists. Production reads only `data/production/editions` and `content/production/articles`; it never falls back to local fixtures.
 
 ## Routes
 

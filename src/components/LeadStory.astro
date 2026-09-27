@@ -2,9 +2,11 @@
 import type { Story } from '../lib/schema';
 import { articlePath } from '../lib/routes';
 import { formatShortDate } from '../lib/format';
+import { getContentMode } from '../lib/content';
 interface Props { story: Story; }
 const { story } = Astro.props;
 const source = story.sources[0];
+const fixture = getContentMode() === 'fixture';
 ---
 <article class="lead" data-lead data-story data-story-id={story.id} data-category={story.category} data-signal={story.signal.label}>
   <p class="eyebrow">Lead story · {story.category.replaceAll('-', ' ')}</p>
@@ -30,7 +32,7 @@ const source = story.sources[0];
         <text class="diagram-caption" x="52" y="454">before emergency change.</text>
         <path class="diagram-arrow" d="M656 414 h94 m-20 -20 20 20 -20 20" />
       </svg>
-      <figcaption>Decision sequence for this fixture brief; verify current vendor evidence before acting.</figcaption>
+      <figcaption>{fixture ? 'Decision sequence for this fixture brief; verify current vendor evidence before acting.' : 'Decision sequence for prioritizing supported action from current evidence.'}</figcaption>
     </figure>
     <div class="lead-copy">
       <p>{story.summary}</p>

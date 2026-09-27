@@ -1,6 +1,6 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
-import { findEditionForStory, getCves, getStoriesForCve } from '../../lib/content';
+import { findEditionForStory, getContentMode, getCves, getStoriesForCve } from '../../lib/content';
 import { cvePath, articlePath } from '../../lib/routes';
 import { formatProbability, formatShortDate } from '../../lib/format';
 export function getStaticPaths() { return getCves().map((cve) => ({ params: { cve }, props: { cve } })); }
@@ -9,20 +9,21 @@ const stories = getStoriesForCve(cve);
 const vulnerability = stories[0].vulnerabilities.find((item) => item.cve === cve)!;
 const edition = findEditionForStory(stories[0].slug);
 const sources = [...new Map(stories.flatMap((story) => story.sources).map((source) => [source.id, source])).values()];
+const fixture = getContentMode() === 'fixture';
 ---
 <ArticleLayout title={cve} description={`Dated vulnerability record for ${cve}`} canonical={cvePath(cve)} editionDate={edition?.date}>
   <main id="main" class="reading-article reading-article--reference">
     <header class="article-opening">
-      <p class="article-kicker">Vulnerability intelligence · Historical fixture</p>
+      <p class="article-kicker">Vulnerability intelligence{fixture && ' · Historical fixture'}</p>
       <h1 translate="no">{cve}</h1>
-      <p class="dek">A dated fixture record separating severity, probability, exploitation evidence, and remediation information. It is not a current alert.</p>
+      <p class="dek">{fixture ? 'A dated fixture record separating severity, probability, exploitation evidence, and remediation information. It is not a current alert.' : 'A dated record separating severity, probability, exploitation evidence, and remediation information.'}</p>
       <p class="article-meta">Evidence as of {vulnerability.evidence_date ? <time datetime={vulnerability.evidence_date}>{formatShortDate(vulnerability.evidence_date)}</time> : 'unknown'}</p>
     </header>
     <div class="article-body">
       <dl class="cve-facts">
         <dt>CVSS</dt><dd>{vulnerability.cvss ?? 'Not available'} {vulnerability.cvss_version ? `(v${vulnerability.cvss_version})` : ''}</dd>
         <dt>EPSS</dt><dd>{formatProbability(vulnerability.epss)}</dd>
-        <dt>KEV</dt><dd>{vulnerability.kev == null ? 'Unknown' : vulnerability.kev ? 'Yes' : 'No'} <small>Fixture value; claim-level source not yet recorded.</small></dd>
+        <dt>KEV</dt><dd>{vulnerability.kev == null ? 'Unknown' : vulnerability.kev ? 'Yes' : 'No'} {fixture && <small>Fixture value; claim-level source not yet recorded.</small>}</dd>
         <dt>Known exploitation</dt><dd>{vulnerability.exploitation.replace('-', ' ')}</dd>
         <dt>Affected</dt><dd>{vulnerability.affected.join(', ') || 'Not available'}</dd>
         <dt>Fixed information</dt><dd>{vulnerability.fixed_versions.join(', ') || 'No authoritative fixed version recorded'}</dd>
@@ -31,7 +32,7 @@ const sources = [...new Map(stories.flatMap((story) => story.sources).map((sourc
       <ul>{stories.map((story) => <li><a href={articlePath(story.slug)}>{story.title}</a></li>)}</ul>
       <h2>Recorded sources</h2>
       <ul>{sources.map((source) => <li><a href={source.url} rel="noreferrer">{source.name}</a> · retrieved {formatShortDate(source.retrieved_at)}</li>)}</ul>
-      <p><strong>Evidence limitation:</strong> the fixture does not yet associate each intelligence field with an independent source record. Unknown or unsupported values must remain explicit.</p>
+      {fixture && <p><strong>Evidence limitation:</strong> the fixture does not yet associate each intelligence field with an independent source record. Unknown or unsupported values must remain explicit.</p>}
     </div>
   </main>
 </ArticleLayout>

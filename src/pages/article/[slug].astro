@@ -5,21 +5,23 @@ import ArticleBody from '../../components/ArticleBody.astro';
 import ArticleContents from '../../components/ArticleContents.astro';
 import ArticleReferences from '../../components/ArticleReferences.astro';
 import { validateArticleDocuments, type ArticleDocument } from '../../lib/articles';
-import { findEditionForStory, findStory, findStoryById, getStories } from '../../lib/content';
+import { findEditionForStory, findStory, findStoryById, getContentMode, getStories } from '../../lib/content';
 import { articlePath, cvePath, editionPath } from '../../lib/routes';
 import { formatShortDate } from '../../lib/format';
 
 export async function getStaticPaths() {
+  const mode = getContentMode();
   const stories = getStories();
-  const documents = await getCollection('articles');
-  validateArticleDocuments(documents as unknown as ArticleDocument[], stories);
+  const documents = await getCollection(mode === 'fixture' ? 'fixtureArticles' : 'productionArticles');
+  validateArticleDocuments(documents as unknown as ArticleDocument[], stories, mode);
   return stories.map((story) => ({ params: { slug: story.slug }, props: { story } }));
 }
 
 const { story } = Astro.props;
+const mode = getContentMode();
 if (!findStory(story.slug)) throw new Error('Unknown article');
 const edition = findEditionForStory(story.slug);
-const documents = await getCollection('articles');
+const documents = await getCollection(mode === 'fixture' ? 'fixtureArticles' : 'productionArticles');
 const article = documents.find((entry) => entry.data.slug === story.slug);
 const rendered = article ? await render(article) : undefined;
 const Content = rendered?.Content;
@@ -30,7 +32,9 @@ const related = article?.data.related_story_ids.map((id) => {
   return candidate;
 }) ?? [];
 const structure = article?.data.structure ?? (story.type === 'original' || story.type === 'research' ? 'essay' : 'brief');
-const statusLabel = story.type === 'cve' ? 'Historical fixture' : article?.data.credit ?? 'Fixture preview';
+const statusLabel = mode === 'fixture'
+  ? story.type === 'cve' ? 'Historical fixture' : article?.data.credit ?? 'Fixture preview'
+  : article?.data.credit ?? story.author ?? 'The Security Diff';
 ---
 <ArticleLayout title={story.title} description={story.summary} canonical={articlePath(story.slug)} editionDate={edition?.date}>
   <main id="main" class:list={['reading-article', `reading-article--${structure}`]}>
@@ -40,7 +44,7 @@ const statusLabel = story.type === 'cve' ? 'Historical fixture' : article?.data.
       <p class="dek">{story.summary}</p>
       <p class="article-meta">
         <span>{statusLabel}</span> · <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time>
-        {article?.data.status === 'unreviewed-fixture' && <span class="article-status">Unreviewed fixture</span>}
+        {mode === 'fixture' && article?.data.status === 'unreviewed-fixture' && <span class="article-status">Unreviewed fixture</span>}
       </p>
     </header>
 

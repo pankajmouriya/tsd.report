@@ -28,4 +28,9 @@ describe('validateArticleDocuments', () => {
     expect(() => validateArticleDocuments([{ ...document, body: 'Claim.[^missing]' }], [story])).toThrow(/Missing reference/);
     expect(() => validateArticleDocuments([{ ...document, body: 'No citation.' }], [story])).toThrow(/Unused reference/);
   });
+
+  it('rejects fixture documents for production stories', () => {
+    const productionStory = { id: 'story-1', slug: 'example', title: 'Example title', status: 'published' as const };
+    expect(() => validateArticleDocuments([document], [productionStory], 'production')).toThrow(/environment does not match/);
+  });
 });
