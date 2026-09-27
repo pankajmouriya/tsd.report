@@ -8,23 +8,91 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: validate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  ASTRO_TELEMETRY_DISABLED: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - name: Check out source
+      - name: Check out tested revision
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Use Node 22
+        with:
+          persist-credentials: false
+      - name: Use pinned Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .node-version
           cache: npm
       - run: npm ci
+      - name: Verify workflow control tests
+        run: python3 -m unittest discover -s tests/workflows -p 'test_*.py'
+      - name: Select fixture or explicit candidate corpus
+        id: content
+        run: python3 .github/scripts/release_control.py mode
       - run: npm run check
       - run: npm test
-      - run: npm run validate:content
-      - run: CONTENT_MODE=fixture npm run build
+      - name: Validate selected content
+        env:
+          CONTENT_MODE: ${{ steps.content.outputs.mode }}
+          CANDIDATE_MANIFEST_PATH: .github/candidate-preview.json
+        run: |
+          if [ "$CONTENT_MODE" = candidate ]; then
+            npm run candidate:validate
+          else
+            npm run validate:content
+          fi
+      - name: Build selected corpus
+        env:
+          CONTENT_MODE: ${{ steps.content.outputs.mode }}
+          CANDIDATE_MANIFEST_PATH: .github/candidate-preview.json
+          HOST_VISIBILITY: noindex
+        run: npm run build
       - run: npm run check:links
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      # playwright.config.ts uses channel: chrome; install that browser explicitly.
+      - run: npx --no-install playwright install --with-deps chrome
+      - name: Test generated preview
+        env:
+          CONTENT_MODE: ${{ steps.content.outputs.mode }}
+        run: |
+          if [ "$CONTENT_MODE" = candidate ]; then
+            npm run test:e2e:candidate
+          else
+            npm run test:e2e
+          fi
+      - name: Verify deployment output when the deployment contract is available
+        env:
+          CONTENT_MODE: ${{ steps.content.outputs.mode }}
+          HOST_VISIBILITY: noindex
+          OUTPUT_DIRECTORY: dist
+        run: |
+          if node -e 'process.exit(require("./package.json").scripts["verify:build"] ? 0 : 1)'; then
+            npm run verify:build
+          else
+            echo '::notice::Deployment verifier is not implemented. This artifact cannot deploy until trusted preview preflight passes.'
+          fi
+      - name: Package complete output with its actual checked-out revision
+        id: artifact
+        env:
+          CONTENT_MODE: ${{ steps.content.outputs.mode }}
+        run: |
+          export BUILD_SHA="$(git rev-parse HEAD)"
+          python3 .github/scripts/release_control.py pack artifact
+      - name: Retain preview archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: preview-dist-${{ env.SOURCE_SHA }}
+          path: |
+            artifact/site.tar
+            artifact/site.tar.sha256
+            artifact/release-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
