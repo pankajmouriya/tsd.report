@@ -6,13 +6,19 @@ const { date, count, previous, next } = Astro.props;
 ---
 <header>
   <div class="edition-topline">
-    <div><a href="/archive">← Archive</a> · <em>tsd.report</em></div>
+    <div><a href="/archive">← Archive</a> · <em translate="no">tsd.report</em></div>
     <div class="date-nav">
       {previous ? <a href={editionPath(previous)} aria-label="Previous edition">‹</a> : <span aria-hidden="true">‹</span>}
       <time datetime={date}>{formatEditionDate(date)}</time>
       {next ? <a href={editionPath(next)} aria-label="Next edition">›</a> : <span aria-hidden="true">›</span>}
     </div>
-    <div>{count} {count === 1 ? 'story' : 'stories'} <button class="theme-toggle" type="button" aria-label="Toggle dark mode">◐</button></div>
+    <div class="edition-actions">
+      <span>{count} {count === 1 ? 'story' : 'stories'}</span>
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme" aria-pressed="false">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2v2.25M12 19.75V22M2 12h2.25M19.75 12H22M4.93 4.93l1.6 1.6M17.47 17.47l1.6 1.6M19.07 4.93l-1.6 1.6M6.53 17.47l-1.6 1.6"></path></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.25 15.2A8.75 8.75 0 0 1 8.8 3.75 8.76 8.76 0 1 0 20.25 15.2Z"></path></svg>
+      </button>
+    </div>
   </div>
   <h1 class="masthead"><a href="/">The Security Diff</a></h1>
   <p class="tagline">Security engineering, without the noise.</p>
@@ -21,10 +27,20 @@ const { date, count, previous, next } = Astro.props;
 
 <script>
   const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+  const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  const syncButton = () => {
+    if (!button) return;
+    const dark = document.documentElement.dataset.theme === 'dark';
+    button.setAttribute('aria-label', dark ? 'Use light mode' : 'Use dark mode');
+    button.setAttribute('aria-pressed', String(dark));
+    button.title = dark ? 'Use light mode' : 'Use dark mode';
+    themeColor?.setAttribute('content', dark ? '#211f1b' : '#faf6ea');
+  };
+  syncButton();
   button?.addEventListener('click', () => {
     const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = theme;
-    button.setAttribute('aria-label', `Use ${theme === 'dark' ? 'light' : 'dark'} mode`);
     try { localStorage.setItem('tsd-theme', theme); } catch {}
+    syncButton();
   });
 </script>

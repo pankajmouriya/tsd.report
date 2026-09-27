@@ -106,7 +106,7 @@ export default defineConfig({
 
 **Create:** `src/lib/schema.ts`, `src/lib/content.ts`, `src/lib/routes.ts`, `src/lib/format.ts`, `config/taxonomy.json`, `schemas/edition.schema.json`, `tests/unit/content.test.ts`, `tests/unit/routes.test.ts`, `scripts/validate-content.ts`.
 
-**Consumes:** the entities and rules in design sections 7–8.  
+**Consumes:** the entities and rules in design sections 7–8.
 **Produces:** runtime schemas and inferred `Story`, `Vulnerability`, `Source`, `SecuritySignal`, `Edition`; `loadContent(mode)`, `getLatestEdition(editions)`, `articlePath(slug)`, `editionPath(date)`, `cvePath(cve)`, and `formatProbability(value)`.
 
 - [ ] Specify `Claim<T>`, evidence states, source provenance, content origin, review status, and edition snapshots. Distinguish a story's publication date from an edition date.
@@ -133,7 +133,7 @@ expect(() => articlePath('../archive')).toThrow();
 
 **Create:** `data/fixtures/editions/2026/09/24.json`, `25.json`, `26.json` in the same directory; `data/fixtures/evidence/manifest.json`, attributed evidence snapshots, `content/articles/monitoring-ai-agents.md`, and `tests/unit/fixtures.test.ts`.
 
-**Consumes:** A2 schemas.  
+**Consumes:** A2 schemas.
 **Produces:** three deterministic preview editions; at least 15 unique stories across all categories and all types.
 
 - [ ] Select a small real advisory sample from primary sources when implementing this task; record retrieval and effective dates, URLs, and fixture labeling. Never invent scores for a real CVE.
@@ -148,7 +148,7 @@ expect(() => articlePath('../archive')).toThrow();
 
 **Create:** `src/styles/tokens.css`, `global.css`, `edition.css`, `article.css`; `src/layouts/BaseLayout.astro`, `EditionLayout.astro`; `src/components/EditionHeader.astro`, `EditionFooter.astro`, `ThemeToggle.astro`, `FixtureNotice.astro`; `src/scripts/theme.ts`; licensed font assets and license records if used.
 
-**Consumes:** design tokens, A2 date/route helpers, A3 edition data.  
+**Consumes:** design tokens, A2 date/route helpers, A3 edition data.
 **Produces:** shared accessible light/dark layouts and edition navigation.
 
 - [ ] Implement the cream sheet, top metadata row, masthead, subtitle, double rule, semantic landmarks, and skip link.
@@ -164,7 +164,7 @@ expect(() => articlePath('../archive')).toThrow();
 
 **Create:** `src/components/LeadStory.astro`, `StorySummary.astro`, `SignalLabel.astro`, `VulnerabilityWatch.astro`, `EvidenceList.astro`, `OriginalWriting.astro`, `ResearchSection.astro`; an original SVG lead diagram in `public/images/`; homepage data integration.
 
-**Consumes:** validated edition/story snapshots; ordered section ids.  
+**Consumes:** validated edition/story snapshots; ordered section ids.
 **Produces:** full edition layout with derived counts and data-driven content.
 
 - [ ] Render the wide headline, split illustration/summary lead, impact, affected technology, source links, and supported action.
@@ -207,7 +207,7 @@ await expect(page.getByRole('heading', { name: "Today's Vulnerability Watch" }))
 
 **Create:** `src/pages/today.astro`, `archive.astro`, `[year]/[month]/[day].astro`, `article/[slug].astro`, `category/[category].astro`, `tag/[tag].astro`, `cve/[cve].astro`, `404.astro`, `about.astro`, `editorial-policy.astro`; `src/layouts/ArticleLayout.astro`; `src/components/ArticleBody.astro`; `tests/e2e/routes.spec.ts`; Astro content collection configuration appropriate to the installed version.
 
-**Consumes:** A2 loader/indexes, A3 editions and Markdown article, A4–A5 components.  
+**Consumes:** A2 loader/indexes, A3 editions and Markdown article, A4–A5 components.
 **Produces:** every initial route from the original implementation prompt, using the singular article route.
 
 - [ ] Generate routes from validated content; centralize canonical URL creation and reject collisions before build.
@@ -224,7 +224,7 @@ await expect(page.getByRole('heading', { name: "Today's Vulnerability Watch" }))
 
 **Create:** `src/pages/rss.xml.ts`, `feed.json.ts`, `markdown.ts`; `src/lib/feeds.ts`; `tests/unit/feeds.test.ts`; `tests/e2e/accessibility.spec.ts`, `edition.spec.ts`; `scripts/check-links.ts`; extend `README.md` and CI.
 
-**Consumes:** validated publication indexes and canonical route helpers.  
+**Consumes:** validated publication indexes and canonical route helpers.
 **Produces:** well-formed escaped feeds, repeatable checks, visual evidence, and a prototype handoff.
 
 - [ ] Produce RSS, JSON Feed, and Markdown representations with stable ids, correct dates, canonical article links, and clear preview labeling in fixture mode.
@@ -357,7 +357,7 @@ EPSS history, vulnerability timelines, package/technology pages, watchlists, ema
 | Milestone | Status | Evidence |
 | --- | --- | --- |
 | Planning | Written; awaiting implementation review | Product spec, design baseline, AGENTS.md, this plan |
-| A | Complete locally | 61 static pages; 15 unit tests; 11 Chromium journeys; type/build/content/link checks pass; light/dark desktop and mobile screenshots reviewed under `/private/tmp/tsd-*.png`; production fixture build rejection verified. Git commit unavailable because `.git` is read-only in this workspace. |
+| A | Complete locally; reading system verified 2026-09-27 | 61 static pages; 19 unit tests and 34 generated-preview Chromium journeys pass; type/content/link checks pass; production build rejects fixtures with the required message. Unique four-story Vulnerabilities count, single filtered results list, invalid/history URL state, no-JavaScript fallback, theme persistence, content-sized paper sheets, Grenze Gotisch masthead and Newsreader editorial typography, compact semantic reading pages, citation return navigation, evidence-note reflow, short fallbacks, print/forced-color/blocked-font behavior, and 767/768/1099/1100px column thresholds are covered. Impeccable detector returned `[]`. Homepage evidence is under `/private/tmp/tsd-refinement-review/` and `/private/tmp/tsd-production-typography/`; the 36-capture reading matrix is under `/private/tmp/tsd-reading-experience/after/`. All recorded pages fit their viewports. Local font and texture assets total 238,087 bytes. Git commit remains unavailable because `.git` is read-only in this workspace. |
 | B | Not started | Depends on content contract |
 | C | Not started | Depends on recorded inputs and adapters |
 | D | Not started | Provider none is an acceptable V1 mode |
@@ -367,3 +367,50 @@ EPSS history, vulnerability timelines, package/technology pages, watchlists, ema
 | H | Deferred | Outside initial release |
 
 At each completed milestone, append the date/revision, changed paths, exact commands and outcomes, screenshot paths and viewport/theme coverage, deviations, and remaining limitations. Check off only verified work.
+
+### Milestone A homepage composition study
+
+- [x] Record the reviewed direction and selection criteria in the design document.
+- [x] Generate balanced and dense standalone concepts from identical validated edition data.
+- [x] Capture each concept at 1440px and 390px in light mode, plus desktop dark-theme samples.
+- [x] Review headline wrapping, story density, attribution, section order, overflow, and artwork treatment.
+- [x] Select Composition B against the documented criteria before changing application components.
+
+The study preserves the current uncommitted Milestone A implementation. Concept files remain separate under `design-explorations/homepage-compositions/`; deployment and application integration are outside this comparison step.
+
+Comparison evidence is in `/private/tmp/tsd-homepage-compositions/`: six full-page captures and `report.json`. Each capture contains the lead plus 14 non-lead stories, has a semantic main region, a first-focus skip link, a labeled illustration, and no page-level horizontal overflow. Composition A gives more room to lead analysis; Composition B brings the daily report higher and is the primary implementation candidate. The Impeccable detector prompted darker metadata, 11px-or-larger mobile utility text, and removal of numbered section labels; its remaining tight-leading warnings refer to intentional display headlines rather than body copy.
+
+Composition B was selected and integrated into `EditionView`, `LeadStory`, `StoryCard`, `VulnerabilityWatch`, and the shared stylesheet. The implementation adds a story-specific evidence diagram, wider lead measure, compact wide-screen controls, quiet source/date attribution, substantive first-row context, and distinct Daily Report, Vulnerability Watch, From the Editor, and Research Worth Reading sections without duplicating stories. Final built-preview captures and metrics are under `/private/tmp/tsd-homepage-integrated/` for 1440px and 390px in both themes; all four contain 15 editorial story instances and report no page overflow. `matrix-report.json` covers 320/390/768/1024/1440px in light and dark with no page overflow, plus a visually reviewed 200% zoom capture. The implemented typography passes all 10 Web Typography diagnostic rows. Verification: 17 unit tests, 19 Chrome journeys, Astro/TypeScript check with zero diagnostics, 61-page static build, and `git diff --check` pass.
+
+A medium paper-grain pass adds a 399-byte local SVG tile behind the paper content at opacity `.30` with multiply blending in light mode and `.14` with soft-light blending in dark mode. The 512px rendered tile preserves visible surface variation at normal page scale. Increased-contrast, forced-color, and print modes omit it. Evidence under `/private/tmp/tsd-paper-grain-medium/` covers the homepage and canonical article route across mobile, desktop, both themes, and the 200% reflow proxy. All seven captures loaded the texture, retained the Newsreader faces, and reported no page overflow. Verification remained at 17 unit tests and 20 Chrome journeys, with an empty Impeccable detector result.
+
+A modern blackletter nameplate pass confines Grenze Gotisch Bold to the fixed “The Security Diff” masthead while retaining Newsreader for headlines and prose. The lead headline uses a true Newsreader Medium face so its weight remains subordinate to the nameplate, while section, card, and article headings remain Semibold. The official sources were locally subset under SIL Open Font License 1.1; the six-face production payload is 226,872 bytes. Evidence under `/private/tmp/tsd-production-typography/` covers homepage and canonical article views at mobile and desktop sizes, both themes, and the 200% reflow proxy. All seven captures loaded the expected families, remained within their viewports, and measured cumulative layout shift from 0.00049 to 0.05145.
+
+The paper sheet now follows document content instead of enforcing a viewport-height minimum. This prevents short pages from displaying a long textured-paper tail when the browser is heavily zoomed out. A 1440 × 4000 regression viewport verifies that the paper ends within 52px of the footer; remaining viewport space uses the surrounding canvas. Evidence is `/private/tmp/tsd-paper-content-height.png`.
+
+### Milestone A reading experience
+
+The reading system replaces the full edition masthead on article and reference pages with a compact nameplate and contextual return. Two validated Markdown samples exercise an essay and a historical brief at `/article/[slug]`: approximately 1,174 and 528 narrative words respectively, with semantic headings, contextual SVG figures, a code example, explicit limitations, native footnotes/backlinks, sparse authored evidence notes, and validated related-story IDs. Existing JSON stories continue through a compatible short-body fallback.
+
+The article title is the only `h1`. Prose stays at 68 characters while figures may widen to 880px. Evidence notes float beside their supported sections when space permits and return to document flow below 1160px. A native contents disclosure appears only with at least four meaningful sections. CVE facts use a semantic definition list with independent CVSS, EPSS, KEV, known-exploitation, affected, fixed, date, uncertainty, source, and coverage treatment. About/editorial pages use the reading shell; archive/category/tag/404 views use its compact browsing variant.
+
+Verification: Astro/TypeScript zero diagnostics, 19 unit tests, 34 Chromium journeys, 3 fixture editions/17 content entries, 61 static pages, internal-link pass, empty Impeccable result, and clean diff whitespace. Production mode rejects fixtures with the exact required message. Browser coverage includes JavaScript-disabled citation return, responsive evidence notes, short/missing-rich-content fallback, 320px reflow, print, forced colors, reduced motion, blocked fonts, existing homepage filtering, and theme persistence. The refreshed capture matrix contains 36 no-overflow screenshots across essay, brief, and CVE pages at 320/390/768/1024/1069/1440px in both themes under `/private/tmp/tsd-reading-experience/after/`; two prior article captures are retained in `before/`. Native footnote wording and authored placement were selected to avoid another Markdown transformation dependency. Human comprehension remains an editorial review activity rather than an automated claim.
+
+### Milestone A filter toolbar refinement — 2026-09-27
+
+Status: implemented and verified locally following the user's crowded-filter screenshot. Changes are scoped to `src/components/EditionFilters.astro`, filter rules in `src/styles/global.css`, `tests/e2e/filters.spec.ts`, and this ledger/design baseline. Existing unrelated changes remain intact.
+
+- Replaced filled/outlined filter boxes with unboxed text and an accent underline for selection. Topic options wrap across the full available width; Signal occupies the next row with result/reset information alongside it on wider screens. Mobile groups stack. Removed the topic scroll hint because the controls no longer scroll horizontally.
+- Reduced utility text weight and removed inherited uppercase styling from result text. Reset appears only with an active selection; resetting with keyboard focus moves focus to Topic All. Preserved existing labels, URL/history behavior, AND filtering, result announcements, and no-JavaScript category navigation.
+- Verification: `npm run check` returned 0 errors/warnings/hints; `CONTENT_MODE=fixture npm run build` generated 61 pages. `npx playwright test --config /private/tmp/tsd-filter-refinement/playwright.config.mjs` passed 17 focused filter/accessibility tests against the generated preview on port 4324. The temporary configuration uses the repository tests and a separate output directory. An initial attempt against the earlier preview port failed because that server was no longer listening; all checks passed on the dedicated preview.
+- Visual evidence: `/private/tmp/tsd-filter-refinement/before/` contains two original captures. `/private/tmp/tsd-filter-refinement/after/` contains 24 captures and `manifest.json`, covering 320/390/768/1024/1440px, both themes, default/active selections, and four surrounding-page views. No document or filter-group overflow; every filter button is at least 44 × 44px. Captures reviewed for wrapping, selected-state visibility, grouping, and theme contrast. Computed palette text contrasts against paper range from 6.07:1 to 15.41:1; these are token comparisons, not per-pixel texture measurements.
+- `sh /Users/pankajmouriya/.codex/skills/impeccable/scripts/impeccable detect --json src/components/EditionFilters.astro src/styles/global.css` returned `[]`; `git diff --check` passed.
+- Deviation: wrapping options supersedes the previous horizontally scrolling topic strip. Browser connector discovery returned no browser; verification used isolated local Chrome through the project's Playwright setup. No deployment or commit. Full publication and article suites were not rerun for this bounded filter change.
+
+### Editorial authoring documentation — 2026-09-27
+
+Status: documentation and reusable templates complete; no pipeline or publishing milestone completed. Added `docs/editorial/authoring-guide.md`, `content-recipes.md`, `agent-workflow.md`, and eight files under `docs/editorial/templates/` (story/edition JSON, brief/essay Markdown, evidence sidecar, agent assignment, output example, and strict proposed output schema). Linked the kit from `README.md` and `docs/README.md`; corrected the documentation index's stale pre-implementation status. Recorded the boundary in the design baseline.
+
+The guide covers local preview authoring, all eight types, lead/section selection, Markdown customization, citation and attribution handling, unknown facts, edition registration, verification, and current limitations. Future agents receive an evidence-constrained drafting assignment; the proposed output schema does not give models control of authoritative facts or publication. No application logic, fixture editions, article bodies, dependencies, or publication state changed in this pass.
+
+Verification: parsed story and edition examples with the current `storySchema`/`editionSchema` through `node --import tsx` and confirmed their shared record matches. Built brief and essay templates separately with the installed Astro in `/private/tmp/tsd-authoring-template-check/`, using unchanged copies of `src/content.config.ts` and `src/lib/articles.ts`. Both one-page builds passed collection and identity/reference validation; generated citation and backlink targets resolve. Python `jsonschema` validated the proposed draft schema/example and rejected extra `fixture`, `vulnerabilities`, `author`, and nested `claim_links.source_url` fields. All 43 local document links checked resolve; `git diff --check` passes. The local evidence report is `/private/tmp/tsd-authoring-template-check/report.json` with both rendered sample HTML files. No full application regression, browser visual audit, real-source verification, or production integration is claimed for this documentation-only pass. No commit or deployment.

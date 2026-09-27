@@ -1,51 +1,121 @@
 ---
 import taxonomy from '../../config/taxonomy.json';
+import { categoryPath } from '../lib/routes';
 ---
 <section class="filters" aria-label="Edition filters" data-filters>
-  <div class="filter-row" data-group="topic"><span class="filter-label">Topic</span><button class="filter-button" data-value="all" aria-pressed="true">All</button>{taxonomy.categories.map((category) => <button class="filter-button" data-value={category.id} aria-pressed="false">{category.label}</button>)}</div>
-  <div class="filter-row" data-group="signal"><span class="filter-label">Signal</span><button class="filter-button" data-value="all" aria-pressed="true">All</button><button class="filter-button" data-value="recommended" aria-pressed="false">Recommended</button><button class="filter-button" data-value="must-read" aria-pressed="false">Must Read</button></div>
-  <div class="filter-meta"><span role="status" aria-live="polite" data-result-count>Showing the full edition</span><button class="reset" type="button" data-reset>Reset filters</button></div>
+  <nav class="filter-fallback" aria-label="Browse edition topics" data-filter-fallback>
+    <span class="filter-label">Browse</span>
+    <a href={Astro.url.pathname}>All stories</a>
+    {taxonomy.categories.map((category) => <a href={categoryPath(category.id)}>{category.label}</a>)}
+  </nav>
+
+  <div data-filter-controls hidden>
+    <div class="filter-row" role="group" aria-labelledby="topic-filter-label" data-group="topic">
+      <span class="filter-label" id="topic-filter-label">Topic</span>
+      <div class="filter-options">
+      <button class="filter-button" type="button" data-value="all" aria-pressed="true">All</button>
+      {taxonomy.categories.map((category) => <button class="filter-button" type="button" data-value={category.id} aria-pressed="false">{category.label}</button>)}
+      </div>
+    </div>
+
+    <div class="filter-row" role="group" aria-labelledby="signal-filter-label" aria-describedby="signal-filter-description" data-group="signal">
+      <span class="filter-label" id="signal-filter-label">Signal</span>
+      <div class="filter-options">
+      <button class="filter-button" type="button" data-value="all" aria-pressed="true">All</button>
+      <button class="filter-button" type="button" data-value="recommended" aria-pressed="false">Recommended</button>
+      <button class="filter-button" type="button" data-value="must-read" aria-pressed="false">Must Read</button>
+      </div>
+    </div>
+    <p class="visually-hidden" id="signal-filter-description">Recommended includes stories marked Recommended and Must Read.</p>
+
+    <div class="filter-meta">
+      <span role="status" aria-live="polite" data-result-count>Showing the full edition</span>
+      <button class="reset" type="button" data-reset hidden>Reset filters</button>
+    </div>
+  </div>
 </section>
 
 <script>
-  const filters = document.querySelector<HTMLElement>('[data-filters]');
-  if (filters) {
-    const allowedTopics = new Set(['all','vulnerabilities','supply-chain','ai-security','appsec','cloud','research','security-engineering']);
-    const allowedSignals = new Set(['all','recommended','must-read']);
-    const params = new URLSearchParams(location.search);
-    let topic = allowedTopics.has(params.get('topic') ?? '') ? params.get('topic')! : 'all';
-    let signal = allowedSignals.has(params.get('signal') ?? '') ? params.get('signal')! : 'all';
-    const apply = (push = true) => {
-      let count = 0;
-      document.querySelectorAll<HTMLElement>('[data-story]').forEach((story) => {
-        const signalMatch = signal === 'all' || story.dataset.signal === signal || (signal === 'recommended' && story.dataset.signal === 'must-read');
-        const match = (topic === 'all' || story.dataset.category === topic) && signalMatch;
-        story.hidden = !match;
-        if (match) count++;
+  import { parseStoryFilters } from '../lib/filter';
+
+  const root = document.querySelector<HTMLElement>('[data-filters]');
+  const controls = root?.querySelector<HTMLElement>('[data-filter-controls]');
+  const fallback = root?.querySelector<HTMLElement>('[data-filter-fallback]');
+
+  if (root && controls && fallback) {
+    try {
+      let selection = parseStoryFilters(new URLSearchParams(location.search));
+
+      const apply = (push = true) => {
+        const active = selection.topic !== 'all' || selection.signal !== 'all';
+        const editorial = document.querySelector<HTMLElement>('[data-editorial-view]');
+        const results = document.querySelector<HTMLElement>('[data-filtered-results]');
+        const stories = results?.querySelectorAll<HTMLElement>('[data-story]') ?? [];
+        let count = 0;
+
+        stories.forEach((story) => {
+          const signalMatches = selection.signal === 'all'
+            || story.dataset.signal === selection.signal
+            || (selection.signal === 'recommended' && story.dataset.signal === 'must-read');
+          const matches = (selection.topic === 'all' || story.dataset.category === selection.topic) && signalMatches;
+          story.hidden = !matches;
+          if (matches) count += 1;
+        });
+
+        if (editorial) editorial.hidden = active;
+        if (results) results.hidden = !active;
+
+        controls.querySelectorAll<HTMLElement>('[data-group]').forEach((group) => {
+          const selectedValue = group.dataset.group === 'topic' ? selection.topic : selection.signal;
+          group.querySelectorAll<HTMLButtonElement>('.filter-button').forEach((button) => {
+            button.setAttribute('aria-pressed', String(button.dataset.value === selectedValue));
+          });
+        });
+
+        const status = controls.querySelector('[data-result-count]');
+        if (status) status.textContent = active ? `${count} ${count === 1 ? 'story' : 'stories'} match` : 'Showing the full edition';
+        const reset = controls.querySelector<HTMLButtonElement>('[data-reset]');
+        if (reset) reset.hidden = !active;
+
+        const empty = document.querySelector<HTMLElement>('[data-no-results]');
+        if (empty) empty.hidden = !active || count !== 0;
+
+        if (push) {
+          const next = new URL(location.href);
+          next.search = '';
+          if (selection.topic !== 'all') next.searchParams.set('topic', selection.topic);
+          if (selection.signal !== 'all') next.searchParams.set('signal', selection.signal);
+          history.pushState({}, '', next);
+        }
+      };
+
+      controls.addEventListener('click', (event) => {
+        const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.filter-button');
+        if (!button) return;
+        const group = button.closest<HTMLElement>('[data-group]')?.dataset.group;
+        if (group === 'topic') selection = { ...selection, topic: button.dataset.value as typeof selection.topic };
+        if (group === 'signal') selection = { ...selection, signal: button.dataset.value as typeof selection.signal };
+        apply();
       });
-      document.querySelectorAll<HTMLElement>('[data-group]').forEach((group) => group.querySelectorAll('button').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.value === (group.dataset.group === 'topic' ? topic : signal)))));
-      document.querySelectorAll<HTMLElement>('[data-edition-section]').forEach((section) => section.hidden = section.querySelectorAll('[data-story]:not([hidden])').length === 0);
-      const status = filters.querySelector('[data-result-count]');
-      if (status) status.textContent = topic === 'all' && signal === 'all' ? 'Showing the full edition' : `${count} ${count === 1 ? 'story' : 'stories'} match`;
-      const empty = document.querySelector<HTMLElement>('[data-no-results]');
-      if (empty) empty.hidden = count !== 0;
-      if (push) {
-        const next = new URL(location.href); next.search = '';
-        if (topic !== 'all') next.searchParams.set('topic', topic);
-        if (signal !== 'all') next.searchParams.set('signal', signal);
-        history.pushState({}, '', next);
-      }
-    };
-    filters.addEventListener('click', (event) => {
-      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.filter-button');
-      if (!button) return;
-      const group = button.closest<HTMLElement>('[data-group]')?.dataset.group;
-      if (group === 'topic') topic = button.dataset.value!;
-      if (group === 'signal') signal = button.dataset.value!;
-      apply();
-    });
-    filters.querySelector('[data-reset]')?.addEventListener('click', () => { topic = 'all'; signal = 'all'; apply(); });
-    addEventListener('popstate', () => { const current = new URLSearchParams(location.search); topic = current.get('topic') ?? 'all'; signal = current.get('signal') ?? 'all'; apply(false); });
-    apply(false);
+
+      controls.querySelector('[data-reset]')?.addEventListener('click', () => {
+        const restoreFocus = document.activeElement === controls.querySelector('[data-reset]');
+        selection = { topic: 'all', signal: 'all' };
+        apply();
+        if (restoreFocus) controls.querySelector<HTMLButtonElement>('[data-group="topic"] [data-value="all"]')?.focus();
+      });
+
+      addEventListener('popstate', () => {
+        selection = parseStoryFilters(new URLSearchParams(location.search));
+        apply(false);
+      });
+
+      apply(false);
+      controls.hidden = false;
+      fallback.hidden = true;
+    } catch {
+      controls.hidden = true;
+      fallback.hidden = false;
+    }
   }
 </script>

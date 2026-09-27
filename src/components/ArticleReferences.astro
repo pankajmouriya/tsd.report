@@ -1,0 +1,9 @@
+---
+import { formatShortDate } from '../lib/format';
+import type { Source } from '../lib/schema';
+const { sources } = Astro.props as { sources: Source[] };
+---
+<section class="article-references" aria-labelledby="references-heading">
+  <h2 id="references-heading">References</h2>
+  <ol>{sources.map((source) => <li><a href={source.url} rel="noreferrer">{source.name}</a> · retrieved {formatShortDate(source.retrieved_at)}</li>)}</ol>
+</section>

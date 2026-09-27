@@ -1,27 +1,70 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import EditionHeader from '../../components/EditionHeader.astro';
-import EditionFooter from '../../components/EditionFooter.astro';
-import { findStory, getLatestEdition, getStories } from '../../lib/content';
-import { articlePath, cvePath } from '../../lib/routes';
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import ArticleBody from '../../components/ArticleBody.astro';
+import ArticleContents from '../../components/ArticleContents.astro';
+import ArticleReferences from '../../components/ArticleReferences.astro';
+import { validateArticleDocuments, type ArticleDocument } from '../../lib/articles';
+import { findEditionForStory, findStory, findStoryById, getStories } from '../../lib/content';
+import { articlePath, cvePath, editionPath } from '../../lib/routes';
 import { formatShortDate } from '../../lib/format';
-import { findMarkdownArticle } from '../../lib/articles';
-export function getStaticPaths() { return getStories().map((story) => ({ params: { slug: story.slug }, props: { story } })); }
+
+export async function getStaticPaths() {
+  const stories = getStories();
+  const documents = await getCollection('articles');
+  validateArticleDocuments(documents as unknown as ArticleDocument[], stories);
+  return stories.map((story) => ({ params: { slug: story.slug }, props: { story } }));
+}
+
 const { story } = Astro.props;
 if (!findStory(story.slug)) throw new Error('Unknown article');
-const edition = getLatestEdition();
-const markdownArticle = findMarkdownArticle(story.slug);
+const edition = findEditionForStory(story.slug);
+const documents = await getCollection('articles');
+const article = documents.find((entry) => entry.data.slug === story.slug);
+const rendered = article ? await render(article) : undefined;
+const Content = rendered?.Content;
+const headings = rendered?.headings ?? [];
+const related = article?.data.related_story_ids.map((id) => {
+  const candidate = findStoryById(id);
+  if (!candidate) throw new Error(`Unknown related story id: ${id}`);
+  return candidate;
+}) ?? [];
+const structure = article?.data.structure ?? (story.type === 'original' || story.type === 'research' ? 'essay' : 'brief');
+const statusLabel = story.type === 'cve' ? 'Historical fixture' : article?.data.credit ?? 'Fixture preview';
 ---
-<BaseLayout title={story.title} description={story.summary} canonical={articlePath(story.slug)}>
-  <EditionHeader date={edition.date} count={edition.stories.length} />
-  <main id="main" class="article">
-    <p class="eyebrow">{story.type} · {story.category.replaceAll('-', ' ')}</p>
-    <h1>{story.title}</h1>
-    <p class="dek">{story.summary}</p>
-    <p class="signal">{formatShortDate(story.published_at)}{story.author ? ` · By ${story.author}` : ''} · Fixture preview</p>
-    <div class="article-panel"><strong>Why it matters</strong><p>{story.why_it_matters}</p><strong>What to do</strong><p>{story.action}</p></div>
-    <div class="article-body">{(markdownArticle?.paragraphs ?? story.body).map((paragraph) => <p>{paragraph}</p>)}</div>
-    {story.vulnerabilities.length > 0 && <section class="article-panel"><h2>Vulnerabilities</h2>{story.vulnerabilities.map((vulnerability) => <p><a href={cvePath(vulnerability.cve)}>{vulnerability.cve}</a> · CVSS {vulnerability.cvss ?? 'Not available'} · KEV {vulnerability.kev == null ? 'Unknown' : vulnerability.kev ? 'Yes' : 'No'}</p>)}</section>}
-    <section><h2>Sources</h2><ul>{story.sources.map((source) => <li><a href={source.url} rel="noreferrer">{source.name}</a> · retrieved {formatShortDate(source.retrieved_at)}</li>)}</ul></section>
-  </main><EditionFooter />
-</BaseLayout>
+<ArticleLayout title={story.title} description={story.summary} canonical={articlePath(story.slug)} editionDate={edition?.date}>
+  <main id="main" class:list={['reading-article', `reading-article--${structure}`]}>
+    <header class="article-opening">
+      <p class="article-kicker">{story.type} · {story.category.replaceAll('-', ' ')}</p>
+      <h1>{story.title}</h1>
+      <p class="dek">{story.summary}</p>
+      <p class="article-meta">
+        <span>{statusLabel}</span> · <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time>
+        {article?.data.status === 'unreviewed-fixture' && <span class="article-status">Unreviewed fixture</span>}
+      </p>
+    </header>
+
+    {structure === 'brief' && <aside class="brief-decision" aria-label="Supported action"><strong>Supported action</strong><p>{story.action}</p></aside>}
+    {article && <ArticleContents {headings} />}
+
+    {Content ? <div class="article-body"><Content /></div> : <ArticleBody paragraphs={story.body} />}
+
+    {story.vulnerabilities.length > 0 && (
+      <section class="article-related" aria-labelledby="vulnerabilities-heading">
+        <h2 id="vulnerabilities-heading">Vulnerability record</h2>
+        {story.vulnerabilities.map((vulnerability) => <p><a href={cvePath(vulnerability.cve)}>{vulnerability.cve}</a> · CVSS {vulnerability.cvss ?? 'Not available'} · KEV {vulnerability.kev == null ? 'Unknown' : vulnerability.kev ? 'Yes' : 'No'}</p>)}
+      </section>
+    )}
+
+    {!article && <ArticleReferences sources={story.sources} />}
+
+    {related.length > 0 && (
+      <aside class="article-related" aria-labelledby="related-heading">
+        <h2 id="related-heading">Continue with</h2>
+        <ul>{related.map((item) => <li><a href={articlePath(item.slug)}>{item.title}</a> — {item.summary}</li>)}</ul>
+      </aside>
+    )}
+
+    <p class="article-close"><a href={edition ? editionPath(edition.date) : '/archive'}>← {edition ? `Return to the ${formatShortDate(`${edition.date}T00:00:00Z`)} edition` : 'Return to archive'}</a></p>
+  </main>
+</ArticleLayout>

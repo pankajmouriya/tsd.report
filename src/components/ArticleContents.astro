@@ -1,0 +1,11 @@
+---
+interface Heading { depth: number; slug: string; text: string; }
+const { headings } = Astro.props as { headings: Heading[] };
+const sections = headings.filter((heading) => heading.depth === 2 && heading.slug !== 'footnote-label');
+---
+{sections.length >= 4 && (
+  <details class="article-contents">
+    <summary>In this article</summary>
+    <ol>{sections.map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol>
+  </details>
+)}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "fixture": true,
+  "notice": "Proposed sidecar template, not frontend content. All identifiers and dates below are illustrative. No source retrieval is claimed.",
+  "request_id": "template-request",
+  "sources": [
+    {
+      "id": "template-source",
+      "name": "Replace with inspected source identity",
+      "url": "https://example.com/tsd-authoring-template",
+      "retrieved_at": null,
+      "published_at": null,
+      "source_data_date": null,
+      "source_version": null,
+      "snapshot_path": null,
+      "snapshot_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "entity": "Replace with the affected component or research subject",
+      "field": "Replace with one specific factual field",
+      "value": null,
+      "status": "unknown",
+      "source_ids": [],
+      "source_statement": null,
+      "conflicting_candidates": [],
+      "authority_rule": null
+    }
+  ],
+  "open_questions": [
+    "Collect and verify evidence before replacing this unknown value."
+  ]
+}

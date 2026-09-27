@@ -40,3 +40,7 @@ npm run test:e2e
 - `/about` and `/editorial-policy`
 
 The product specification, design decisions, execution plan, and repository rules live under [docs](docs/README.md) and [AGENTS.md](AGENTS.md).
+
+## Authoring and automation
+
+Use the [authoring guide and templates](docs/editorial/authoring-guide.md) to add briefs, essays, lead stories, and editions without relearning the content model. The [editorial recipes](docs/editorial/content-recipes.md) cover all supported story types. The [agent workflow](docs/editorial/agent-workflow.md) defines an evidence-constrained draft handoff and distinguishes the proposed automation contract from today's fixture-only publishing capabilities.

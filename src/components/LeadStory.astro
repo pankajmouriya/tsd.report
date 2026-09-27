@@ -1,21 +1,43 @@
 ---
 import type { Story } from '../lib/schema';
 import { articlePath } from '../lib/routes';
+import { formatShortDate } from '../lib/format';
 interface Props { story: Story; }
 const { story } = Astro.props;
+const source = story.sources[0];
 ---
-<article class="lead" data-lead data-story data-category={story.category} data-signal={story.signal.label}>
-  <p class="eyebrow">● Top story · {story.category.replaceAll('-', ' ')}</p>
+<article class="lead" data-lead data-story data-story-id={story.id} data-category={story.category} data-signal={story.signal.label}>
+  <p class="eyebrow">Lead story · {story.category.replaceAll('-', ' ')}</p>
   <h2><a href={articlePath(story.slug)}>{story.title}</a></h2>
+  <p class="lead-byline">{story.author ? `By ${story.author}` : `Source: ${source.name}`} · <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time></p>
   <div class="lead-grid">
-    <img class="lead-illustration" src={story.illustration} alt="A chain of evidence connecting source facts, engineering context, and action." width="800" height="600" />
+    <figure class="lead-figure">
+      <svg class="lead-illustration" viewBox="0 0 820 520" role="img" aria-labelledby="lead-art-title lead-art-description">
+        <title id="lead-art-title">Evidence path for prioritizing a vulnerable component</title>
+        <desc id="lead-art-description">A decision path checks whether a component is deployed, reachable, exploited, and covered by vendor guidance before action.</desc>
+        <rect class="diagram-ground" x="1" y="1" width="818" height="518" />
+        <text class="diagram-overline" x="52" y="59">PATCH DECISION / EVIDENCE PATH</text>
+        <text class="diagram-title" x="52" y="110">What changed?</text>
+        <path class="diagram-spine" d="M126 185 H694" />
+        {['DEPLOYED', 'REACHABLE', 'EXPLOITED', 'ACTION'].map((label, index) => {
+          const x = 126 + index * 188;
+          const notes = ['component + version', 'path + exposure', 'dated evidence', 'vendor guidance'];
+          return <g><circle class:list={['diagram-node', { 'diagram-node-accent': index === 2 }]} cx={x} cy="186" r="25" /><text class:list={['diagram-number', { 'diagram-number-accent': index === 2 }]} x={x} y="193">0{index + 1}</text><text class="diagram-label" x={x} y="252">{label}</text><text class="diagram-note" x={x} y="279">{notes[index]}</text></g>;
+        })}
+        <line class="diagram-divider" x1="52" y1="332" x2="768" y2="332" />
+        <text class="diagram-overline" x="52" y="376">SUPPORTED PRIORITY</text>
+        <text class="diagram-caption" x="52" y="420">Reachability + exploitation evidence</text>
+        <text class="diagram-caption" x="52" y="454">before emergency change.</text>
+        <path class="diagram-arrow" d="M656 414 h94 m-20 -20 20 20 -20 20" />
+      </svg>
+      <figcaption>Decision sequence for this fixture brief; verify current vendor evidence before acting.</figcaption>
+    </figure>
     <div class="lead-copy">
       <p>{story.summary}</p>
       <div class="fact-block"><h3>Why it matters</h3><p>{story.why_it_matters}</p></div>
       <div class="fact-block"><h3>Affected</h3><p>{story.affected_technologies.join(' · ')}</p></div>
-      <div class="fact-block"><h3>What to do</h3><p>{story.action}</p></div>
-      <div class="fact-block"><span class="signal">{story.signal.label.replace('-', ' ')} · {story.signal.reasons.join(' · ')}</span></div>
-      <a class="read-more" href={articlePath(story.slug)}>Read the full brief →</a>
+      <div class="fact-block"><h3>Supported action</h3><p>{story.action}</p></div>
+      <div class="fact-block"><h3>Evidence</h3><p>{source.name} · Retrieved {formatShortDate(source.retrieved_at)}</p></div>
     </div>
   </div>
 </article>

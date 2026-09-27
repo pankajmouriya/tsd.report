@@ -1,6 +1,12 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro'; import EditionHeader from '../../components/EditionHeader.astro'; import StoryCard from '../../components/StoryCard.astro'; import EditionFooter from '../../components/EditionFooter.astro'; import { getLatestEdition, getStories } from '../../lib/content'; import { tagPath } from '../../lib/routes';
+import BrowseLayout from '../../layouts/BrowseLayout.astro';
+import StoryCard from '../../components/StoryCard.astro';
+import { getStories } from '../../lib/content';
+import { tagPath } from '../../lib/routes';
 export function getStaticPaths() { return [...new Set(getStories().flatMap((story) => story.tags))].map((tag) => ({ params: { tag }, props: { tag } })); }
-const { tag } = Astro.props; const edition = getLatestEdition(); const stories = getStories().filter((story) => story.tags.includes(tag));
+const { tag } = Astro.props;
+const stories = getStories().filter((story) => story.tags.includes(tag));
 ---
-<BaseLayout title={`#${tag}`} canonical={tagPath(tag)}><EditionHeader date={edition.date} count={stories.length} /><main id="main"><section class="section"><div class="section-heading"><h2>#{tag}</h2><p>{stories.length} stories</p></div><div class="story-grid">{stories.map((story) => <StoryCard story={story} />)}</div></section></main><EditionFooter /></BaseLayout>
+<BrowseLayout title={`#${tag}`} canonical={tagPath(tag)}>
+  <main id="main" class="browse-page"><header class="browse-heading"><h1>#{tag}</h1><p>{stories.length} {stories.length === 1 ? 'story' : 'stories'}</p></header><div class="story-grid">{stories.map((story) => <StoryCard story={story} />)}</div></main>
+</BrowseLayout>

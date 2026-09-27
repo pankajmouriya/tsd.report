@@ -1,0 +1,13 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ReaderHeader from '../components/ReaderHeader.astro';
+import EditionFooter from '../components/EditionFooter.astro';
+import '../styles/article.css';
+interface Props { title: string; canonical: string; description?: string; }
+const { title, canonical, description = 'Browse The Security Diff.' } = Astro.props;
+---
+<BaseLayout {title} {canonical} {description}>
+  <ReaderHeader />
+  <slot />
+  <EditionFooter />
+</BaseLayout>

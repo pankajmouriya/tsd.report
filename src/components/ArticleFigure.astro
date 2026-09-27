@@ -1,0 +1,4 @@
+---
+const { caption, label } = Astro.props as { caption: string; label: string };
+---
+<figure class="article-figure" aria-label={label}><slot /><figcaption>{caption}</figcaption></figure>

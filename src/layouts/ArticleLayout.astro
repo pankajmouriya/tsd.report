@@ -1,0 +1,13 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ReaderHeader from '../components/ReaderHeader.astro';
+import EditionFooter from '../components/EditionFooter.astro';
+import '../styles/article.css';
+interface Props { title: string; description: string; canonical: string; editionDate?: string; }
+const { title, description, canonical, editionDate } = Astro.props;
+---
+<BaseLayout {title} {description} {canonical}>
+  <ReaderHeader {editionDate} />
+  <slot />
+  <EditionFooter />
+</BaseLayout>

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-composition="b">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#faf6e9" data-theme-color />
+  <title>Dense newspaper concept · The Security Diff</title>
+  <link rel="stylesheet" href="./concept.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to edition</a>
+  <div class="fixture-banner">Fixture preview <span aria-hidden="true">·</span> Composition B <span aria-hidden="true">·</span> Dense newspaper</div>
+  <div class="sheet">
+    <header class="edition-header">
+      <div class="utility-row"><a href="/archive">← Archive</a><span class="publication-mark">TSD.report</span><nav aria-label="Edition date"><a href="#" aria-label="Previous edition">‹</a><time datetime="2026-09-26">Saturday, September 26, 2026</time><a href="#" aria-label="Next edition">›</a></nav><span>15 stories</span><button class="theme-toggle" type="button" data-theme-toggle aria-label="Use dark theme"><span aria-hidden="true">◐</span></button></div>
+      <h1 class="masthead"><a href="/">The Security Diff</a></h1>
+      <p class="tagline">Security engineering, without the noise.</p>
+      <div class="double-rule" aria-hidden="true"></div>
+    </header>
+    <section class="filters" aria-label="Static filter concept">
+    <div class="filter-line"><span class="filter-name">Topic</span><div class="filter-options">
+      <button class="filter-option is-active" type="button" aria-pressed="true">All</button>
+      <button class="filter-option" type="button" aria-pressed="false">Vulnerabilities</button><button class="filter-option" type="button" aria-pressed="false">Supply Chain</button><button class="filter-option" type="button" aria-pressed="false">AI &amp; Agent Security</button><button class="filter-option" type="button" aria-pressed="false">AppSec</button><button class="filter-option" type="button" aria-pressed="false">Cloud &amp; Kubernetes</button><button class="filter-option" type="button" aria-pressed="false">Research</button><button class="filter-option" type="button" aria-pressed="false">Security Engineering</button>
+    </div></div>
+    <div class="filter-line filter-line--signal"><span class="filter-name">Signal</span><div class="filter-options">
+      <button class="filter-option is-active" type="button" aria-pressed="true">All</button>
+      <button class="filter-option" type="button" aria-pressed="false">Recommended</button>
+      <button class="filter-option" type="button" aria-pressed="false">Must Read</button>
+    </div><span class="filter-status">Showing all 15 stories</span></div>
+  </section>
+    <main id="main">
+      <article class="lead-story">
+    <p class="lead-kicker">Lead story <span aria-hidden="true">·</span> Vulnerabilities</p>
+    <h2><a href="/article/patching-the-edge">Patching the edge starts with knowing which evidence changed</a></h2>
+    <p class="lead-meta">Source: Apache Log4j Security<span aria-hidden="true"> · </span><time datetime="2026-09-26T05:40:00Z">Sep 26, 2026</time></p>
+    <div class="lead-layout">
+      <figure class="lead-art">
+    <svg viewBox="0 0 820 520" role="img" aria-labelledby="evidence-title evidence-description">
+      <title id="evidence-title">Evidence path for prioritizing a vulnerable component</title>
+      <desc id="evidence-description">A four-stage decision path checks whether a component is deployed, reachable, exploited, and covered by vendor guidance before action.</desc>
+      <rect class="art-ground" x="1" y="1" width="818" height="518" />
+      <text class="art-overline" x="52" y="59">PATCH DECISION / EVIDENCE PATH</text>
+      <text class="art-title" x="52" y="110">What changed?</text>
+      <path class="art-spine" d="M126 185 H694" />
+      <g transform="translate(62 148)">
+        <circle class="art-node" cx="64" cy="38" r="25" />
+        <text class="art-number" x="64" y="45">01</text>
+        <text class="art-label" x="0" y="102">DEPLOYED</text>
+        <text class="art-note" x="0" y="129">component + version</text>
+      </g>
+      <g transform="translate(250 148)">
+        <circle class="art-node" cx="64" cy="38" r="25" />
+        <text class="art-number" x="64" y="45">02</text>
+        <text class="art-label" x="0" y="102">REACHABLE</text>
+        <text class="art-note" x="0" y="129">path + exposure</text>
+      </g>
+      <g transform="translate(438 148)">
+        <circle class="art-node art-node--accent" cx="64" cy="38" r="25" />
+        <text class="art-number art-number--accent" x="64" y="45">03</text>
+        <text class="art-label" x="0" y="102">EXPLOITED</text>
+        <text class="art-note" x="0" y="129">dated evidence</text>
+      </g>
+      <g transform="translate(626 148)">
+        <circle class="art-node" cx="64" cy="38" r="25" />
+        <text class="art-number" x="64" y="45">04</text>
+        <text class="art-label" x="0" y="102">ACTION</text>
+        <text class="art-note" x="0" y="129">vendor guidance</text>
+      </g>
+      <line class="art-divider" x1="52" y1="332" x2="768" y2="332" />
+      <text class="art-caption-label" x="52" y="376">SUPPORTED PRIORITY</text>
+      <text class="art-caption" x="52" y="420">Reachability + exploitation evidence</text>
+      <text class="art-caption" x="52" y="454">before emergency change.</text>
+      <path class="art-arrow" d="M656 414 h94 m-20 -20 20 20 -20 20" />
+    </svg>
+    <figcaption>Decision sequence shown for the fixture brief; verify current vendor evidence before acting.</figcaption>
+  </figure>
+      <div class="lead-copy">
+        <p class="lead-summary">A practical vulnerability brief shows how teams can separate severity, exploitation evidence, and deployment exposure before opening an emergency change.</p>
+        <dl class="evidence-notes">
+          <div><dt>Why it matters</dt><dd>A critical score alone does not tell an engineer whether the vulnerable component is deployed, reachable, or already targeted.</dd></div>
+          <div><dt>Affected</dt><dd>Java · Internet-facing services · Asset inventory</dd></div>
+          <div><dt>Supported action</dt><dd>Confirm the deployed component and version, review vendor guidance, then prioritize reachable systems with exploitation evidence.</dd></div>
+          <div><dt>Evidence</dt><dd>Apache Log4j Security · Retrieved Sep 26, 2026</dd></div>
+        </dl>
+      </div>
+    </div>
+  </article>
+      <section class="coverage section-block" aria-labelledby="coverage-heading">
+        <header class="section-heading"><div><p class="section-index">Daily report</p><h2 id="coverage-heading">Today’s Security Briefs</h2></div><p>Selected for engineering relevance</p></header>
+        <div class="story-grid"><article class="story story--substantial" data-story-id="signed-builds">
+    <p class="story-kicker">explainer <span aria-hidden="true">·</span> Supply Chain</p>
+    <h3><a href="/article/signed-build-evidence">Signed builds are useful only when verification is part of deployment</a></h3>
+    <p class="story-summary">Provenance becomes a control when deployment verifies the expected builder, source, and workflow.</p>
+    <p class="story-context"><strong>Why it matters</strong> Generating attestations without enforcing them leaves the trust decision unchanged.</p>
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T04:55:00Z">Sep 26, 2026</time></p>
+  </article><article class="story story--substantial" data-story-id="admission-guardrails">
+    <p class="story-kicker">news <span aria-hidden="true">·</span> Cloud &amp; Kubernetes</p>
+    <h3><a href="/article/admission-guardrails">Admission policies need an exception path engineers can audit</a></h3>
+    <p class="story-summary">A policy rollout pattern pairs blocking rules with time-bound, attributed exceptions.</p>
+    <p class="story-context"><strong>Why it matters</strong> Permanent bypasses turn a useful guardrail into documentation.</p>
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T04:40:00Z">Sep 26, 2026</time></p>
+  </article><article class="story story--substantial" data-story-id="epss-explained">
+    <p class="story-kicker">explainer <span aria-hidden="true">·</span> Vulnerabilities</p>
+    <h3><a href="/article/epss-without-shortcuts">EPSS is a probability estimate, not a patching deadline</a></h3>
+    <p class="story-summary">Use EPSS alongside exposure, business context, and exploitation evidence.</p>
+    <p class="story-context"><strong>Why it matters</strong> A single percentile can hide the difference between probability and consequence.</p>
+    <p class="story-meta">Source: FIRST EPSS<span aria-hidden="true"> · </span><time datetime="2026-09-26T04:00:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="secret-response">
+    <p class="story-kicker">incident <span aria-hidden="true">·</span> Security Engineering</p>
+    <h3><a href="/article/secret-exposure-response">A leaked token is an incident until revocation and scope are verified</a></h3>
+    <p class="story-summary">A response sequence covers revocation, audit review, dependent credentials, and recovery evidence.</p>
+
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T03:40:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="runtime-tool">
+    <p class="story-kicker">tool <span aria-hidden="true">·</span> Security Engineering</p>
+    <h3><a href="/article/runtime-observation-tool">Tool watch: a small runtime observer for process and network context</a></h3>
+    <p class="story-summary">A synthetic open-source tool profile demonstrates how TSD evaluates operational fit.</p>
+
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T03:20:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="cloud-keys">
+    <p class="story-kicker">advisory <span aria-hidden="true">·</span> Cloud &amp; Kubernetes</p>
+    <h3><a href="/article/short-lived-cloud-keys">Short-lived cloud credentials still need a clear issuer and audience</a></h3>
+    <p class="story-summary">Credential lifetime helps, but confused-deputy risks remain when trust conditions are broad.</p>
+
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T02:40:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="maintainer-tokens">
+    <p class="story-kicker">news <span aria-hidden="true">·</span> Supply Chain</p>
+    <h3><a href="/article/maintainer-token-boundaries">Package maintainer tokens should not share the blast radius of a workstation</a></h3>
+    <p class="story-summary">A publishing pattern isolates release credentials and requires provenance for new versions.</p>
+
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T02:20:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="fix-evidence">
+    <p class="story-kicker">advisory <span aria-hidden="true">·</span> Vulnerabilities</p>
+    <h3><a href="/article/fixed-version-evidence">A fixed version needs a vendor source, not a guess from the latest release</a></h3>
+    <p class="story-summary">Version claims remain unknown until an authoritative advisory defines the repaired range.</p>
+
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T02:00:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="incident-path">
+    <p class="story-kicker">incident <span aria-hidden="true">·</span> Supply Chain</p>
+    <h3><a href="/article/package-incident-path">Incident diagram: from a package install to a cloud API call</a></h3>
+    <p class="story-summary">A synthetic attack path highlights credential access and API telemetry opportunities.</p>
+
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T01:20:00Z">Sep 26, 2026</time></p>
+  </article></div>
+      </section>
+      <section class="watch section-block" aria-labelledby="watch-heading">
+    <header class="section-heading"><div><p class="section-index">Evidence desk</p><h2 id="watch-heading">Vulnerability Watch</h2></div><p>Snapshot · Sep 26, 2026</p></header>
+    <div class="watch-scroll" tabindex="0"><table><thead><tr><th>CVE</th><th>CVSS</th><th>EPSS</th><th>KEV</th><th>Technology</th><th>Supported action</th></tr></thead><tbody>
+      <tr><td><a href="/cve/CVE-2021-44228" translate="no">CVE-2021-44228</a></td><td>10</td><td>Not available</td><td>Yes</td><td>Apache Log4j 2</td><td>Confirm the deployed component and version, review vendor guidance, then prioritize reachable systems with exploitation evidence.</td></tr>
+    </tbody></table></div>
+  </section>
+      <section class="section-block originals" aria-labelledby="originals-heading">
+    <header class="section-heading"><div><p class="section-index">Original writing</p><h2 id="originals-heading">From the Editor</h2></div><p>3 stories</p></header>
+    <div class="feature-grid"><article class="story story--feature" data-story-id="agent-boundaries">
+    <p class="story-kicker">original <span aria-hidden="true">·</span> AI &amp; Agent Security</p>
+    <h3><a href="/article/agent-tool-boundaries">Agent tool boundaries belong in the architecture, not only in the prompt</a></h3>
+    <p class="story-summary">A design note for constraining coding-agent actions with scoped credentials and observable tool calls.</p>
+
+    <p class="story-meta">By Pankaj Mouriya<span aria-hidden="true"> · </span><time datetime="2026-09-26T05:20:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="cve-priority">
+    <p class="story-kicker">original <span aria-hidden="true">·</span> Vulnerabilities</p>
+    <h3><a href="/article/cve-priority-context">A critical CVE count is not a vulnerability-management outcome</a></h3>
+    <p class="story-summary">Measure reachable exposure, remediation progress, and exception age instead of raw totals.</p>
+
+    <p class="story-meta">By Pankaj Mouriya<span aria-hidden="true"> · </span><time datetime="2026-09-26T01:40:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="editor-letter">
+    <p class="story-kicker">original <span aria-hidden="true">·</span> Security Engineering</p>
+    <h3><a href="/article/why-the-security-diff">From the editor: evidence before prose</a></h3>
+    <p class="story-summary">The publication separates sourced facts, generated summaries, and editorial judgment.</p>
+
+    <p class="story-meta">By Pankaj Mouriya<span aria-hidden="true"> · </span><time datetime="2026-09-26T01:00:00Z">Sep 26, 2026</time></p>
+  </article></div>
+  </section>
+      <section class="section-block research" aria-labelledby="research-heading">
+    <header class="section-heading"><div><p class="section-index">Research notes</p><h2 id="research-heading">Research Worth Reading</h2></div><p>2 stories</p></header>
+    <div class="feature-grid"><article class="story story--feature" data-story-id="authz-review">
+    <p class="story-kicker">research <span aria-hidden="true">·</span> AppSec</p>
+    <h3><a href="/article/authorization-review">Authorization review should start from objects and relationships</a></h3>
+    <p class="story-summary">A review method maps actors, objects, and allowed relationships before testing endpoints.</p>
+
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T04:20:00Z">Sep 26, 2026</time></p>
+  </article><article class="story " data-story-id="research-note">
+    <p class="story-kicker">research <span aria-hidden="true">·</span> Research</p>
+    <h3><a href="/article/research-claims-and-interpretation">Research notes should separate demonstrated results from editorial interpretation</a></h3>
+    <p class="story-summary">A compact template keeps the original finding distinct from its architecture implications.</p>
+
+    <p class="story-meta">Source: TSD Fixture Lab<span aria-hidden="true"> · </span><time datetime="2026-09-26T03:00:00Z">Sep 26, 2026</time></p>
+  </article></div>
+  </section>
+    </main>
+    <nav class="edition-nav" aria-label="Edition navigation"><a href="#">← Friday, September 25</a><a href="/archive">Browse the archive</a></nav>
+    <footer><p>The Security Diff · Fixture content for design evaluation.</p><nav aria-label="Publication links"><a href="/about">About</a><a href="/editorial-policy">Editorial policy</a><a href="/rss.xml">RSS</a><a href="/feed.json">JSON</a></nav></footer>
+  </div>
+  <script>
+    const root = document.documentElement;
+    const params = new URLSearchParams(location.search);
+    root.dataset.theme = params.get('theme') === 'dark' ? 'dark' : 'light';
+    const button = document.querySelector('[data-theme-toggle]');
+    const themeColor = document.querySelector('[data-theme-color]');
+    const sync = () => {
+      button.setAttribute('aria-label', root.dataset.theme === 'dark' ? 'Use light theme' : 'Use dark theme');
+      themeColor.setAttribute('content', root.dataset.theme === 'dark' ? '#1d1c18' : '#faf6e9');
+    };
+    sync();
+    button.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; sync(); });
+  </script>
+</body>
+</html>

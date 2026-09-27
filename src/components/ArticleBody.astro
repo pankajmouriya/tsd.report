@@ -1,0 +1,6 @@
+---
+const { paragraphs } = Astro.props as { paragraphs: string[] };
+---
+<div class="article-body article-body--fallback">
+  {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+</div>

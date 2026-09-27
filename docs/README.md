@@ -1,4 +1,14 @@
-# The Security Diff planning documents
+# The Security Diff documentation
+
+## Add or edit content
+
+Start with the [authoring guide](editorial/authoring-guide.md): copyable templates for stories, briefs, essays, and editions; lead selection; source handling; customization; and exact local checks.
+
+- [Editorial recipes](editorial/content-recipes.md) — adaptable outlines for all eight story types.
+- [Agent-assisted workflow](editorial/agent-workflow.md) — constrained drafting, evidence handoff, proposed output schema, and automation gaps.
+- [Editorial seed rationale](editorial/editorial-seed-rationale.md) — existing examples and future candidates.
+
+## Product and implementation
 
 Read in this order:
 
@@ -6,5 +16,10 @@ Read in this order:
 2. [Design and architecture](superpowers/specs/2026-09-26-tsd-design.md) — screenshot interpretation, visual system, interactions, data integrity, architecture, and proposed defaults.
 3. [Agent rules](../AGENTS.md) — instructions for every agent working in the repository.
 4. [Delivery plan](superpowers/plans/2026-09-26-tsd-delivery.md) — detailed prototype tasks, later milestones, release gates, and evidence ledger.
+5. [Production deployment plan](superpowers/plans/2026-09-27-tsd-production-deployment.md) — provider decision, preview and production CI/CD, security headers, DNS, release approval, daily candidate automation, smoke checks, and rollback.
 
-The confirmed article route is `/article/[slug]`. The next implementation scope is Milestone A: the static fixture prototype. The planning documents describe future checks and deliverables; no application or deployment has been completed yet.
+The canonical article route is `/article/[slug]`. Milestone A is implemented locally as a fixture prototype, including the reading pages. Live ingestion and production publication remain future work; see the delivery ledger for verification and limitations. No deployment is recorded.
+
+## Operations
+
+- [Cloudflare account and `tsd.report` DNS setup](operations/cloudflare-domain-setup.md) — exact Cloudflare onboarding, GoDaddy nameserver migration, DNS verification, and DNSSEC steps.

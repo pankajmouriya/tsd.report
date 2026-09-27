@@ -27,6 +27,14 @@ export function findStory(slug: string): Story | undefined {
   return getStories().find((story) => story.slug === slug);
 }
 
+export function findEditionForStory(slug: string): Edition | undefined {
+  return editions.find((edition) => edition.stories.some((story) => story.slug === slug));
+}
+
+export function findStoryById(id: string): Story | undefined {
+  return getStories().find((story) => story.id === id);
+}
+
 export function getStoryById(edition: Edition, id: string): Story {
   const story = edition.stories.find((candidate) => candidate.id === id);
   if (!story) throw new Error(`Unknown story ${id}`);

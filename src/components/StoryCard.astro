@@ -1,13 +1,18 @@
 ---
 import type { Story } from '../lib/schema';
 import { articlePath } from '../lib/routes';
-interface Props { story: Story; }
-const { story } = Astro.props;
+import { formatShortDate } from '../lib/format';
+interface Props { story: Story; substantial?: boolean; }
+const { story, substantial = false } = Astro.props;
+const source = story.sources[0];
 ---
-<article class="story-card" data-story data-category={story.category} data-signal={story.signal.label}>
+<article class:list={['story-card', { 'story-card-substantial': substantial }]} data-story data-story-id={story.id} data-category={story.category} data-signal={story.signal.label}>
   <p class="eyebrow">{story.type} · {story.category.replaceAll('-', ' ')}</p>
   <h3><a href={articlePath(story.slug)}>{story.title}</a></h3>
-  <p>{story.summary}</p>
-  <span class="signal">{story.signal.label.replace('-', ' ')}</span><br />
-  <a class="read-more" href={articlePath(story.slug)}>Read the full brief →</a>
+  <p class="story-summary">{story.summary}</p>
+  {substantial && <p class="story-context"><strong>Why it matters</strong>{story.why_it_matters}</p>}
+  <footer class="story-meta">
+    <span>{story.author ? `By ${story.author}` : `Source: ${source.name}`}</span>
+    <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time>
+  </footer>
 </article>

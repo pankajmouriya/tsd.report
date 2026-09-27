@@ -1,0 +1,41 @@
+{
+  "id": "template-security-story",
+  "slug": "template-security-story",
+  "title": "Synthetic example: reviewing a deployment boundary",
+  "type": "news",
+  "category": "security-engineering",
+  "published_at": "2026-09-27T00:00:00Z",
+  "updated_at": null,
+  "summary": "Synthetic authoring example only. Replace this text with the observed change, affected audience, and practical consequence, supported by inspected sources.",
+  "why_it_matters": "Explain the practical consequence and the limits of the available evidence. This template reports no real incident.",
+  "action": "Replace this instruction with a supported next step and any scope that still needs verification.",
+  "affected_technologies": [],
+  "tags": [
+    "editorial"
+  ],
+  "sources": [
+    {
+      "id": "template-source",
+      "name": "Synthetic source placeholder — replace before reporting",
+      "url": "https://example.com/tsd-authoring-template",
+      "type": "editorial",
+      "published_at": null,
+      "retrieved_at": "2026-09-27T00:00:00Z"
+    }
+  ],
+  "signal": {
+    "score": 0,
+    "label": "standard",
+    "reasons": [
+      "Illustrative fixture score; replace through editorial assessment, not model invention."
+    ]
+  },
+  "vulnerabilities": [],
+  "illustration": null,
+  "body": [
+    "This is a synthetic authoring template, not a security alert. Its example source and dates are placeholders, not verified evidence.",
+    "Replace these plain-text paragraphs with a concise supported account, explicit uncertainty, and a useful next step."
+  ],
+  "author": null,
+  "fixture": true
+}

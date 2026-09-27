@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "title": "Synthetic draft: a deployment-boundary question",
+  "summary": "This is an illustrative agent-output object. No real security event or advisory has been verified.",
+  "why_it_matters": "Replace this text only after the assignment supplies evidence for the reader consequence.",
+  "action": "Obtain the primary evidence and confirm the scope before drafting operational advice.",
+  "body_markdown": "This is hypothetical template copy. The assignment has not supplied usable factual evidence, so no vulnerability, fix, or incident claim is made.",
+  "claim_links": [],
+  "open_questions": [
+    "Which primary source and dated claim establish the change?"
+  ]
+}

@@ -1,8 +1,8 @@
 # The Security Diff — design and architecture
 
-Date: 2026-09-26  
-Status: proposed implementation baseline, written at the user's request; application implementation has not started.  
-Product specification: [original spec](../../../the-security-diff-implementation-spec.md).  
+Date: 2026-09-26
+Status: Milestone A implemented locally and visually refined; no deployment has been performed.
+Product specification: [original spec](../../../the-security-diff-implementation-spec.md).
 Execution rules: [AGENTS.md](../../../AGENTS.md).
 
 ## 1. Intent and confirmed decisions
@@ -76,9 +76,10 @@ Use CSS custom properties in `src/styles/tokens.css`. The values below are start
 | `--surface` | `#F0E9D5` | `#2D2923` |
 | `--focus` | `#285F86` | `#92C9EC` |
 
-Selected controls use a separate filled-button background/text pair with checked contrast. Do not assume that the dark accent works as a background with white text. Severity colors are supplementary; always include a text label.
+Selected edition filters use accent text and a visible underline on the paper surface. Filled controls elsewhere use a separate background/text pair with checked contrast. Do not assume that the dark accent works as a background with white text. Severity colors are supplementary; always include a text label.
 
-- Masthead/headlines: start with a locally hosted, licensed editorial serif, proposed `Source Serif 4`, with Georgia and serif fallbacks. Compare its bold masthead in-browser before finalizing.
+- Masthead: locally hosted Grenze Gotisch Bold, subset to the fixed publication name, with Newsreader Display and Georgia fallbacks.
+- Headlines: locally hosted Newsreader 72pt Semibold, selected after a controlled comparison with Georgia and Source Serif 4, with Georgia and serif fallbacks.
 - Body: the same serif family for cohesion; metadata/navigation: system sans; technical identifiers/code: system monospace. Limit font downloads to the styles actually used.
 - Masthead: fluid 40–88 px; lead headline: 30–48 px; secondary headline: 22–28 px; body: 18–20 px; metadata: 12–14 px. Avoid small all-caps paragraphs.
 - Body line height: 1.5–1.65; headline line height: 1.05–1.15. Long-form reading width: at most 70 characters.
@@ -91,13 +92,13 @@ Selected controls use a separate filled-button background/text pair with checked
 
 | Viewport | Layout |
 | --- | --- |
-| 320–767 px | One column, 16 px sheet padding, wrapped top row, stacked lead, horizontally scrollable topic strip |
+| 320–767 px | One column, 16 px sheet padding, wrapped top row, stacked lead, wrapping topic options |
 | 768–1099 px | Two story columns, 24 px padding; lead may split when both sides retain readable widths |
 | 1100 px and wider | Three story columns, 40 px padding, split lead; sheet max-width 1440 px |
 
 Use CSS grid and natural content height. Lead text must never be clipped to match illustration height. Remove vertical rules when columns stack. At 320 px, the masthead must fit through wrapping or responsive type sizing, never horizontal page scrolling.
 
-The vulnerability table may scroll inside a labeled region. Keep the CVE identifier and action link easy to locate. Do not hide the meaning of columns at small widths. Topic-strip scrolling must be keyboard accessible and visibly discoverable.
+The vulnerability table may scroll inside a labeled region. Keep the CVE identifier and action link easy to locate. Do not hide the meaning of columns at small widths. Topic options wrap without horizontal scrolling, keeping every category discoverable.
 
 ## 6. Components and reader interactions
 
@@ -115,6 +116,8 @@ The vulnerability table may scroll inside a labeled region. Keep the CVE identif
 
 ### Filters
 
+- Visual refinement (2026-09-27): use unboxed sentence-case options with accent underlines for selected states and 44px minimum targets. Topic occupies the full first row; Signal and the quiet result/reset area share the second row from 768px. Narrow layouts stack the labeled groups and wrap their options. Preserve visible keyboard focus and `aria-pressed` semantics.
+- Hide Reset filters when both selections are All. Activating Reset returns focus to the Topic All button if Reset held focus, so removing the control never strands keyboard focus.
 - Topic values: `all`, `vulnerabilities`, `supply-chain`, `ai-security`, `appsec`, `cloud`, `research`, `security-engineering`.
 - Signal values: `all`, `recommended`, `must-read`. Recommended includes both recommended and must-read stories; Must Read includes only must-read stories. Explain this in the control's accessible description.
 - Combine topic and signal with AND. Persist as `?topic=...&signal=...`; Back/Forward restores selections. Ignore invalid values and fall back to All.
@@ -225,6 +228,49 @@ The editorial provider accepts validated evidence and returns only headline, sum
 
 The first prototype passes design review only if the masthead dominates without excessive empty space; the split lead and three-column grid preserve the screenshot's rhythm; sources and actions are easy to find; narrow screens feel intentionally designed; and dark mode retains an editorial identity. Inspect screenshots and interact with the pages; do not substitute a build result for review.
 
-Decisions deferred until their milestone: hosting provider/account and DNS access; confirmed author biography and public security contact; licensed font final selection; editorial AI provider and cost ceiling; unattended publishing policy. None blocks the local fixture prototype. Do not fabricate identities, contacts, or credentials to fill these gaps.
+Decisions deferred until their milestone: hosting provider/account and DNS access; confirmed author biography and public security contact; editorial AI provider and cost ceiling; unattended publishing policy. None blocks the local fixture prototype. Do not fabricate identities, contacts, or credentials to fill these gaps.
 
 Changes to this baseline should include the reason, affected milestone, and required validation. Keep `/article/[slug]`, source integrity, archival semantics, and the newspaper identity consistent across subsequent work.
+
+## 13. Milestone A visual refinement
+
+The approved refinement pass preserves the original newspaper composition. A controlled typography study selected locally hosted Newsreader for editorial display and reading text, with system sans for interface text and Georgia fallbacks. The fixed publication name subsequently adopted a 6,584-byte Grenze Gotisch Bold subset as a modern blackletter nameplate. It is confined to the masthead so story headlines and reading surfaces retain Newsreader's clarity. Lead headlines use Newsreader Medium to keep their visual weight below the nameplate; other editorial headings use Semibold. The six production subsets total 226,872 bytes and preserve the fluid scale, 68-character long-form measure, balanced headings, tabular intelligence data, explicit light/dark surface contrast, and themed browser surfaces.
+
+The paper sheet uses a medium-strength, locally hosted monochrome grain tile behind all content. Light mode uses opacity `.30` with multiply blending; dark mode uses opacity `.14` with soft-light blending. The tile renders at 512px so the texture remains visible at normal page scale and after browser scaling. Increased-contrast, forced-color, and print modes remove it so it cannot compete with text or consume printer ink.
+
+Responsive story columns now follow the design thresholds exactly: one column through 767px, two columns from 768px through 1099px, and three columns from 1100px. Phone, tablet, and wide sheet padding are 16px, 24px, and 40px respectively. The lead splits only when both columns retain readable width.
+
+Active filtering replaces the editorial composition with one ordered, duplicate-free results list derived from edition stories. Counts use unique story entries and ignore Vulnerability Watch rows. The unfiltered state restores the lead, story grid, and evidence section. Without JavaScript, enhanced controls remain hidden and category links provide working navigation.
+
+The theme control uses authored SVG sun/moon marks, exposes its target theme through its accessible name, persists the explicit choice, and updates browser theme color. Mobile topic and vulnerability regions display horizontal-scroll guidance. Selected dark-theme controls use the dark paper color on the light accent to preserve contrast.
+
+## 14. Homepage newspaper composition study
+
+The next homepage pass is a bounded composition study rather than another token-only refinement. Two standalone concepts use the same validated 2026-09-26 fixture and preserve the centered sheet, masthead, compact filters, prominent lead, ruled three-column coverage, Vulnerability Watch, original writing, research, edition navigation, responsive behavior, and early dark-theme treatment.
+
+- **Composition A — balanced newspaper:** gives the lead illustration and editorial context comparable weight, uses substantial story summaries, and separates original writing and research with a relaxed section rhythm.
+- **Composition B — denser newspaper:** shortens the masthead and lead, allocates less height to the illustration, tightens metadata and coverage spacing, and brings the secondary report above the fold without reducing body text below the existing readable baseline.
+
+Both concepts use linked headlines as primary navigation, one quiet attribution line per story, and existing summary, impact, action, author, source, and timestamp data only. Repeated call-to-action text is omitted. The lead artwork is a subject-specific evidence path for the fixture vulnerability: deployed component, reachability, exploitation evidence, and vendor-supported action. It does not assert an incident path.
+
+The comparison artifacts live under `design-explorations/homepage-compositions/` and are generated from the fixture data. Selection is based on lead-to-secondary hierarchy, natural headline wrapping, reading density, control footprint, attribution clarity, section distinction, mobile order, and dark artwork coherence.
+
+**Selected: Composition B — denser newspaper.** It preserves the reference composition while reducing the opening's vertical footprint, gives the lead headline a wider and more natural measure, balances a smaller subject-specific illustration with structured evidence, and brings the daily report into view sooner. Application integration keeps existing routes, data, filters, theming, and accessibility behavior; homepage-only section grouping and lead styles must not silently alter article layouts.
+
+## 15. Reading system
+
+Reading pages use a compact publication header so the article title remains the primary heading and visual entry point. The shared system keeps Newsreader at a maximum 68-character prose measure, permits contextual figures to widen independently, and retains the paper identity without adding a second texture treatment. Edition pages keep the large masthead and newspaper composition.
+
+Astro content collections validate repository-authored essay and brief metadata against the edition story identity. Native semantic Markdown renders headings, lists, code, figures, and footnotes while legacy JSON bodies retain a simple fallback. Essays with four or more meaningful sections expose a native `details` contents disclosure. Briefs begin with one supported-action summary. Related reading is limited to validated editorial story IDs.
+
+Evidence uses claim-level footnote anchors, native return links, full end references, and sparse authored source notes. At wide widths the notes sit beside their supporting section; below 1160px they return to normal document flow immediately after the passage. Critical uncertainty remains in the prose. CVE pages independently label CVSS, EPSS, KEV, known exploitation, affected scope, fixed information, evidence dates, and missing claim-level provenance.
+
+The selected samples are `/article/agent-tool-boundaries` and `/article/patching-the-edge`. They are unreviewed fixtures rather than attributed to the author named in edition seed data: the essay carries an “Editorial prototype” credit and the brief carries a “Historical fixture” label. The historical brief distinguishes current deployment unknowns from dated Apache and CISA evidence. Visual and verification evidence is recorded in `docs/design/reading-experience.md` and `/private/tmp/tsd-reading-experience/`.
+
+## 16. Authoring kit and proposed agent handoff
+
+The [authoring guide](../../editorial/authoring-guide.md), [recipes](../../editorial/content-recipes.md), and [templates](../../editorial/templates/story.json) document the current JSON-plus-Markdown path for all eight story types. Lead is edition placement, independent of article type. Templates remain outside loaded content directories and use explicitly synthetic values; they do not add site stories.
+
+The [agent workflow](../../editorial/agent-workflow.md) proposes a strict editorial draft output contract with title, summary, impact, action, Markdown body, claim links, and open questions. The drafter does not control authoritative facts, source identity/timestamps, ranking, bylines/review records, lead selection, or publication. Evidence is supplied separately and the integrator must copy approved fields explicitly. This contract and its evidence sidecar are documentation artifacts, not implemented pipeline enforcement. B–G retain their existing scope and gates.
+
+Current authoring limits are explicit: manual edition imports, collection-wide Markdown loading without a draft exclusion state, hardcoded lead artwork, incomplete field-level provenance, and older duplicate slug records overwriting newer records in the story index. These require scoped implementation before automated integration or production publishing. The documentation does not silently change those behaviors.
