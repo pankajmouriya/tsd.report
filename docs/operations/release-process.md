@@ -1,6 +1,6 @@
 # Minimal GitHub and Cloudflare release process
 
-Status: implemented locally; hosted workflows and the first production deployment remain unverified.
+Status: implemented locally; the first reviewed production edition is ready locally, the Pages project and pull-request preview path are verified, and the first production deployment remains pending.
 
 ## Release flow
 
@@ -47,15 +47,19 @@ Add these repository variables:
 
 ## First publication checklist
 
-1. Add the first reviewed JSON edition under `data/production/editions/`.
-2. Add any reviewed long-form Markdown under `content/production/articles/`.
-3. Record genuine `reviewed_by` and `reviewed_at` values. Never copy the temporary values used by automated tests.
-4. Run `npm ci`, `npm run check`, `npm test`, `npm run test:content-environments`, `npm run validate:production`, `npm run build:production`, and `npm run check:links`.
+1. Add the first reviewed JSON edition under `data/production/editions/`. Completed locally on 2026-09-29.
+2. Add any reviewed long-form Markdown under `content/production/articles/`. Completed locally with `admission-control-kubernetes-policy.md`.
+3. Record genuine `reviewed_by` and `reviewed_at` values. Completed from the user's exact-copy approval at `2026-09-29T16:19:11Z`.
+4. Run `npm ci`, `npm run check`, `npm test`, `npm run test:content-environments`, `npm run validate:production`, `npm run build:production`, and `npm run check:links`. Completed in an isolated worktree on 2026-09-29.
 5. Open a pull request and verify validation and secret scanning. If previews are enabled, inspect the `pr-<number>.tsd-report.pages.dev` URL.
 6. Confirm the production Pages project has the intended custom domain and active TLS.
 7. Set `TSD_PRODUCTION_ENABLED=true`.
 8. Merge the reviewed pull request to `main`.
 9. Verify the production job and visit both `https://tsd-report.pages.dev/` and `https://tsd.report/`.
+
+The local production corpus contains one editor original, “Admission control is where Kubernetes policy becomes executable,” credited to Pankaj Mouriya and based on a newly written, source-backed revision of the author's 2024 noShellAccess guide. Its edition record retains the original post and current Kubernetes documentation as sources. It has not been deployed.
+
+Hosted check on 2026-09-29: GitHub contains the `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_PROJECT_NAME=tsd-report`, and `TSD_PREVIEW_ENABLED=true` variables, the `CLOUDFLARE_API_TOKEN` secret, and the `preview` and `production` environments. The setup workflow created or confirmed the Pages project, and `https://pr-1.tsd-report.pages.dev/` returned 200 with `X-Robots-Tag: noindex`. `TSD_PRODUCTION_ENABLED` is deliberately absent. `https://tsd-report.pages.dev/` returns 404 because no production content has been deployed; `https://tsd.report/` does not yet complete HTTPS and its HTTP endpoint returns 403. Custom-domain and TLS configuration must be completed before enabling the production variable.
 
 ## Rollback
 

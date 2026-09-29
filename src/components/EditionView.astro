@@ -1,6 +1,6 @@
 ---
 import type { Edition } from '../lib/schema';
-import { getStoryById } from '../lib/content';
+import { getStoryById, getStoryCategories } from '../lib/content';
 import EditionHeader from './EditionHeader.astro';
 import EditionFilters from './EditionFilters.astro';
 import LeadStory from './LeadStory.astro';
@@ -16,7 +16,7 @@ const research = secondary.filter((story) => story.type === 'research' || story.
 const reports = secondary.filter((story) => !originals.includes(story) && !research.includes(story));
 ---
 <EditionHeader date={edition.date} count={edition.stories.length} previous={previous} next={next} />
-<EditionFilters />
+<EditionFilters categories={getStoryCategories(edition.stories)} />
 <main id="main">
   <div data-editorial-view>
     <div data-edition-section><LeadStory story={lead} /></div>

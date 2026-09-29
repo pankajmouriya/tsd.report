@@ -1,12 +1,15 @@
 ---
 import taxonomy from '../../config/taxonomy.json';
 import { categoryPath } from '../lib/routes';
+interface Props { categories: string[]; }
+const { categories } = Astro.props;
+const availableCategories = taxonomy.categories.filter((category) => categories.includes(category.id));
 ---
 <section class="filters" aria-label="Edition filters" data-filters>
   <nav class="filter-fallback" aria-label="Browse edition topics" data-filter-fallback>
     <span class="filter-label">Browse</span>
     <a href={Astro.url.pathname}>All stories</a>
-    {taxonomy.categories.map((category) => <a href={categoryPath(category.id)}>{category.label}</a>)}
+    {availableCategories.map((category) => <a href={categoryPath(category.id)}>{category.label}</a>)}
   </nav>
 
   <div data-filter-controls hidden>
@@ -14,7 +17,7 @@ import { categoryPath } from '../lib/routes';
       <span class="filter-label" id="topic-filter-label">Topic</span>
       <div class="filter-options">
       <button class="filter-button" type="button" data-value="all" aria-pressed="true">All</button>
-      {taxonomy.categories.map((category) => <button class="filter-button" type="button" data-value={category.id} aria-pressed="false">{category.label}</button>)}
+      {availableCategories.map((category) => <button class="filter-button" type="button" data-value={category.id} aria-pressed="false">{category.label}</button>)}
       </div>
     </div>
 

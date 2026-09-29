@@ -1,6 +1,6 @@
 # Fixture and production content environments
 
-Status: implemented locally on 2026-09-28
+Status: implemented locally on 2026-09-28; first reviewed production edition added locally on 2026-09-29
 
 ## Goal
 
@@ -14,17 +14,17 @@ data/
     editions/
   production/
     editions/
-      .gitkeep
+      2026-09-29.json
 
 content/
   fixtures/
     articles/
   production/
     articles/
-      .gitkeep
+      admission-control-kubernetes-policy.md
 ```
 
-The existing examples belong under `fixtures`. The production directories remain empty until the first reviewed article and edition are ready.
+The existing examples belong under `fixtures`. The production roots now contain the first reviewed edition and its original essay. Future production records follow the same review and provenance contract.
 
 ## Build contract
 
@@ -120,14 +120,16 @@ The implementation is complete when:
 
 1. Local development displays the existing fixture corpus without copying it into production directories.
 2. A production build cannot access fixture editions or fixture Markdown.
-3. Production directories may remain empty without weakening the content boundary.
+3. Tests can exercise an empty production corpus without weakening the content boundary.
 4. Normal release automation refuses to publish an empty production corpus.
 5. Adding the first reviewed production edition requires adding production records, not changing fixture flags.
 
 ## Local verification
 
-Run `npm run test:content-environments`, `npm run check`, `npm run validate:fixture`, `npm run build:fixture`, and `npm run check:links`. Then run `npm run validate:production`.
+Run `npm run test:content-environments`, `npm run check`, `npm run validate:fixture`, `npm run build:fixture`, and `npm run check:links`. Then run `npm run validate:production`, `npm run build:production`, and `npm run check:links` for the reviewed corpus.
 
-The final command must exit nonzero with `Production content requires at least one reviewed edition` while the production corpus is empty.
+The focused environment tests must still prove that a temporary empty production corpus exits nonzero with `Production content requires at least one reviewed edition`. The checked-in production corpus itself must validate and build successfully.
 
 Verification on 2026-09-28: 25 unit tests passed, including 15 focused environment tests; Astro and TypeScript reported zero diagnostics; the fixture validator loaded 3 editions and 17 entries; the fixture build generated 61 pages; internal links passed; and all 36 fixture browser journeys passed. An isolated temporary production record generated 10 production pages with `index, follow`, only its selected category/article/date/tag routes, and no fixture labels or `patching-the-edge` route. The temporary record was removed, the fixture output was rebuilt, and empty production validation returned the required error.
+
+Verification on 2026-09-29: the first approved production edition and original essay passed the 15 environment tests, 25 application tests, Astro and TypeScript checks with zero diagnostics, production validation with 1 edition and 1 entry, a 13-page production build, internal-link checks, and three generated-preview browser checks. The browser checks covered the article structure, attribution, source links, desktop and mobile layouts in both themes, horizontal overflow, and the no-JavaScript category path. Review captures are stored under `/private/tmp/tsd-admission-controller-review/`.
