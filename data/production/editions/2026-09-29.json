@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-29",
+  "generated_at": "2026-09-29T06:00:00Z",
+  "status": "published",
+  "reviewed_by": "Pankaj Mouriya",
+  "reviewed_at": "2026-09-29T16:19:11Z",
+  "lead_story": "kubernetes-admission-control",
+  "sections": {
+    "from-the-editor": ["kubernetes-admission-control"]
+  },
+  "stories": [
+    {
+      "id": "kubernetes-admission-control",
+      "slug": "admission-control-kubernetes-policy",
+      "title": "Admission control is where Kubernetes policy becomes executable",
+      "type": "original",
+      "category": "cloud",
+      "published_at": "2026-09-29T06:00:00Z",
+      "updated_at": null,
+      "summary": "Kubernetes admission turns broad API permission into an object-level policy decision. The durable design starts with built-in controls and in-process validation, then treats webhooks as control-plane dependencies.",
+      "why_it_matters": "RBAC can authorize a workload creation request without deciding whether the submitted workload meets the cluster's security contract.",
+      "action": "Map the admission policies protecting each cluster, prefer built-in or in-process controls where they fit, and test webhook latency, failure policy, exclusions, and recovery before enforcing broadly.",
+      "affected_technologies": [
+        "Kubernetes API server",
+        "Pod Security Admission",
+        "ValidatingAdmissionPolicy",
+        "Admission webhooks"
+      ],
+      "tags": [
+        "kubernetes",
+        "admission-control",
+        "policy-as-code",
+        "container-security"
+      ],
+      "sources": [
+        {
+          "id": "noshellaccess-admission-controllers",
+          "name": "Quick Guide on Kubernetes Admission Controllers",
+          "url": "https://noshellaccess.com/containersecurity/guide-admission-controllers/",
+          "type": "community",
+          "published_at": "2024-04-12T00:00:00Z",
+          "retrieved_at": "2026-09-29T00:00:00Z"
+        },
+        {
+          "id": "kubernetes-admission-control",
+          "name": "Kubernetes documentation — Admission Control",
+          "url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/",
+          "type": "vendor",
+          "retrieved_at": "2026-09-29T00:00:00Z"
+        },
+        {
+          "id": "kubernetes-dynamic-admission",
+          "name": "Kubernetes documentation — Dynamic Admission Control",
+          "url": "https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/",
+          "type": "vendor",
+          "retrieved_at": "2026-09-29T00:00:00Z"
+        },
+        {
+          "id": "kubernetes-validating-admission-policy",
+          "name": "Kubernetes documentation — Validating Admission Policy",
+          "url": "https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/",
+          "type": "vendor",
+          "retrieved_at": "2026-09-29T00:00:00Z"
+        },
+        {
+          "id": "kubernetes-pod-security-admission",
+          "name": "Kubernetes documentation — Pod Security Admission",
+          "url": "https://kubernetes.io/docs/concepts/security/pod-security-admission/",
+          "type": "vendor",
+          "retrieved_at": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "signal": {
+        "score": 82,
+        "label": "recommended",
+        "reasons": [
+          "Foundational Kubernetes policy boundary",
+          "Broad platform engineering relevance"
+        ]
+      },
+      "vulnerabilities": [],
+      "illustration": null,
+      "body": [
+        "Authentication establishes identity, authorization permits an operation, and admission decides whether the resulting object satisfies cluster policy.",
+        "Prefer built-in controls and in-process validation where they fit. Treat every admission webhook as a control-plane dependency with explicit latency, failure, and recovery behavior."
+      ],
+      "author": "Pankaj Mouriya",
+      "status": "published",
+      "reviewed_by": "Pankaj Mouriya",
+      "reviewed_at": "2026-09-29T16:19:11Z"
+    }
+  ]
+}
