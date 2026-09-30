@@ -104,10 +104,10 @@ describe('newsletter workflow policy', () => {
     });
   });
 
-  it('allows PR supersession without cancelling a main workflow waiting to send', () => {
+  it('retains queued main workflows without replacing a pending edition', () => {
     expect(mapping(workflow, 'concurrency', 0)).toEqual({
       group: 'validate-${{ github.event.pull_request.number || github.ref }}',
-      'cancel-in-progress': "${{ github.event_name == 'pull_request' }}",
+      queue: 'max',
     });
   });
 
