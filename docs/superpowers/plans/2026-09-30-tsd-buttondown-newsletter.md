@@ -12,6 +12,8 @@
 
 ## Global constraints
 
+Implementation rulings — 2026-09-30: Task 4's original header and payload examples below are historical instructions superseded by the verified implementation. Use `X-API-Version: 2026-04-01`; omit deprecated/derived `email_type`; set `archival_mode: disabled` and explicit empty filters for all eligible subscribers. Every matching nonaccepted provider state requires manual review. The workflow uses its per-ref group with `queue: max` and no cancellation; the send job separately uses `newsletter-production` with cancellation disabled. GitHub retains at most 100 pending runs per group. See the [design rulings](../specs/2026-09-30-tsd-buttondown-newsletter-design.md#implementation-rulings--2026-09-30), [operator runbook](../../operations/newsletter.md), and [delivery evidence](2026-09-26-tsd-delivery.md). Original task checklists and evidence are preserved; this note does not certify live rollout.
+
 - Keep `tsd.report` as the canonical archive. Every story link uses `/article/[slug]`; every edition link uses its permanent dated route.
 - Add no account system, subscriber database, runtime API, server adapter, paid Buttondown RSS automation, analytics script, tracking pixel, or duplicated Buttondown archive.
 - Collect only an email address. Buttondown remains responsible for double opt-in, unsubscribe, bounce, complaint, and suppression state.

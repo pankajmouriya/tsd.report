@@ -109,7 +109,7 @@ Add an optional newsletter object to the edition schema:
     "status": "approved",
     "subject": "The Security Diff — September 30, 2026",
     "preview_text": "Admission control, deployment evidence, and the security changes worth your attention.",
-    "approved_by": "Pankaj Mouriya",
+    "approved_by": "<operator-supplied real approver>",
     "approved_at": "2026-09-30T12:00:00Z"
   }
 }
@@ -117,6 +117,7 @@ Add an optional newsletter object to the edition schema:
 
 Rules:
 
+- This example's approver placeholder and timestamp are illustrative, not recorded approval. Production requires the actual approving person and actual approval time.
 - The object is optional. Its absence means “do not send.”
 - `status` is either `draft` or `approved`.
 - Production sending requires `approved`, a non-empty subject and preview text, a real approver, and an ISO timestamp.
@@ -149,7 +150,7 @@ Buttondown receives Markdown with:
 - `slug: tsd-edition-YYYY-MM-DD`
 - `canonical_url` set to the dated TSD edition
 - `status: about_to_send` only in the live send step
-- public email type
+- explicit empty audience filters for all eligible subscribers (`filters: { filters: [], groups: [], predicate: 'and' }`); omit deprecated `email_type`
 - Buttondown archive disabled so search engines and readers treat `tsd.report` as canonical
 - metadata containing the edition date, source Git SHA, content digest, and schema version
 
@@ -188,6 +189,12 @@ Pull requests run schema validation, digest rendering, snapshot assertions, link
 
 Use a serialized newsletter concurrency group. Pin the Buttondown API version header to the reviewed version. Set network timeouts and bounded retries for safe GET requests. Do not blindly retry the create/send POST after an ambiguous timeout: query Buttondown again by deterministic identity before deciding whether a retry is safe.
 
+### Implementation rulings — 2026-09-30
+
+The reviewed implementation pins `X-API-Version: 2026-04-01`, as documented by [Buttondown versioning](https://docs.buttondown.com/api-versioning). The earlier implementation plan's `X-Buttondown-API-Version` spelling is superseded. The [create-email contract](https://docs.buttondown.com/api-emails-create) derives the deprecated `email_type` from archive visibility and audience; `public` conflicts with a disabled archive. The sender therefore omits `email_type`, sets `archival_mode: disabled`, and supplies explicit empty audience filters. This preserves all-subscriber delivery and TSD's canonical archive without enabling a paid RSS add-on.
+
+The whole workflow uses the existing per-ref group with `queue: max` and no cancellation, retaining pending eligible deployments rather than replacing them. The send job separately uses `newsletter-production` with `cancel-in-progress: false`. GitHub permits at most 100 pending runs in each group and cancels additional arrivals; waiting order is not guaranteed to match push order. Operators must monitor canceled/pending runs and reconcile edition identities rather than assume unlimited retention. See [GitHub concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency). Local workflow tests cover the queue configuration; hosted queuing remains unverified.
+
 ## 9. Idempotency and failure behavior
 
 Before creating an email, list Buttondown emails across all result pages and compare both the deterministic slug and stored edition metadata.
@@ -196,10 +203,12 @@ Before creating an email, list Buttondown emails across all result pages and com
 | --- | --- |
 | No matching email | Create one email with `about_to_send` |
 | `draft`, `about_to_send`, `scheduled`, `in_flight`, `throttled`, `resending`, or `sent` | Exit successfully as already accepted; never create another |
-| `paused`, `errored`, `partially_sent`, or `suppressed` | Fail and require manual review |
+| Any matching nonaccepted state, including `paused`, `errored`, `partially_sent`, `suppressed`, `deleted`, `managed_by_rss`, `imported`, or `transactional` | Fail and require manual review |
 | Conflicting slug or metadata | Fail closed and report the non-secret conflict |
 | Buttondown unavailable before creation | Fail without sending |
-| Ambiguous create response | Re-query; succeed only if exactly one matching email exists, otherwise fail |
+| Ambiguous create response | Re-query; succeed only if exactly one matching email is in an accepted state with consistent identity, otherwise fail for manual review |
+
+Identity matching uses the slug or edition date to find candidates, then requires exactly one result with matching slug, date, and rendered-body digest. Source SHA changes alone do not permit resending. A matching provider `draft` is considered already accepted and is not promoted to sending by the automation. An unknown state or malformed/incomplete provider listing fails closed.
 
 A newsletter failure does not roll back a healthy site deployment. It marks the workflow unsuccessful and requires an operator to reconcile Buttondown before retrying. A site deployment failure prevents email delivery. A code-only deployment after an edition was sent becomes an idempotent no-op.
 

@@ -17,7 +17,7 @@ Read in this order:
 3. [Agent rules](../AGENTS.md) — instructions for every agent working in the repository.
 4. [Delivery plan](superpowers/plans/2026-09-26-tsd-delivery.md) — detailed prototype tasks, later milestones, release gates, and evidence ledger.
 5. [Production deployment plan](superpowers/plans/2026-09-27-tsd-production-deployment.md) — provider decision, preview and production CI/CD, security headers, DNS, release approval, daily candidate automation, smoke checks, and rollback.
-6. [Buttondown newsletter implementation plan](superpowers/plans/2026-09-30-tsd-buttondown-newsletter.md) — test-first tasks for signup, digest rendering, duplicate-safe delivery, workflow gates, browser validation, and rollout.
+6. [Buttondown newsletter implementation plan](superpowers/plans/2026-09-30-tsd-buttondown-newsletter.md) — task requirements, implemented provider/workflow rulings, verification, and remaining live rollout gates; execution evidence is in the delivery ledger.
 
 Supporting design notes:
 
@@ -31,4 +31,5 @@ The canonical article route is `/article/[slug]`. Milestone A is implemented loc
 ## Operations
 
 - [Release process and workflow setup](operations/release-process.md) — pull request validation and previews, main-branch Direct Upload, GitHub and Cloudflare settings, first-publication checks, and manual rollback.
+- [Buttondown newsletter operations](operations/newsletter.md) — provider setup, configuration locations, approval and preview, independent rollout gates, identity reconciliation, pause/recovery, key rotation, privacy, and the 80/100 capacity decision.
 - [Cloudflare account and `tsd.report` DNS setup](operations/cloudflare-domain-setup.md) — exact Cloudflare onboarding, GoDaddy nameserver migration, DNS verification, and DNSSEC steps.
