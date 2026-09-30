@@ -97,6 +97,8 @@ The API key must never enter source, fixtures, logs, build output, browser bundl
 
 When `TSD_NEWSLETTER_SIGNUP_ENABLED=true`, production builds require `BUTTONDOWN_USERNAME` and `TSD_PUBLICATION_CONTACT_URL` and render the live form. Fixture builds may receive the public values in CI so the form can be visually and semantically tested; they never receive the API key and never run a send job. When signup is disabled or configuration is absent in local development, omit the component instead of rendering an inert form. Validation reports missing or invalid configuration if signup was explicitly enabled.
 
+Acquisition-pause ruling — 2026-09-30: `/privacy` resolves the publication contact independently of signup enablement and the provider username. Keep a valid `TSD_PUBLICATION_CONTACT_URL` configured during an acquisition pause so existing subscribers can request export or deletion. An absent contact is permitted before setup when signup is disabled; a configured invalid contact fails the privacy-page build in either gate state. Enabled signup continues to require both public values.
+
 The signup and send flags are independent of `TSD_PRODUCTION_ENABLED` and each other. The site may collect confirmed subscribers before automatic sending is enabled. Sending requires all three production, signup, and send flags. Setting any flag never bypasses per-edition approval.
 
 ## 6. Edition contract

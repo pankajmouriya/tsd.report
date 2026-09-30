@@ -1,9 +1,7 @@
 ---
 import ArticleLayout from '../layouts/ArticleLayout.astro';
-import { resolveNewsletterSignupConfig } from '../lib/newsletter-config';
-const config = resolveNewsletterSignupConfig({
-  TSD_NEWSLETTER_SIGNUP_ENABLED: import.meta.env.TSD_NEWSLETTER_SIGNUP_ENABLED,
-  BUTTONDOWN_USERNAME: import.meta.env.BUTTONDOWN_USERNAME,
+import { resolvePublicationContactUrl } from '../lib/newsletter-config';
+const contactUrl = resolvePublicationContactUrl({
   TSD_PUBLICATION_CONTACT_URL: import.meta.env.TSD_PUBLICATION_CONTACT_URL,
 });
 ---
@@ -17,8 +15,8 @@ const config = resolveNewsletterSignupConfig({
       <h2>Unsubscribe and retention</h2>
       <p>You can unsubscribe using the link in any email edition. Retention and suppression records are governed by Buttondown’s configuration and legitimate needs to prevent delivery abuse, handle complaints, and respect unsubscribe requests.</p>
       <h2>Requests and contact</h2>
-      {config
-        ? <p>For requests to export or delete subscriber information, use our <a href={config.contactUrl}>monitored publication contact</a>.</p>
+      {contactUrl
+        ? <p>For requests to export or delete subscriber information, use our <a href={contactUrl}>monitored publication contact</a>.</p>
         : <p>Email signup is currently unavailable. A publication contact for subscriber requests will be provided when signup opens.</p>}
       <h2>Site privacy and changes</h2>
       <p>The site does not use third-party analytics scripts, tracking pixels, advertising tags, or behavioral profiling. Buttondown analytics add-ons are outside this newsletter service.</p>
