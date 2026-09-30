@@ -51,6 +51,24 @@ describe('public newsletter signup configuration', () => {
       .toBe(contactUrl);
   });
 
+  it('retains mailto query parameters with a valid mailbox domain', () => {
+    const contactUrl = 'mailto:privacy+requests@support.example-test.test?subject=Privacy%20request&body=Please%20contact%20me';
+    expect(resolveNewsletterSignupConfig({ ...enabled, TSD_PUBLICATION_CONTACT_URL: contactUrl })?.contactUrl)
+      .toBe(contactUrl);
+  });
+
+  it.each([
+    'mailto:privacy@example.test/requests',
+    'mailto:privacy@example..test',
+    'mailto:privacy@.example.test',
+    'mailto:privacy@-example.test',
+    'mailto:privacy@example-.test',
+    'mailto:privacy@example_test.test',
+  ])('rejects malformed mailto mailbox domains (%s)', (contactUrl) => {
+    expect(() => resolveNewsletterSignupConfig({ ...enabled, TSD_PUBLICATION_CONTACT_URL: contactUrl }))
+      .toThrow('TSD_PUBLICATION_CONTACT_URL');
+  });
+
   it.each(['http://example.test', 'javascript:alert(1)', 'data:text/html,test', '/contact', 'not a URL', 'https://', 'mailto:', 'mailto:not-an-address', 'https://user:pass@example.test', ' https://example.test'])('rejects invalid public contact %s', (contactUrl) => {
     expect(() => resolveNewsletterSignupConfig({ ...enabled, TSD_PUBLICATION_CONTACT_URL: contactUrl }))
       .toThrow('TSD_PUBLICATION_CONTACT_URL');

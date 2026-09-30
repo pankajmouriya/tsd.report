@@ -25,7 +25,7 @@ export function resolveNewsletterSignupConfig(
   }
   const validContact = contact && (
     (contact.protocol === 'https:' && Boolean(contact.hostname) && !contact.username && !contact.password)
-    || (contact.protocol === 'mailto:' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact.pathname))
+    || (contact.protocol === 'mailto:' && /^[^@\s]+@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(contact.pathname))
   );
   if (!contactUrl || !validContact) {
     throw new Error('Newsletter signup configuration: TSD_PUBLICATION_CONTACT_URL is required and must be a valid mailto: address or HTTPS contact URL.');
