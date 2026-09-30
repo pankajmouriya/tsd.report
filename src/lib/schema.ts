@@ -67,12 +67,32 @@ export const productionStorySchema = z.object({
   reviewed_at: z.iso.datetime(),
 }).strict();
 
+const newsletterCopyFields = {
+  subject: z.string().trim().min(1).max(120),
+  preview_text: z.string().trim().min(1).max(200),
+};
+
+const draftSchema = z.object({
+  status: z.literal('draft'),
+  ...newsletterCopyFields,
+}).strict();
+
+const approvedSchema = z.object({
+  status: z.literal('approved'),
+  ...newsletterCopyFields,
+  approved_by: z.string().trim().min(1),
+  approved_at: z.iso.datetime(),
+}).strict();
+
+export const newsletterSchema = z.discriminatedUnion('status', [draftSchema, approvedSchema]);
+
 const editionFields = {
   schema_version: z.literal(1),
   date: z.iso.date(),
   generated_at: z.iso.datetime().optional(),
   lead_story: z.string(),
   sections: z.record(z.string(), z.array(z.string())),
+  newsletter: newsletterSchema.optional(),
 };
 
 function validateEdition(
@@ -119,5 +139,6 @@ export type Story = FixtureStory | ProductionStory;
 export type FixtureEdition = z.infer<typeof fixtureEditionSchema>;
 export type ProductionEdition = z.infer<typeof productionEditionSchema>;
 export type Edition = FixtureEdition | ProductionEdition;
+export type Newsletter = z.infer<typeof newsletterSchema>;
 export type Vulnerability = z.infer<typeof vulnerabilitySchema>;
 export type Source = z.infer<typeof sourceSchema>;

@@ -3,6 +3,11 @@
   "date": "2026-09-27",
   "generated_at": "2026-09-27T00:00:00Z",
   "fixture": true,
+  "newsletter": {
+    "status": "draft",
+    "subject": "Preview only: The Security Diff edition template",
+    "preview_text": "Synthetic newsletter copy for template validation. Do not send."
+  },
   "lead_story": "template-security-story",
   "sections": {
     "daily-report": [],
