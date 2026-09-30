@@ -76,6 +76,7 @@
 .article-body .footnotes li, .article-references li { padding-left: 5px; }
 .article-related, .article-close { width: min(100%, 68ch); margin: 44px auto 0; padding-top: 22px; border-top: 1px solid var(--rule); }
 .article-related h2 { margin: 0 0 14px; font-size: 1.55rem; }
+.reading-article > .newsletter-signup { width: min(100%, var(--measure)); margin-inline: auto; }
 .article-related li + li { margin-top: 8px; }
 .brief-decision { width: min(100%, 68ch); margin: 28px auto 0; padding: 18px 20px; border-block: 2px solid var(--ink); background: var(--surface); font-size: var(--text-body); line-height: 1.55; }
 .brief-decision p { margin: 5px 0 0; }
