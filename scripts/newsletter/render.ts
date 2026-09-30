@@ -1,7 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
-import { loadEditions, resolveContentMode } from '../../src/lib/content';
 import { buildNewsletterDigest, renderNewsletterPreviewHtml } from '../../src/lib/newsletter';
 
 try {
@@ -9,7 +8,11 @@ try {
     mode: { type: 'string', default: 'fixture' },
     output: { type: 'string', default: 'dist/newsletter-preview.html' },
   } });
-  const mode = resolveContentMode(values.mode);
+  const mode = values.mode;
+  if (mode !== 'fixture' && mode !== 'production') throw new Error(`Invalid CONTENT_MODE: ${mode}`);
+  // The content boundary initializes eagerly, so select the CLI mode before importing it.
+  process.env.CONTENT_MODE = mode;
+  const { loadEditions } = await import('../../src/lib/content');
   const edition = loadEditions(mode)[0];
   if (!edition) throw new Error(`No ${mode} editions are available`);
   if (!values.output?.trim()) throw new Error('Newsletter preview output must be a nonempty path');

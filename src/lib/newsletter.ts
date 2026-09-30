@@ -111,7 +111,8 @@ function markdownText(value: string): string {
 }
 
 function markdownLink(label: string, url: string): string {
-  const destination = webUrl(url).replace(/[()< >"\\\s]/g, (character) => encodeURIComponent(character));
+  const destination = webUrl(url).replace(/[()<>"\\\s]/g, (character) =>
+    character === '(' ? '%28' : character === ')' ? '%29' : encodeURIComponent(character));
   return `[${markdownText(label)}](${destination})`;
 }
 

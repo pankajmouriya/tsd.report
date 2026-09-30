@@ -105,6 +105,16 @@ describe('newsletter digest', () => {
     expect(output).toContain('&amp;other=1');
   });
 
+  it('encodes destination parentheses so a supplied URL cannot break the Markdown link or inject an image', () => {
+    const digest = buildNewsletterDigest(edition({ sections: {}, stories: [story('lead')] }));
+    digest.lead.url = 'https://example.test/report)![pixel](https://evil.test/tracker)';
+    const output = renderNewsletterMarkdown(digest);
+    const headlineLink = output.split('\n').find((line) => line.startsWith('### [Headline lead]'));
+    expect(headlineLink).toBe('### [Headline lead](https://example.test/report%29![pixel]%28https://evil.test/tracker%29)');
+    expect(output).not.toContain('![pixel](');
+    expect(headlineLink?.match(/^### \[Headline lead\]\(([^)]+)\)$/)?.[1]).toBe('https://example.test/report%29![pixel]%28https://evil.test/tracker%29');
+  });
+
   it('retains Unicode and long headlines in a one-story edition', () => {
     const title = `Évidence — 安全 🔐 ${'A long headline '.repeat(35)}`;
     const digest = buildNewsletterDigest(edition({ sections: {}, stories: [story('lead', { title })] }));
@@ -134,7 +144,21 @@ describe('newsletter digest', () => {
 describe('newsletter preview CLI', () => {
   const script = fileURLToPath(new URL('../../scripts/newsletter/render.ts', import.meta.url));
   const tsx = resolve('node_modules/tsx/dist/loader.mjs');
-  const run = (cwd: string, args: string[]) => spawnSync(process.execPath, ['--import', tsx, script, ...args], { cwd, encoding: 'utf8', env: { PATH: process.env.PATH } });
+  const run = (cwd: string, args: string[], ambientMode?: string) => spawnSync(process.execPath, ['--import', tsx, script, ...args], { cwd, encoding: 'utf8', env: { PATH: process.env.PATH, ...(ambientMode ? { CONTENT_MODE: ambientMode } : {}) } });
+
+  it('honors explicit fixture mode before loading an unavailable ambient production corpus', () => {
+    const root = mkdtempSync(join(tmpdir(), 'tsd-newsletter-mode-'));
+    try {
+      const directory = join(root, 'data/fixtures/editions');
+      mkdirSync(directory, { recursive: true });
+      writeFileSync(join(directory, 'edition.json'), JSON.stringify(edition({ sections: {}, stories: [story('lead')] })));
+      const result = run(root, ['--mode', 'fixture'], 'production');
+      expect(result.status, result.stderr).toBe(0);
+      const output = readFileSync(join(root, 'dist/newsletter-preview.html'), 'utf8');
+      expect(output).toContain('Fixture preview');
+      expect(output).toContain('https://tsd.report/article/lead');
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  });
 
   it('selects the latest edition, writes standalone HTML, and supports a custom output', () => {
     const root = mkdtempSync(join(tmpdir(), 'tsd-newsletter-preview-'));
