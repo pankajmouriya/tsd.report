@@ -2,7 +2,7 @@
 
 Date: 2026-09-30
 
-Status: Draft for user review
+Status: Approved for implementation planning
 
 Product specification: [original spec](../../../the-security-diff-implementation-spec.md)
 
@@ -91,10 +91,11 @@ Do not add third-party analytics scripts, tracking pixels, advertising tags, or 
 | `BUTTONDOWN_API_KEY` | GitHub `production` environment secret | Yes | Lists and creates Buttondown emails |
 | `TSD_NEWSLETTER_SIGNUP_ENABLED` | GitHub repository variable | No | Explicit standing gate for rendering the live signup form |
 | `TSD_NEWSLETTER_SEND_ENABLED` | GitHub repository variable | No | Explicit standing gate for automatic sends |
+| `TSD_PUBLICATION_CONTACT_URL` | GitHub repository variable and local environment | No | Monitored `mailto:` or HTTPS destination for privacy requests and replies |
 
 The API key must never enter source, fixtures, logs, build output, browser bundles, pull-request workflows, or chat. Scope the key to the single Buttondown newsletter when the provider supports it. Rotate it after suspected exposure and verify that logs redact authorization headers.
 
-When `TSD_NEWSLETTER_SIGNUP_ENABLED=true`, production builds require `BUTTONDOWN_USERNAME` and render the live form. Fixture builds may receive the public username in CI so the form can be visually and semantically tested; they never receive the API key and never run a send job. When signup is disabled or the username is absent in local development, omit the component instead of rendering an inert form. Validation reports the missing configuration if signup was explicitly enabled.
+When `TSD_NEWSLETTER_SIGNUP_ENABLED=true`, production builds require `BUTTONDOWN_USERNAME` and `TSD_PUBLICATION_CONTACT_URL` and render the live form. Fixture builds may receive the public values in CI so the form can be visually and semantically tested; they never receive the API key and never run a send job. When signup is disabled or configuration is absent in local development, omit the component instead of rendering an inert form. Validation reports missing or invalid configuration if signup was explicitly enabled.
 
 The signup and send flags are independent of `TSD_PRODUCTION_ENABLED` and each other. The site may collect confirmed subscribers before automatic sending is enabled. Sending requires all three production, signup, and send flags. Setting any flag never bypasses per-edition approval.
 
@@ -213,10 +214,11 @@ Before enabling acquisition:
 3. Configure and verify the actual sender identity and monitored reply address.
 4. Configure Buttondown's required DNS records without changing the existing Pages records.
 5. Set the public `BUTTONDOWN_USERNAME` repository variable.
-6. Add `BUTTONDOWN_API_KEY` only to the GitHub `production` environment.
-7. Confirm unsubscribe wording and the provider-hosted confirmation flow.
-8. Publish the privacy page.
-9. Set `TSD_NEWSLETTER_SIGNUP_ENABLED=true` only after the preceding checks pass.
+6. Set `TSD_PUBLICATION_CONTACT_URL` to the monitored `mailto:` or HTTPS contact destination.
+7. Add `BUTTONDOWN_API_KEY` only to the GitHub `production` environment.
+8. Confirm unsubscribe wording and the provider-hosted confirmation flow.
+9. Publish the privacy page.
+10. Set `TSD_NEWSLETTER_SIGNUP_ENABLED=true` only after the preceding checks pass.
 
 Before enabling automatic delivery:
 

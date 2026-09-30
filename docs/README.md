@@ -17,6 +17,7 @@ Read in this order:
 3. [Agent rules](../AGENTS.md) — instructions for every agent working in the repository.
 4. [Delivery plan](superpowers/plans/2026-09-26-tsd-delivery.md) — detailed prototype tasks, later milestones, release gates, and evidence ledger.
 5. [Production deployment plan](superpowers/plans/2026-09-27-tsd-production-deployment.md) — provider decision, preview and production CI/CD, security headers, DNS, release approval, daily candidate automation, smoke checks, and rollback.
+6. [Buttondown newsletter implementation plan](superpowers/plans/2026-09-30-tsd-buttondown-newsletter.md) — test-first tasks for signup, digest rendering, duplicate-safe delivery, workflow gates, browser validation, and rollout.
 
 Supporting design notes:
 
