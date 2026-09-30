@@ -332,6 +332,8 @@ Configure Playwright's web server to serve the fixture production build. The con
 
 EPSS history, vulnerability timelines, package/technology pages, watchlists, email digests, topic feeds, trend charts, saved preferences, and accounts require separate designs justified by actual reader needs. Do not let these delay V1 or introduce placeholders into its UI.
 
+Newsletter design update — 2026-09-30: the user approved the architecture for a free-first Buttondown integration with double opt-in, concise edition digests, and post-deployment API delivery. The detailed [newsletter design](../specs/2026-09-30-tsd-buttondown-newsletter-design.md) is written for review. No subscriber form, provider secret, send workflow, or email delivery has been implemented by this design-only change. All other Milestone H proposals remain deferred.
+
 ## 11. Requirement coverage
 
 | Requirement | Delivery |

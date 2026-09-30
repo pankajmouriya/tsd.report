@@ -19,6 +19,10 @@ The user selected semantic-release for automatic SemVer GitHub releases after re
 
 Production must implement the [content-environments design](../../design/content-environments.md): separate fixture and production JSON/Markdown, one selected source, genuine recorded review, no fixture fallback, and empty-production rejection. The workflow requires dedicated production build/validation and boundary tests before upload. Fixture seed content remains available locally. Initial launch retains explicit exact-artifact/DNS authorization; subsequent automatic promotion requires the documented standing policy, which has not yet been recorded. Candidate agents prepare PRs and cannot approve, merge, or publish them.
 
+### Newsletter decision — 2026-09-30
+
+The user selected a free-first Buttondown newsletter with double opt-in, concise edition digests, and automatic API delivery only after a reviewed production edition deploys successfully. TSD retains the canonical article and edition archive. Buttondown owns subscriber confirmation, unsubscribe, bounce, complaint, and suppression state; TSD does not add accounts or a subscriber database. The [Buttondown newsletter design](2026-09-30-tsd-buttondown-newsletter-design.md) defines the separate editorial approval, duplicate-send protection, privacy boundary, rollout gates, and free-tier capacity decision.
+
 ## 2. Design direction and alternatives
 
 | Approach | Benefit | Tradeoff |

@@ -22,6 +22,7 @@ Supporting design notes:
 
 - [Fixture and production content environments](design/content-environments.md) — keeps local seed content separate from reviewed production content and defines the fail-closed build contract.
 - [Reading experience](design/reading-experience.md) — long-form article hierarchy and evidence placement.
+- [Buttondown newsletter](superpowers/specs/2026-09-30-tsd-buttondown-newsletter-design.md) — double opt-in signup, concise digest contract, deployment-triggered delivery, privacy, and duplicate-send controls.
 - [Typography comparison](design/typography-comparison.md) — typeface evaluation and adopted direction.
 
 The canonical article route is `/article/[slug]`. Milestone A is implemented locally as a fixture prototype, including the reading pages. Live ingestion and production publication remain future work; see the delivery ledger for verification and limitations. No deployment is recorded.
