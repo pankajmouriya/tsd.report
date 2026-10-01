@@ -26,7 +26,8 @@
 .article-opening h1 {
   max-width: 19ch;
   margin: 10px 0 18px;
-  font-size: clamp(2.45rem, 1.85rem + 2.2vw, 4rem);
+  overflow-wrap: anywhere;
+  font-size: clamp(2.15rem, 1.85rem + 2.2vw, 4rem);
   font-weight: 600;
   line-height: 1.03;
   letter-spacing: -.02em;
@@ -105,6 +106,9 @@
   .article-figure { width: 100%; margin-inline: 0; transform: none; }
   .article-figure svg { min-width: 620px; }
   .article-figure { overflow-x: auto; }
+}
+@media (max-width: 360px) {
+  .article-opening h1 { font-size: 2rem; }
 }
 @media (min-width: 700px) {
   .external-provenance { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
