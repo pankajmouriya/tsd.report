@@ -29,7 +29,7 @@
 - Modify: `src/lib/routes.ts`
 - Modify: `tests/unit/schema.test.ts`
 - Modify: `tests/unit/routes.test.ts`
-- Modify: `public/schema/edition.schema.json`
+- Modify: `schemas/edition.schema.json`
 
 **Interfaces:**
 - Consumes: existing `Story`, `articlePath(slug)` and generated edition schema.
@@ -48,7 +48,8 @@ expect(isExternalStory({ slug: 'paper', destination_url: 'https://example.com/pa
 
 - [ ] **Step 2: Run focused tests and confirm the missing contract fails**
 
-Run: `npm test -- tests/unit/schema.test.ts tests/unit/routes.test.ts`  
+Run: `npm test -- tests/unit/schema.test.ts tests/unit/routes.test.ts`
+
 Expected: FAIL because `destination_url` and destination helpers do not exist.
 
 - [ ] **Step 3: Implement the HTTPS-only field and route helpers**
@@ -67,13 +68,14 @@ Add `destination_url: externalDestinationSchema.optional()` to `storyFields`. Im
 
 - [ ] **Step 4: Regenerate the checked-in schema and rerun focused tests**
 
-Run: `npm run generate:schema && npm test -- tests/unit/schema.test.ts tests/unit/routes.test.ts`  
+Run: `npm run generate:schema && npm test -- tests/unit/schema.test.ts tests/unit/routes.test.ts`
+
 Expected: PASS; generated JSON Schema exposes the optional field and HTTPS refinement description.
 
 - [ ] **Step 5: Commit the contract**
 
 ```bash
-git add src/lib/schema.ts src/lib/routes.ts tests/unit/schema.test.ts tests/unit/routes.test.ts public/schema/edition.schema.json
+git add src/lib/schema.ts src/lib/routes.ts tests/unit/schema.test.ts tests/unit/routes.test.ts schemas/edition.schema.json
 git commit -m "feat(content): add external story destinations"
 ```
 
@@ -100,7 +102,8 @@ Use a fixture external research story with `https://example.com/research-paper`.
 
 - [ ] **Step 2: Run the focused browser tests and confirm failure**
 
-Run: `npm run build:fixture && npm run test:e2e -- tests/e2e/edition.spec.ts tests/e2e/reading.spec.ts`  
+Run: `npm run build:fixture && npm run test:e2e -- tests/e2e/edition.spec.ts tests/e2e/reading.spec.ts`
+
 Expected: FAIL because the fixture and components still use internal destinations.
 
 - [ ] **Step 3: Implement shared link labeling and content-aware lead markup**
@@ -117,7 +120,8 @@ Add square, ruled external-research treatments using `--paper`, `--surface`, `--
 
 - [ ] **Step 6: Rerun focused browser tests and commit**
 
-Run: `npm run build:fixture && npm run test:e2e -- tests/e2e/edition.spec.ts tests/e2e/reading.spec.ts`  
+Run: `npm run build:fixture && npm run test:e2e -- tests/e2e/edition.spec.ts tests/e2e/reading.spec.ts`
+
 Expected: PASS for internal and external navigation, provenance, keyboard-visible anchors, and no horizontal overflow.
 
 ```bash
@@ -154,7 +158,8 @@ expect(digest.lead.url).toBe('https://example.com/research-paper');
 
 - [ ] **Step 2: Run tests and confirm identity/destination failures**
 
-Run: `npm test -- tests/unit/feeds.test.ts tests/unit/newsletter.test.ts`  
+Run: `npm test -- tests/unit/feeds.test.ts tests/unit/newsletter.test.ts`
+
 Expected: FAIL because all links currently use the internal article route.
 
 - [ ] **Step 3: Implement shared serialization semantics**
@@ -163,7 +168,8 @@ Expand the feed story type to include `destination_url`. Resolve absolute extern
 
 - [ ] **Step 4: Rerun tests and commit**
 
-Run: `npm test -- tests/unit/feeds.test.ts tests/unit/newsletter.test.ts tests/unit/newsletter-send.test.ts`  
+Run: `npm test -- tests/unit/feeds.test.ts tests/unit/newsletter.test.ts tests/unit/newsletter-send.test.ts`
+
 Expected: PASS, including deterministic escaping and existing no-send behavior.
 
 ```bash
@@ -195,7 +201,8 @@ Add a dated milestone entry with actual changed paths and verification results. 
 
 - [ ] **Step 3: Validate documentation and commit**
 
-Run: `git diff --check && rg -n "destination_url|story identity|external destination" docs/editorial docs/superpowers/specs`  
+Run: `git diff --check && rg -n "destination_url|story identity|external destination" docs/editorial docs/superpowers/specs`
+
 Expected: no whitespace errors; authoring and architecture documents contain the reconciled model.
 
 ```bash
@@ -220,7 +227,8 @@ Record the exact title, source URL, arXiv version/date, a concise original summa
 
 - [ ] **Step 2: Complete feature verification before requesting editorial approval**
 
-Run: `npm run check && npm test && npm run validate:fixture && npm run build:fixture && npm run check:links`  
+Run: `npm run check && npm test && npm run validate:fixture && npm run build:fixture && npm run check:links`
+
 Expected: zero diagnostics, all unit tests pass, fixtures validate/build, internal links pass.
 
 - [ ] **Step 3: Request approval of the exact draft**
@@ -275,10 +283,10 @@ Expected: all commands pass; fixture and production artifacts stay separated; pr
 
 - [ ] **Step 2: Review branch scope**
 
-Run: `git status --short && git log --oneline origin/main..HEAD && git diff --stat origin/main...HEAD`  
+Run: `git status --short && git log --oneline origin/main..HEAD && git diff --stat origin/main...HEAD`
+
 Expected: clean tree; only the approved design, implementation plan, feature, documentation, tests, and reviewed content are present.
 
 - [ ] **Step 3: Push and open the PR**
 
 Push `feat/external-story-destinations`, then create a pull request targeting `main`. The PR body must summarize identity/destination behavior, the GenRec content review record, test and visual evidence, and state that merge does not authorize deployment or newsletter delivery.
-

@@ -1,10 +1,15 @@
 # The Security Diff — external story destinations
 
-Date: 2026-10-02  
-Status: Approved direction, written specification awaiting review  
-Product specification: [original spec](../../../the-security-diff-implementation-spec.md)  
-Architecture baseline: [site design](2026-09-26-tsd-design.md)  
-Content environments: [fixture and production separation](../../design/content-environments.md)  
+Date: 2026-10-02
+
+Status: Approved and implemented on `feat/external-story-destinations`
+
+Product specification: [original spec](../../../the-security-diff-implementation-spec.md)
+
+Architecture baseline: [site design](2026-09-26-tsd-design.md)
+
+Content environments: [fixture and production separation](../../design/content-environments.md)
+
 Newsletter design: [Buttondown newsletter](2026-09-30-tsd-buttondown-newsletter-design.md)
 
 ## 1. Decision
