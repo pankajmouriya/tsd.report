@@ -7,8 +7,9 @@ import ArticleReferences from '../../components/ArticleReferences.astro';
 import NewsletterPrompt from '../../components/NewsletterPrompt.astro';
 import { validateArticleDocuments, type ArticleDocument } from '../../lib/articles';
 import { findEditionForStory, findStory, findStoryById, getContentMode, getStories } from '../../lib/content';
-import { articlePath, cvePath, editionPath } from '../../lib/routes';
+import { articlePath, cvePath, editionPath, isExternalStory, storyDestination } from '../../lib/routes';
 import { formatShortDate } from '../../lib/format';
+import StoryDestinationLabel from '../../components/StoryDestinationLabel.astro';
 
 export async function getStaticPaths() {
   const mode = getContentMode();
@@ -36,11 +37,12 @@ const structure = article?.data.structure ?? (story.type === 'original' || story
 const statusLabel = mode === 'fixture'
   ? story.type === 'cve' ? 'Historical fixture' : article?.data.credit ?? 'Fixture preview'
   : article?.data.credit ?? story.author ?? 'The Security Diff';
+const primarySource = story.sources[0];
 ---
 <ArticleLayout title={story.title} description={story.summary} canonical={articlePath(story.slug)} editionDate={edition?.date}>
   <main id="main" class:list={['reading-article', `reading-article--${structure}`]}>
     <header class="article-opening">
-      <p class="article-kicker">{story.type} · {story.category.replaceAll('-', ' ')}</p>
+      <p class="article-kicker">{story.type} · {story.category.replaceAll('-', ' ')} <StoryDestinationLabel {story} /></p>
       <h1>{story.title}</h1>
       <p class="dek">{story.summary}</p>
       <p class="article-meta">
@@ -48,6 +50,20 @@ const statusLabel = mode === 'fixture'
         {mode === 'fixture' && article?.data.status === 'unreviewed-fixture' && <span class="article-status">Unreviewed fixture</span>}
       </p>
     </header>
+
+    {isExternalStory(story) && (
+      <aside class="external-provenance" aria-label="Original source">
+        <div>
+          <p class="external-provenance-kicker">Curated external work</p>
+          <h2>{primarySource.name}</h2>
+          <p>
+            {primarySource.published_at && <>Published <time datetime={primarySource.published_at}>{formatShortDate(primarySource.published_at)}</time> · </>}
+            Retrieved <time datetime={primarySource.retrieved_at}>{formatShortDate(primarySource.retrieved_at)}</time>
+          </p>
+        </div>
+        <a class="external-story-cta" href={storyDestination(story)}>Read original research <span>↗</span></a>
+      </aside>
+    )}
 
     {structure === 'brief' && <aside class="brief-decision" aria-label="Supported action"><strong>Supported action</strong><p>{story.action}</p></aside>}
     {article && <ArticleContents {headings} />}
@@ -68,7 +84,7 @@ const statusLabel = mode === 'fixture'
     {related.length > 0 && (
       <aside class="article-related" aria-labelledby="related-heading">
         <h2 id="related-heading">Continue with</h2>
-        <ul>{related.map((item) => <li><a href={articlePath(item.slug)}>{item.title}</a> — {item.summary}</li>)}</ul>
+        <ul>{related.map((item) => <li><a href={storyDestination(item)}>{item.title}</a> <StoryDestinationLabel story={item} /> — {item.summary}</li>)}</ul>
       </aside>
     )}
 

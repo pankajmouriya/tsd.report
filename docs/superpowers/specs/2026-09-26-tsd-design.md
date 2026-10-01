@@ -150,7 +150,7 @@ Use semantic anchors for navigation and buttons for actions. Add a skip link, vi
 | `/today` | Static alias of the latest edition with canonical `/`; host redirect optional if supported |
 | `/YYYY/MM/DD` | Immutable edition snapshot with previous/next available-edition links |
 | `/archive` | Year/month/date listing with derived story counts |
-| `/article/[slug]` | Every story type; unique stable slug; brief or long-form body |
+| `/article/[slug]` | Canonical internal record for every story type; unique stable slug; brief, long-form body, or external-work provenance |
 | `/category/[category]` | All published coverage in a canonical taxonomy category |
 | `/tag/[tag]` | Normalized tag index with readable label |
 | `/cve/[cve]` | Latest validated intelligence, as-of timestamps, history of TSD coverage |
@@ -162,6 +162,8 @@ Use semantic anchors for navigation and buttons for actions. Add a skip link, vi
 Use uppercase CVE identifiers and lower-case kebab-case article/category/tag slugs. Canonical URLs use HTTPS, `tsd.report`, and no trailing slash except `/`. Reject slug collisions and invalid calendar dates at build time.
 
 Article pages display type, dates, byline/review status, summary, impact, affected technology, action, evidence, and related coverage. Unknown fields are explicit where their absence affects decisions. Long-form articles add readable headings and code blocks; a table of contents is optional when useful.
+
+Stories may define an optional validated `destination_url` for curated external originals. Reader-facing story links use that HTTPS destination across editions, indexes, feeds, and newsletters, while `/article/[slug]` remains the stable TSD provenance record. RSS keeps the internal URL as GUID and uses the destination as the item link; JSON Feed keeps the internal URL as ID and uses the destination as URL. External links open in the current tab and carry a visible cue. The [external story destination design](2026-10-02-tsd-external-story-destinations-design.md) defines the complete behavior.
 
 CVE pages distinguish CVSS score/version/vector/source; EPSS probability/percentile/date; KEV membership/catalog time; known exploitation; and public PoC evidence. A missing KEV match is "No" only after a successful, sufficiently current catalog check. A stale check is labeled with its date and is not a current negative claim.
 

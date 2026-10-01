@@ -1,7 +1,7 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import { findEditionForStory, getContentMode, getCves, getStoriesForCve } from '../../lib/content';
-import { cvePath, articlePath } from '../../lib/routes';
+import { cvePath, storyDestination } from '../../lib/routes';
 import { formatProbability, formatShortDate } from '../../lib/format';
 export function getStaticPaths() { return getCves().map((cve) => ({ params: { cve }, props: { cve } })); }
 const { cve } = Astro.props;
@@ -29,7 +29,7 @@ const fixture = getContentMode() === 'fixture';
         <dt>Fixed information</dt><dd>{vulnerability.fixed_versions.join(', ') || 'No authoritative fixed version recorded'}</dd>
       </dl>
       <h2>Coverage</h2>
-      <ul>{stories.map((story) => <li><a href={articlePath(story.slug)}>{story.title}</a></li>)}</ul>
+      <ul>{stories.map((story) => <li><a href={storyDestination(story)}>{story.title}</a></li>)}</ul>
       <h2>Recorded sources</h2>
       <ul>{sources.map((source) => <li><a href={source.url} rel="noreferrer">{source.name}</a> · retrieved {formatShortDate(source.retrieved_at)}</li>)}</ul>
       {fixture && <p><strong>Evidence limitation:</strong> the fixture does not yet associate each intelligence field with an independent source record. Unknown or unsupported values must remain explicit.</p>}

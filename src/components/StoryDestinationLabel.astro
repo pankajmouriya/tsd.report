@@ -1,0 +1,10 @@
+---
+import type { Story } from '../lib/schema';
+import { isExternalStory } from '../lib/routes';
+
+const { story } = Astro.props as { story: Story };
+const label = story.type === 'research' || story.category === 'research' ? 'External research' : 'External source';
+---
+{isExternalStory(story) && (
+  <span class="story-destination-label">{label} <span aria-hidden="true">↗</span></span>
+)}

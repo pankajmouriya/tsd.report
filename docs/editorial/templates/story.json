@@ -6,6 +6,7 @@
   "category": "security-engineering",
   "published_at": "2026-09-27T00:00:00Z",
   "updated_at": null,
+  "destination_url": "https://example.com/tsd-authoring-template",
   "summary": "Synthetic authoring example only. Replace this text with the observed change, affected audience, and practical consequence, supported by inspected sources.",
   "why_it_matters": "Explain the practical consequence and the limits of the available evidence. This template reports no real incident.",
   "action": "Replace this instruction with a supported next step and any scope that still needs verification.",

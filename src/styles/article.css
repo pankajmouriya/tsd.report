@@ -26,7 +26,8 @@
 .article-opening h1 {
   max-width: 19ch;
   margin: 10px 0 18px;
-  font-size: clamp(2.45rem, 1.85rem + 2.2vw, 4rem);
+  overflow-wrap: anywhere;
+  font-size: clamp(2.15rem, 1.85rem + 2.2vw, 4rem);
   font-weight: 600;
   line-height: 1.03;
   letter-spacing: -.02em;
@@ -34,6 +35,20 @@
 .article-opening .dek { max-width: 58ch; margin: 0 0 16px; font-size: clamp(1.18rem, 1.08rem + .35vw, 1.4rem); line-height: 1.5; color: var(--muted); }
 .article-kicker, .article-meta { color: var(--accent); font: 800 .75rem/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 .article-status { display: inline-block; margin-left: 8px; color: var(--muted); }
+.article-kicker .story-destination-label { color: var(--muted); }
+.external-provenance {
+  display: grid;
+  width: min(100%, 68ch);
+  margin: 30px auto 0;
+  padding: 18px 20px;
+  border-block: 2px solid var(--ink);
+  background: var(--surface);
+  gap: 14px 24px;
+}
+.external-provenance h2 { margin: 4px 0 6px; font-size: 1.45rem; line-height: 1.12; }
+.external-provenance p { margin: 0; color: var(--muted); font: 700 var(--text-sm)/1.45 var(--sans); }
+.external-provenance .external-provenance-kicker { color: var(--accent); font-size: var(--text-xs); letter-spacing: .1em; text-transform: uppercase; }
+.external-provenance .external-story-cta { align-self: center; justify-self: start; }
 .article-contents { width: min(100%, 68ch); margin: 32px auto 40px; padding-block: 15px; border-block: 1px solid var(--rule-strong); }
 .article-contents summary { cursor: pointer; font: 700 var(--text-base)/1.4 var(--sans); }
 .article-contents ol { margin: 12px 0 0; padding-left: 1.4rem; }
@@ -91,6 +106,12 @@
   .article-figure { width: 100%; margin-inline: 0; transform: none; }
   .article-figure svg { min-width: 620px; }
   .article-figure { overflow-x: auto; }
+}
+@media (max-width: 360px) {
+  .article-opening h1 { font-size: 2rem; }
+}
+@media (min-width: 700px) {
+  .external-provenance { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
 }
 @media (max-width: 1160px) {
   .evidence-note { float: none; width: auto; margin: 1.2em 0 1.7em; padding-inline: 14px; border-inline: 3px solid var(--accent); }

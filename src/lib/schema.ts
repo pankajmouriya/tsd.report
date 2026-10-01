@@ -32,6 +32,17 @@ const signalSchema = z.object({
   reasons: z.array(z.string()),
 }).strict();
 
+const externalDestinationSchema = z.url().superRefine((value, context) => {
+  if (!URL.canParse(value)) return;
+  const url = new URL(value);
+  if (url.protocol !== 'https:') {
+    context.addIssue({ code: 'custom', message: 'Story destination must use HTTPS', input: value });
+  }
+  if (url.username || url.password) {
+    context.addIssue({ code: 'custom', message: 'Story destination must not contain credentials', input: value });
+  }
+});
+
 const storyFields = {
   id: z.string().min(1),
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
@@ -51,6 +62,7 @@ const storyFields = {
   illustration: z.string().nullable().optional(),
   body: z.array(z.string()).default([]),
   author: z.string().nullable().optional(),
+  destination_url: externalDestinationSchema.optional(),
 };
 
 export const fixtureStorySchema = z.object({

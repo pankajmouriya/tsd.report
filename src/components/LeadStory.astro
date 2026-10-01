@@ -1,19 +1,30 @@
 ---
 import type { Story } from '../lib/schema';
-import { articlePath } from '../lib/routes';
+import { isExternalStory, storyDestination } from '../lib/routes';
 import { formatShortDate } from '../lib/format';
 import { getContentMode } from '../lib/content';
+import StoryDestinationLabel from './StoryDestinationLabel.astro';
 interface Props { story: Story; }
 const { story } = Astro.props;
 const source = story.sources[0];
 const fixture = getContentMode() === 'fixture';
+const externalResearch = isExternalStory(story) && (story.type === 'research' || story.category === 'research');
 ---
 <article class="lead" data-lead data-story data-story-id={story.id} data-category={story.category} data-signal={story.signal.label}>
-  <p class="eyebrow">Lead story · {story.category.replaceAll('-', ' ')}</p>
-  <h2><a href={articlePath(story.slug)}>{story.title}</a></h2>
+  <p class="eyebrow">Lead story · {story.category.replaceAll('-', ' ')} <StoryDestinationLabel {story} /></p>
+  <h2><a href={storyDestination(story)}>{story.title}</a></h2>
   <p class="lead-byline">{story.author ? `By ${story.author}` : `Source: ${source.name}`} · <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time></p>
-  <div class="lead-grid">
-    <figure class="lead-figure">
+  <div class:list={['lead-grid', { 'lead-grid-research': externalResearch }]}>
+    {externalResearch ? (
+      <aside class="lead-research-panel" aria-label="Original research source">
+        <p class="lead-research-kicker">Original research</p>
+        <h3>{source.name}</h3>
+        {source.published_at && <p>Published <time datetime={source.published_at}>{formatShortDate(source.published_at)}</time></p>}
+        <p>Source retrieved <time datetime={source.retrieved_at}>{formatShortDate(source.retrieved_at)}</time></p>
+        <a class="external-story-cta" href={storyDestination(story)}>Read the paper <span>↗</span></a>
+      </aside>
+    ) : (
+      <figure class="lead-figure">
       <svg class="lead-illustration" viewBox="0 0 820 520" role="img" aria-labelledby="lead-art-title lead-art-description">
         <title id="lead-art-title">Evidence path for prioritizing a vulnerable component</title>
         <desc id="lead-art-description">A decision path checks whether a component is deployed, reachable, exploited, and covered by vendor guidance before action.</desc>
@@ -33,7 +44,8 @@ const fixture = getContentMode() === 'fixture';
         <path class="diagram-arrow" d="M656 414 h94 m-20 -20 20 20 -20 20" />
       </svg>
       <figcaption>{fixture ? 'Decision sequence for this fixture brief; verify current vendor evidence before acting.' : 'Decision sequence for prioritizing supported action from current evidence.'}</figcaption>
-    </figure>
+      </figure>
+    )}
     <div class="lead-copy">
       <p>{story.summary}</p>
       <div class="fact-block"><h3>Why it matters</h3><p>{story.why_it_matters}</p></div>

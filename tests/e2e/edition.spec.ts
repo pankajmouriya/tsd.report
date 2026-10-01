@@ -8,6 +8,17 @@ test('renders a complete newspaper edition', async ({ page }) => {
   await expect(page.locator('.story-card h3 a').first()).toHaveAttribute('href', /\/article\//);
 });
 
+test('uses a clearly labeled external destination in research indexes and filtered results', async ({ page }) => {
+  const title = 'Research notes should separate demonstrated results from editorial interpretation';
+  for (const path of ['/category/research', '/?topic=research']) {
+    await page.goto(path);
+    const link = page.getByRole('link', { name: title });
+    await expect(link).toHaveAttribute('href', 'https://example.com/research-paper');
+    await expect(link).not.toHaveAttribute('target', '_blank');
+    await expect(page.locator('.story-card:visible .story-destination-label').first()).toHaveText('External research ↗');
+  }
+});
+
 test('loads the production masthead and editorial typography on editions and articles', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);

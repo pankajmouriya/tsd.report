@@ -17,7 +17,7 @@ Use these as adaptable outlines alongside the [authoring guide](authoring-guide.
 
 Choose a story whose consequence merits the edition's strongest emphasis and whose evidence can sustain it. A strong lead has a specific headline, a useful deck, clear affected scope, a supported action, and appropriate artwork if used. A score alone does not make it the lead.
 
-Set the edition's `lead_story` to its existing ID. Keep its type and canonical article URL. The current embedded patch-decision figure must be changed or omitted before promoting an unrelated subject; see the authoring guide.
+Set the edition's `lead_story` to its existing ID. Keep its type and stable internal article record. External research may add `destination_url`; its lead uses a text-led source panel and normal clicks open the original work. Other unrelated subjects still require suitable original artwork or omission of the vulnerability figure; see the authoring guide.
 
 ## Reusable section patterns
 
@@ -44,6 +44,8 @@ Use a timestamped timeline only for sourced events. Separate “observed,” “
 ### Research commentary
 
 Separate the authors' demonstrated result from your engineering interpretation. Describe experimental conditions, threat model, and limits of generalization. “We reproduced” requires an actual recorded reproduction.
+
+For a curated paper that should remain on its publisher or repository, set an absolute HTTPS `destination_url`, keep the primary work in `sources`, and retain an internal slug. TSD summaries, feeds, and email must remain concise original commentary. Do not copy an abstract or paper figure merely because the normal headline click leaves TSD.
 
 ## Local examples to learn from
 

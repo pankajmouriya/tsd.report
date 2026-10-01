@@ -1,9 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { articlePath, cvePath, editionPath } from '../../src/lib/routes';
+import { articlePath, cvePath, editionPath, isExternalStory, storyDestination, storyIdentityPath } from '../../src/lib/routes';
 
 describe('canonical routes', () => {
   it('uses the singular article route', () => {
     expect(articlePath('monitor-ai-agents')).toBe('/article/monitor-ai-agents');
+  });
+
+  it('separates stable story identity from an optional reader destination', () => {
+    expect(storyIdentityPath({ slug: 'research-paper' })).toBe('/article/research-paper');
+    expect(storyDestination({ slug: 'research-paper' })).toBe('/article/research-paper');
+    expect(isExternalStory({ slug: 'research-paper' })).toBe(false);
+
+    const external = { slug: 'research-paper', destination_url: 'https://example.com/research-paper' };
+    expect(storyIdentityPath(external)).toBe('/article/research-paper');
+    expect(storyDestination(external)).toBe('https://example.com/research-paper');
+    expect(isExternalStory(external)).toBe(true);
   });
 
   it('maps a real calendar date to an edition route', () => {

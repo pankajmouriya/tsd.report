@@ -1,5 +1,5 @@
 import { formatProbability } from './format';
-import { articlePath, editionPath } from './routes';
+import { editionPath, storyDestination } from './routes';
 import type { Edition, Story, Vulnerability } from './schema';
 
 export interface NewsletterDigestStory {
@@ -50,7 +50,7 @@ export function buildNewsletterDigest(edition: Edition, origin = 'https://tsd.re
   const digestStory = (story: Story): NewsletterDigestStory => ({
     slug: story.slug, category: story.category, headline: story.title, summary: story.summary,
     signal: story.signal ? structuredClone(story.signal) : undefined,
-    url: webUrl(articlePath(story.slug), origin),
+    url: webUrl(storyDestination(story), origin),
   });
   return {
     editionDate: edition.date,
@@ -60,7 +60,7 @@ export function buildNewsletterDigest(edition: Edition, origin = 'https://tsd.re
     lead: digestStory(lead),
     stories: selected.slice(1).map(digestStory),
     vulnerabilities: selected.flatMap((story) => story.vulnerabilities.map((vulnerability) => ({
-      ...structuredClone(vulnerability), action: story.action, url: webUrl(articlePath(story.slug), origin),
+      ...structuredClone(vulnerability), action: story.action, url: webUrl(storyDestination(story), origin),
     }))),
     fixture: edition.fixture === true,
   };

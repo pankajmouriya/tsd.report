@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "generated_at": "2026-10-01T21:10:31Z",
+  "status": "published",
+  "reviewed_by": "Pankaj Mouriya",
+  "reviewed_at": "2026-10-01T21:10:31Z",
+  "lead_story": "genrec-netflix-ranker",
+  "sections": {
+    "research": []
+  },
+  "stories": [
+    {
+      "id": "genrec-netflix-ranker",
+      "slug": "genrec-netflix-recommendation-ranker",
+      "title": "GenRec: An LLM-Backed Recommendation Ranker at Netflix",
+      "type": "research",
+      "category": "research",
+      "published_at": "2026-10-02T00:00:00Z",
+      "updated_at": null,
+      "destination_url": "https://arxiv.org/html/2608.10257v2",
+      "summary": "Netflix describes GenRec, an LLM-backed ranker that turns user histories and context into text, post-trains a foundation model for ranking, and scores the catalog in one pass. In the configuration reported, it beat a mature production baseline while using far fewer Phase-2 examples and input signals.",
+      "why_it_matters": "The paper is a rare production account of moving recommendation work from handcrafted feature interactions toward context design, reward integration, and constrained LLM serving, with online A/B evidence and explicit cost tradeoffs.",
+      "action": "Read it for the system design and evaluation method: separate foundation training from ranking adaptation, then inspect how context length, catalog constraints, reward signals, and serving cost shape the result.",
+      "affected_technologies": [
+        "Large-scale recommender systems",
+        "LLM post-training",
+        "Online experimentation",
+        "Model serving"
+      ],
+      "tags": [
+        "llm",
+        "recommendation-systems",
+        "context-engineering",
+        "model-serving"
+      ],
+      "sources": [
+        {
+          "id": "arxiv-2608-10257-v2",
+          "name": "GenRec: An LLM-Backed Recommendation Ranker at Netflix — arXiv v2",
+          "url": "https://arxiv.org/html/2608.10257v2",
+          "type": "research",
+          "published_at": "2026-08-21T22:32:55Z",
+          "retrieved_at": "2026-10-01T21:08:22Z"
+        }
+      ],
+      "signal": {
+        "score": 78,
+        "label": "recommended",
+        "reasons": [
+          "Large-scale production evaluation",
+          "Concrete quality-cost tradeoffs"
+        ]
+      },
+      "vulnerabilities": [],
+      "illustration": null,
+      "body": [
+        "Netflix reports GenRec as a two-phase LLM-backed recommendation ranker: foundation adaptation followed by ranking-specific post-training with recommendation data, labels, and reward signals.",
+        "The reported configuration verbalizes user history and context, constrains scoring to the catalog, and uses a cost-aware serving design. The paper presents offline results and a four-week online A/B test against a mature production ranker; its conclusions apply to the tested recommendation surfaces and configurations."
+      ],
+      "author": "Ying Li, Shradha Sehgal, Arjun Rao, Rein Houthooft, Yaochen Zhu, and Ashish Rastogi",
+      "status": "published",
+      "reviewed_by": "Pankaj Mouriya",
+      "reviewed_at": "2026-10-01T21:10:31Z"
+    }
+  ]
+}
