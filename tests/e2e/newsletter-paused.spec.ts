@@ -17,6 +17,8 @@ for (const theme of ['light', 'dark'] as const) {
     for (const path of ['/', '/2026/09/26', '/article/agent-tool-boundaries', '/subscribe', '/privacy']) {
       await page.goto(path);
       await expect(page.locator('.newsletter-signup')).toHaveCount(0);
+      await expect(page.locator('.newsletter-prompt')).toHaveCount(0);
+      await expect(page.locator('[data-newsletter-link]')).toHaveCount(0);
       await expect(page.locator('form[action*="buttondown.com"]')).toHaveCount(0);
     }
     const contact = page.getByRole('link', { name: 'monitored publication contact' });

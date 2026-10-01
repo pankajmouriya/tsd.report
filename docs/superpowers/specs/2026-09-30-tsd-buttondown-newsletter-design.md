@@ -38,20 +38,15 @@ This design promotes the email digest portion of deferred Milestone H into a sep
 
 ### Placement
 
-Use one reusable `NewsletterSignup` component in three contexts:
-
-1. On an edition page after all editorial sections and before the edition footer.
-2. On article pages after the references and before return navigation.
-3. On a dedicated `/subscribe` page linked from the edition footer and informational pages.
+Placement refinement — 2026-10-02: keep the native email form only on the dedicated `/subscribe` page. Edition pages end with a compact ruled prompt linking there. Editor-original articles receive the same quiet invitation after the article body; briefs, research notes, and other story types do not. Edition and reading headers expose a small `Subscribe` link beside their existing utility controls. Hide the header links and compact prompts whenever signup is disabled.
 
 Do not add a modal, entrance overlay, sticky banner, masthead takeover, subscriber count, urgency copy, or repeated inline prompts. The signup should feel like the final note of the newspaper rather than an advertisement.
 
 ### Form
 
-The form collects only `email`. Its visible contract is:
+The `/subscribe` form collects only `email`. Its visible contract is:
 
-- Heading: `Receive the email edition`
-- Supporting copy: `A concise digest when a reviewed edition is published.`
+- Page heading and supporting explanation supplied by the dedicated route
 - Email label, email input, and `Subscribe` submit button
 - Consent note explaining that Buttondown processes the address, confirmation is required, and every email includes an unsubscribe link
 - Links to the privacy page and existing RSS feed
@@ -272,7 +267,7 @@ At 80 active subscribers, record a capacity review. Before 100 active subscriber
 
 The feature is complete when:
 
-1. A reader can submit an address from all three placements and receive Buttondown's confirmation message.
+1. A reader can discover the subscription path from edition and reading headers, edition prompts, and editor-original prompts, then submit an address from `/subscribe` and receive Buttondown's confirmation message.
 2. An unconfirmed address receives no edition.
 3. A confirmed test subscriber receives exactly one concise digest after an approved production edition deploys.
 4. Every digest story link resolves to the deployed canonical route.

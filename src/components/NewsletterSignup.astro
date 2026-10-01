@@ -7,9 +7,7 @@ const config = resolveNewsletterSignupConfig({
 });
 ---
 {config && (
-  <section class="newsletter-signup" aria-labelledby="newsletter-heading">
-    <h2 id="newsletter-heading">Receive the email edition</h2>
-    <p class="newsletter-description">A concise digest when a reviewed edition is published.</p>
+  <section class="newsletter-signup" aria-label="Newsletter signup">
     <form method="post" action={config.action} aria-describedby="newsletter-consent">
       <input type="hidden" name="embed" value="1" />
       <label for="newsletter-email">Email address</label>
@@ -18,7 +16,7 @@ const config = resolveNewsletterSignupConfig({
         <button type="submit">Subscribe</button>
       </div>
     </form>
-    <p id="newsletter-consent" class="newsletter-consent">Buttondown processes your email address. Confirmation is required before you receive editions, and every email includes an unsubscribe link.</p>
+    <p id="newsletter-consent" class="newsletter-consent">Buttondown processes your address. Confirmation is required, and every email includes an unsubscribe link.</p>
     <p class="newsletter-links"><a href="/privacy">Privacy</a> · <a href="/rss.xml">Read via RSS</a></p>
   </section>
 )}

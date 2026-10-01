@@ -4,7 +4,7 @@ import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import ArticleBody from '../../components/ArticleBody.astro';
 import ArticleContents from '../../components/ArticleContents.astro';
 import ArticleReferences from '../../components/ArticleReferences.astro';
-import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import NewsletterPrompt from '../../components/NewsletterPrompt.astro';
 import { validateArticleDocuments, type ArticleDocument } from '../../lib/articles';
 import { findEditionForStory, findStory, findStoryById, getContentMode, getStories } from '../../lib/content';
 import { articlePath, cvePath, editionPath } from '../../lib/routes';
@@ -54,6 +54,8 @@ const statusLabel = mode === 'fixture'
 
     {Content ? <div class="article-body"><Content /></div> : <ArticleBody paragraphs={story.body} />}
 
+    {story.type === 'original' && <NewsletterPrompt context="article" />}
+
     {story.vulnerabilities.length > 0 && (
       <section class="article-related" aria-labelledby="vulnerabilities-heading">
         <h2 id="vulnerabilities-heading">Vulnerability record</h2>
@@ -70,7 +72,6 @@ const statusLabel = mode === 'fixture'
       </aside>
     )}
 
-    <NewsletterSignup />
     <p class="article-close"><a href={edition ? editionPath(edition.date) : '/archive'}>← {edition ? `Return to the ${formatShortDate(`${edition.date}T00:00:00Z`)} edition` : 'Return to archive'}</a></p>
   </main>
 </ArticleLayout>

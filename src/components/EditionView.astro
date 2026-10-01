@@ -7,7 +7,7 @@ import LeadStory from './LeadStory.astro';
 import StoryCard from './StoryCard.astro';
 import VulnerabilityWatch from './VulnerabilityWatch.astro';
 import EditionFooter from './EditionFooter.astro';
-import NewsletterSignup from './NewsletterSignup.astro';
+import NewsletterPrompt from './NewsletterPrompt.astro';
 interface Props { edition: Edition; previous?: string; next?: string; }
 const { edition, previous, next } = Astro.props;
 const lead = getStoryById(edition, edition.lead_story);
@@ -30,6 +30,6 @@ const reports = secondary.filter((story) => !originals.includes(story) && !resea
     {edition.stories.map((story) => <StoryCard story={story} />)}
   </section>
   <section class="no-results" data-no-results hidden><h2>No stories match</h2><p>Reset the filters to return to the full edition.</p></section>
-  <NewsletterSignup />
+  <NewsletterPrompt context="edition" />
 </main>
 <EditionFooter />

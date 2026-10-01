@@ -1,0 +1,19 @@
+---
+import { resolveNewsletterSignupConfig } from '../lib/newsletter-config';
+interface Props { context: 'edition' | 'article'; }
+const { context } = Astro.props;
+const config = resolveNewsletterSignupConfig({
+  TSD_NEWSLETTER_SIGNUP_ENABLED: import.meta.env.TSD_NEWSLETTER_SIGNUP_ENABLED,
+  BUTTONDOWN_USERNAME: import.meta.env.BUTTONDOWN_USERNAME,
+  TSD_PUBLICATION_CONTACT_URL: import.meta.env.TSD_PUBLICATION_CONTACT_URL,
+});
+const message = context === 'article'
+  ? 'More original security engineering, when it is ready.'
+  : 'The next reviewed edition, delivered by email.';
+---
+{config && (
+  <aside class:list={['newsletter-prompt', `newsletter-prompt--${context}`]} aria-label="Newsletter">
+    <p><span>Email edition</span>{message}</p>
+    <a href="/subscribe">Subscribe<span aria-hidden="true"> →</span></a>
+  </aside>
+)}

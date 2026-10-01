@@ -2,8 +2,8 @@ import { expect, test, type Locator } from '@playwright/test';
 
 // Build first with the public fixture values from the newsletter delivery plan.
 const action = 'https://buttondown.com/api/emails/embed-subscribe/tsd-test';
-const signupRoutes = ['/', '/2026/09/26', '/article/agent-tool-boundaries', '/subscribe'];
-const readerRoutes = [...signupRoutes, '/privacy'];
+const promptRoutes = ['/', '/2026/09/26', '/article/agent-tool-boundaries'];
+const readerRoutes = [...promptRoutes, '/article/signed-build-evidence', '/subscribe', '/privacy'];
 
 // Fail closed: no test in this file may contact an external service.
 test.beforeEach(async ({ context, baseURL }) => {
@@ -25,29 +25,51 @@ async function expectVisibleFocus(control: Locator) {
   expect(focus.color).not.toBe('rgba(0, 0, 0, 0)');
 }
 
-for (const path of signupRoutes) {
-  test(`has one native, consent-backed signup after editorial content on ${path}`, async ({ page }) => {
+test('keeps the email form on the dedicated subscribe page', async ({ page }) => {
+  await page.goto('/subscribe');
+  const signup = page.getByRole('region', { name: 'Newsletter signup' });
+  await expect(signup).toBeVisible();
+  await expect(signup.getByRole('heading')).toHaveCount(0);
+  const form = signup.locator('form');
+  await expect(form).toHaveAttribute('method', 'post');
+  await expect(form).toHaveAttribute('action', action);
+  await expect(form).toHaveAttribute('aria-describedby', 'newsletter-consent');
+  await expect(form.locator('input[type="hidden"][name="embed"]')).toHaveValue('1');
+  const email = signup.getByRole('textbox', { name: 'Email address' });
+  await expect(email).toHaveAttribute('type', 'email');
+  await expect(email).toHaveAttribute('name', 'email');
+  await expect(email).toHaveAttribute('autocomplete', 'email');
+  await expect(email).toHaveAttribute('required', '');
+  await expect(signup).toContainText(/Buttondown.*Confirmation.*unsubscribe/s);
+  await expect(signup.getByRole('link', { name: 'Privacy', exact: true })).toHaveAttribute('href', '/privacy');
+  await expect(signup.getByRole('link', { name: 'Read via RSS' })).toHaveAttribute('href', '/rss.xml');
+});
+
+for (const path of promptRoutes) {
+  test(`uses a compact newsletter prompt after editorial content on ${path}`, async ({ page }) => {
     await page.goto(path);
-    const signup = page.getByRole('region', { name: 'Receive the email edition' });
-    await expect(signup).toHaveCount(1);
-    await expect(signup).toBeVisible();
-    const form = signup.locator('form');
-    await expect(form).toHaveAttribute('method', 'post');
-    await expect(form).toHaveAttribute('action', action);
-    await expect(form).toHaveAttribute('aria-describedby', 'newsletter-consent');
-    await expect(form.locator('input[type="hidden"][name="embed"]')).toHaveValue('1');
-    const email = signup.getByRole('textbox', { name: 'Email address' });
-    await expect(email).toHaveAttribute('type', 'email');
-    await expect(email).toHaveAttribute('name', 'email');
-    await expect(email).toHaveAttribute('autocomplete', 'email');
-    await expect(email).toHaveAttribute('required', '');
-    await expect(signup).toContainText(/Buttondown.*Confirmation.*unsubscribe/s);
-    await expect(signup.getByRole('link', { name: 'Privacy', exact: true })).toHaveAttribute('href', '/privacy');
-    await expect(signup.getByRole('link', { name: 'Read via RSS' })).toHaveAttribute('href', '/rss.xml');
-    expect(await signup.evaluate((element) => {
+    await expect(page.locator('.newsletter-signup')).toHaveCount(0);
+    const prompt = page.getByRole('complementary', { name: 'Newsletter' });
+    await expect(prompt).toHaveCount(1);
+    await expect(prompt.getByRole('link', { name: 'Subscribe' })).toHaveAttribute('href', '/subscribe');
+    expect(await prompt.evaluate((element) => {
       const content = document.querySelector('.article-body, [data-lead]');
       return !!content && !!(content.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING);
     })).toBe(true);
+  });
+}
+
+test('keeps the article prompt exclusive to editor originals', async ({ page }) => {
+  await page.goto('/article/signed-build-evidence');
+  await expect(page.getByRole('complementary', { name: 'Newsletter' })).toHaveCount(0);
+  await expect(page.locator('.newsletter-signup')).toHaveCount(0);
+});
+
+for (const path of ['/', '/article/agent-tool-boundaries']) {
+  test(`offers newsletter subscription in the top navigation on ${path}`, async ({ page }) => {
+    await page.goto(path);
+    const header = page.locator('header').first();
+    await expect(header.getByRole('link', { name: 'Subscribe', exact: true })).toHaveAttribute('href', '/subscribe');
   });
 }
 
@@ -131,7 +153,7 @@ for (const theme of ['light', 'dark'] as const) {
           expect(box!.width, path).toBeGreaterThanOrEqual(44);
           await expect(control).toHaveCSS('border-radius', '0px');
         }
-        const contrasts = await page.locator('.newsletter-description, .newsletter-consent, .newsletter-fields input, .newsletter-fields button, .article-body').evaluateAll((elements) => {
+        const contrasts = await page.locator('.newsletter-nav-link, .newsletter-prompt, .newsletter-consent, .newsletter-fields input, .newsletter-fields button, .article-body').evaluateAll((elements) => {
           const luminance = (color: string) => {
             const channels = color.match(/[\d.]+/g)!.slice(0, 3).map(Number).map((v) => v / 255).map((v) => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4);
             return channels[0] * .2126 + channels[1] * .7152 + channels[2] * .0722;

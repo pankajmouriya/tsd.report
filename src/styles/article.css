@@ -16,7 +16,7 @@
   letter-spacing: -.02em;
   text-decoration: none;
 }
-.reader-header .theme-toggle { justify-self: end; }
+.reader-actions { display: flex; justify-self: end; align-items: center; gap: 10px; }
 .reading-article { width: min(100%, 1080px); margin: 54px auto 72px; }
 .browse-page { margin: 48px 0 68px; }
 .browse-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; margin-bottom: 24px; border-bottom: 2px solid var(--ink); }
@@ -76,7 +76,8 @@
 .article-body .footnotes li, .article-references li { padding-left: 5px; }
 .article-related, .article-close { width: min(100%, 68ch); margin: 44px auto 0; padding-top: 22px; border-top: 1px solid var(--rule); }
 .article-related h2 { margin: 0 0 14px; font-size: 1.55rem; }
-.reading-article > .newsletter-signup { width: min(100%, var(--measure)); margin-inline: auto; }
+.reading-article > .newsletter-signup,
+.reading-article > .newsletter-prompt { width: min(100%, var(--measure)); margin-inline: auto; }
 .article-related li + li { margin-top: 8px; }
 .brief-decision { width: min(100%, 68ch); margin: 28px auto 0; padding: 18px 20px; border-block: 2px solid var(--ink); background: var(--surface); font-size: var(--text-body); line-height: 1.55; }
 .brief-decision p { margin: 5px 0 0; }
@@ -95,7 +96,7 @@
   .evidence-note { float: none; width: auto; margin: 1.2em 0 1.7em; padding-inline: 14px; border-inline: 3px solid var(--accent); }
 }
 @media print {
-  .reader-header .theme-toggle, .reader-return, .fixture-notice { display: none; }
+  .reader-actions, .reader-return, .fixture-notice { display: none; }
   .paper { width: 100%; padding: 0; box-shadow: none; }
   .reader-header { grid-template-columns: 1fr; }
   .article-figure { width: 100%; }
