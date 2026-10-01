@@ -29,7 +29,8 @@ Edition JSON
 Optional Markdown → richer body, structure, references, related reading
                     matched to JSON by story_id + slug + title
 
-One canonical page: /article/<slug>
+One canonical TSD record: /article/<slug>
+Optional reader destination: destination_url (absolute HTTPS)
 ```
 
 JSON owns the headline, deck (`summary`), dates, category, signal, and intelligence. Markdown supplies the full article body when present. Keep a useful JSON `body` fallback even when adding Markdown: feeds and other consumers may use the story record rather than the rendered essay. Do not maintain contradictory claims in the two bodies.
@@ -56,6 +57,7 @@ An entry is a complete JSON object, not a separate auto-discovered story file. K
 | `type` | `news`, `cve`, `research`, `original`, `incident`, `explainer`, `tool`, `advisory` |
 | `category` | One of the seven IDs below; independent of type |
 | `published_at`, `updated_at` | ISO UTC timestamps such as `2026-09-27T06:00:00Z`; updates only when real |
+| `destination_url` | Optional absolute HTTPS URL for the original external work. Omit it for TSD-hosted stories. The internal slug and provenance page remain required |
 | `summary` | Concise deck/card summary; suggested 35–70 words, not an enforced quota |
 | `why_it_matters` | Practical consequence for a specific reader; avoid repeating the deck |
 | `action` | Supported next step and limits; “verify scope” is valid when facts remain unknown |
@@ -117,9 +119,29 @@ This is a placement fragment, not a complete edition. Every referenced ID must e
 
 Lead placement is independent of the signal label. “Must Read” does not automatically become the lead, and changing `lead_story` does not change its article URL.
 
-### Current lead artwork limitation
+### Lead artwork and external research
 
-[LeadStory.astro](../../src/components/LeadStory.astro) embeds a patch-decision diagram and fixture-specific caption. The `illustration` field does not replace it. An unrelated lead therefore needs a scoped component change to supply appropriate original artwork or omit the figure. Do not promote an unrelated story and leave misleading artwork attached. General per-story artwork selection is a future authoring improvement, not supported by these templates yet.
+[LeadStory.astro](../../src/components/LeadStory.astro) uses a text-led source panel for external research and does not reuse the vulnerability diagram. Other lead types retain the existing supported treatment. The `illustration` field still does not select lead artwork. Do not promote an unrelated internal story while leaving misleading artwork attached; general per-story artwork selection remains unsupported.
+
+### Curate an external original
+
+Use `destination_url` when the reader should open the original paper or article instead of a TSD-hosted reading page:
+
+```json
+{
+  "slug": "example-research-paper",
+  "destination_url": "https://example.com/research-paper",
+  "sources": [{
+    "id": "example-paper",
+    "name": "Example research paper",
+    "url": "https://example.com/research-paper",
+    "type": "research",
+    "retrieved_at": "2026-10-02T00:00:00Z"
+  }]
+}
+```
+
+The destination and source have separate jobs. `destination_url` controls normal reader clicks; `sources` records evidence and retrieval details. The build still creates `/article/<slug>` as TSD's provenance record. Keep the external item in the edition, archive, category/tag pages, feeds, and newsletter like any other story. Remove `destination_url` entirely for TSD-hosted stories. HTTP, relative, credential-bearing, and non-web destinations fail schema validation.
 
 ### Reuse and corrections
 
@@ -203,7 +225,7 @@ This is illustrative metadata, not a complete edition or a publication instructi
 npm run newsletter:preview -- --mode fixture --output /private/tmp/tsd-newsletter-preview.html
 ```
 
-For a genuinely reviewed production working draft, use `--mode production` instead. Rendering is local and needs no provider key. It fails if the newest edition has no newsletter object. The renderer selects the lead once, then remaining unique stories from section order followed by otherwise unplaced stories; it does not provide a separate email-selection field. Review all included stories, ordering, concise summaries, unknown intelligence values, the subject/title, preview sentence, canonical `/article/[slug]` links, dated edition link, and policy/privacy/RSS links. Local HTML is an editorial preview; an owner-only Buttondown test must verify delivered-template appearance and unsubscribe behavior before launch.
+For a genuinely reviewed production working draft, use `--mode production` instead. Rendering is local and needs no provider key. It fails if the newest edition has no newsletter object. The renderer selects the lead once, then remaining unique stories from section order followed by otherwise unplaced stories; it does not provide a separate email-selection field. Review all included stories, ordering, concise summaries, unknown intelligence values, the subject/title, preview sentence, internal `/article/[slug]` links or approved external destinations, dated edition link, and policy/privacy/RSS links. Local HTML is an editorial preview; an owner-only Buttondown test must verify delivered-template appearance and unsubscribe behavior before launch.
 
 Only after actual preview review and explicit approval, change to this approved shape:
 

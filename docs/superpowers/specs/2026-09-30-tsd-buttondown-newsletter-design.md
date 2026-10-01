@@ -140,7 +140,7 @@ Digest order:
 6. `Read the complete edition` link
 7. Brief provenance note and links to the editorial policy, privacy page, and RSS feed
 
-The email is a digest, not a copy of complete articles. All story URLs use the canonical `/article/[slug]` route. The edition link uses the permanent dated route. Link construction reuses the existing route helpers and configured site origin.
+The email is a digest, not a copy of complete articles. TSD-hosted story URLs use the canonical `/article/[slug]` route; a story with a reviewed `destination_url` links directly to that external original. The internal article route remains its stable identity and provenance record. The edition link uses the permanent dated route. Link construction reuses the shared destination and edition route helpers plus the configured site origin.
 
 Buttondown receives Markdown with:
 
