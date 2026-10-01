@@ -47,6 +47,22 @@ describe('newsletter digest', () => {
     expect(renderNewsletterMarkdown(local)).toContain('https://preview.example.test/privacy');
   });
 
+  it('uses an external story destination without changing the permanent edition origin', () => {
+    const input = edition({
+      sections: {},
+      stories: [story('lead', { destination_url: 'https://example.com/research-paper' })],
+    });
+    const digest = buildNewsletterDigest(input, 'https://preview.example.test/base');
+    expect(digest.lead.url).toBe('https://example.com/research-paper');
+    expect(digest.canonicalUrl).toBe('https://preview.example.test/2026/09/26');
+    for (const render of [renderNewsletterMarkdown, renderNewsletterPreviewHtml]) {
+      const output = render(digest);
+      expect(output).toContain('https://example.com/research-paper');
+      expect(output).toContain('https://preview.example.test/2026/09/26');
+      expect(output).not.toContain('https://preview.example.test/article/lead');
+    }
+  });
+
   it('renders supplied editorial signals and omits an absent digest signal', () => {
     const digest = buildNewsletterDigest(edition({ sections: {}, stories: [story('lead', { signal: { score: 0, label: 'standard', reasons: [] } })] }));
     for (const render of [renderNewsletterMarkdown, renderNewsletterPreviewHtml]) {
