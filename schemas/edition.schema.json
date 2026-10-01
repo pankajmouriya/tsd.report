@@ -403,6 +403,10 @@
               "null"
             ]
           },
+          "destination_url": {
+            "type": "string",
+            "format": "uri"
+          },
           "fixture": {
             "type": "boolean",
             "const": true

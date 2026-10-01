@@ -10,6 +10,20 @@ export function articlePath(slug: string): string {
   return `/article/${assertSlug(slug)}`;
 }
 
+type StoryRoute = { slug: string; destination_url?: string };
+
+export function storyIdentityPath(story: Pick<StoryRoute, 'slug'>): string {
+  return articlePath(story.slug);
+}
+
+export function isExternalStory(story: StoryRoute): boolean {
+  return story.destination_url !== undefined;
+}
+
+export function storyDestination(story: StoryRoute): string {
+  return story.destination_url ?? storyIdentityPath(story);
+}
+
 export function editionPath(date: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
   if (!match) throw new Error(`Invalid edition date: ${date}`);

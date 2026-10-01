@@ -120,6 +120,46 @@ describe('editionSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('accepts an optional absolute HTTPS story destination in both content modes', () => {
+    const externalFixture = {
+      ...fixtureEdition,
+      stories: fixtureEdition.stories.map((story) => ({
+        ...story,
+        destination_url: 'https://example.com/research-paper',
+      })),
+    };
+    expect(schemas.fixtureEditionSchema.safeParse(externalFixture).success).toBe(true);
+
+    const { fixture: _editionFixture, ...edition } = externalFixture;
+    const production = {
+      ...edition,
+      status: 'published',
+      reviewed_by: 'Test reviewer',
+      reviewed_at: '2026-09-26T01:00:00Z',
+      stories: externalFixture.stories.map(({ fixture: _storyFixture, ...story }) => ({
+        ...story,
+        status: 'published',
+        reviewed_by: 'Test reviewer',
+        reviewed_at: '2026-09-26T01:00:00Z',
+      })),
+    };
+    expect(schemas.productionEditionSchema.safeParse(production).success).toBe(true);
+  });
+
+  it.each([
+    'http://example.com/research-paper',
+    '/research-paper',
+    'https://reader:secret@example.com/research-paper',
+    'javascript:alert(1)',
+    'data:text/html,unsafe',
+  ])('rejects unsafe external story destination %s', (destination_url) => {
+    const result = schemas.fixtureEditionSchema.safeParse({
+      ...fixtureEdition,
+      stories: fixtureEdition.stories.map((story) => ({ ...story, destination_url })),
+    });
+    expect(result.success).toBe(false);
+  });
+
   it('rejects an out-of-range EPSS probability', () => {
     const result = schemas.editionSchema.safeParse({ schema_version: 1, date: '2026-09-26', stories: [
       { id: 'x', slug: 'x', title: 'x', type: 'cve', category: 'vulnerabilities', published_at: '2026-09-26T00:00:00Z', summary: 'x', why_it_matters: 'x', action: 'x', tags: [], sources: [], signal: { score: 1, label: 'standard', reasons: [] }, vulnerabilities: [{ cve: 'CVE-2025-49704', epss: 1.2 }] }
