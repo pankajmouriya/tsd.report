@@ -1,0 +1,9 @@
+---
+import { resolveNewsletterSignupConfig } from '../lib/newsletter-config';
+const config = resolveNewsletterSignupConfig({
+  TSD_NEWSLETTER_SIGNUP_ENABLED: import.meta.env.TSD_NEWSLETTER_SIGNUP_ENABLED,
+  BUTTONDOWN_USERNAME: import.meta.env.BUTTONDOWN_USERNAME,
+  TSD_PUBLICATION_CONTACT_URL: import.meta.env.TSD_PUBLICATION_CONTACT_URL,
+});
+---
+{config && <a class="newsletter-nav-link" data-newsletter-link href="/subscribe">Subscribe</a>}

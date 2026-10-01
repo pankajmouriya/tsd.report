@@ -3,6 +3,11 @@
   "date": "2026-09-26",
   "generated_at": "2026-09-26T06:00:00Z",
   "fixture": true,
+  "newsletter": {
+    "status": "draft",
+    "subject": "Fixture preview: The Security Diff — September 26, 2026",
+    "preview_text": "Preview copy for the fixture edition. This metadata does not authorize delivery."
+  },
   "lead_story": "patching-edge",
   "sections": {
     "briefs": ["agent-boundaries", "signed-builds", "admission-guardrails", "authz-review", "epss-explained", "secret-response", "runtime-tool", "research-note", "cloud-keys", "maintainer-tokens", "fix-evidence", "cve-priority", "incident-path", "editor-letter"]

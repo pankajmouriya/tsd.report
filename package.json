@@ -20,7 +20,9 @@
     "validate:production": "CONTENT_MODE=production npm run validate:content",
     "test:content-environments": "vitest run tests/unit/content.test.ts tests/unit/schema.test.ts tests/unit/articles.test.ts tests/unit/feeds.test.ts",
     "generate:schema": "node --import tsx scripts/generate-schema.ts",
-    "check:links": "node --import tsx scripts/check-links.ts"
+    "check:links": "node --import tsx scripts/check-links.ts",
+    "newsletter:preview": "node --import tsx scripts/newsletter/render.ts",
+    "newsletter:send": "node --import tsx scripts/newsletter/send.ts"
   },
   "dependencies": {
     "astro": "7.3.5",

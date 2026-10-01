@@ -1,5 +1,6 @@
 ---
 import { editionPath } from '../lib/routes';
+import NewsletterNavLink from './NewsletterNavLink.astro';
 interface Props { editionDate?: string; }
 const { editionDate } = Astro.props;
 const returnPath = editionDate ? editionPath(editionDate) : '/archive';
@@ -8,10 +9,13 @@ const returnLabel = editionDate ? 'Return to edition' : 'Archive';
 <header class="reader-header">
   <a class="reader-return" href={returnPath}>← {returnLabel}</a>
   <a class="reader-nameplate" href="/" translate="no">The Security Diff</a>
-  <button class="theme-toggle" type="button" aria-label="Toggle color theme" aria-pressed="false">
-    <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2v2.25M12 19.75V22M2 12h2.25M19.75 12H22M4.93 4.93l1.6 1.6M17.47 17.47l1.6 1.6M19.07 4.93l-1.6 1.6M6.53 17.47l-1.6 1.6"></path></svg>
-    <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.25 15.2A8.75 8.75 0 0 1 8.8 3.75 8.76 8.76 0 1 0 20.25 15.2Z"></path></svg>
-  </button>
+  <div class="reader-actions">
+    <NewsletterNavLink />
+    <button class="theme-toggle" type="button" aria-label="Toggle color theme" aria-pressed="false">
+      <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2v2.25M12 19.75V22M2 12h2.25M19.75 12H22M4.93 4.93l1.6 1.6M17.47 17.47l1.6 1.6M19.07 4.93l-1.6 1.6M6.53 17.47l-1.6 1.6"></path></svg>
+      <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.25 15.2A8.75 8.75 0 0 1 8.8 3.75 8.76 8.76 0 1 0 20.25 15.2Z"></path></svg>
+    </button>
+  </div>
 </header>
 <script>
   const header = document.querySelector<HTMLElement>('.reader-header');

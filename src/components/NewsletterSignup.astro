@@ -1,0 +1,22 @@
+---
+import { resolveNewsletterSignupConfig } from '../lib/newsletter-config';
+const config = resolveNewsletterSignupConfig({
+  TSD_NEWSLETTER_SIGNUP_ENABLED: import.meta.env.TSD_NEWSLETTER_SIGNUP_ENABLED,
+  BUTTONDOWN_USERNAME: import.meta.env.BUTTONDOWN_USERNAME,
+  TSD_PUBLICATION_CONTACT_URL: import.meta.env.TSD_PUBLICATION_CONTACT_URL,
+});
+---
+{config && (
+  <section class="newsletter-signup" aria-label="Newsletter signup">
+    <form method="post" action={config.action} aria-describedby="newsletter-consent">
+      <input type="hidden" name="embed" value="1" />
+      <label for="newsletter-email">Email address</label>
+      <div class="newsletter-fields">
+        <input id="newsletter-email" name="email" type="email" autocomplete="email" required />
+        <button type="submit">Subscribe</button>
+      </div>
+    </form>
+    <p id="newsletter-consent" class="newsletter-consent">Buttondown processes your address. Confirmation is required, and every email includes an unsubscribe link.</p>
+    <p class="newsletter-links"><a href="/privacy">Privacy</a> · <a href="/rss.xml">Read via RSS</a></p>
+  </section>
+)}

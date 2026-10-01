@@ -4,6 +4,7 @@ import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import ArticleBody from '../../components/ArticleBody.astro';
 import ArticleContents from '../../components/ArticleContents.astro';
 import ArticleReferences from '../../components/ArticleReferences.astro';
+import NewsletterPrompt from '../../components/NewsletterPrompt.astro';
 import { validateArticleDocuments, type ArticleDocument } from '../../lib/articles';
 import { findEditionForStory, findStory, findStoryById, getContentMode, getStories } from '../../lib/content';
 import { articlePath, cvePath, editionPath } from '../../lib/routes';
@@ -52,6 +53,8 @@ const statusLabel = mode === 'fixture'
     {article && <ArticleContents {headings} />}
 
     {Content ? <div class="article-body"><Content /></div> : <ArticleBody paragraphs={story.body} />}
+
+    {story.type === 'original' && <NewsletterPrompt context="article" />}
 
     {story.vulnerabilities.length > 0 && (
       <section class="article-related" aria-labelledby="vulnerabilities-heading">

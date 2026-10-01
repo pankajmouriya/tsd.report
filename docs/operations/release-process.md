@@ -12,8 +12,19 @@ The first live version uses one workflow:
 4. When production deployment is enabled, the main-branch job validates and builds only the reviewed production corpus.
 5. Wrangler uploads `dist/` to the Cloudflare Pages project `tsd-report`.
 6. The workflow requests the production Pages URL and fails if it is not reachable.
+7. Only after `deploy-production`, including that smoke check, succeeds for the same SHA, the separate `send-newsletter` job evaluates newsletter eligibility and reconciles Buttondown identity before queuing an approved digest.
 
 Production never reads local seed content. An empty production corpus stops the deploy before Cloudflare credentials are used.
+
+## Independent newsletter gates
+
+The [newsletter operations runbook](newsletter.md) covers provider setup, privacy, preview, capacity, and recovery. Newsletter setup and live delivery remain unverified. The existing production edition has no newsletter approval and will not send.
+
+The send job requires a push to `refs/heads/main`, successful production deployment and Pages URL smoke check for that run, and exact `true` values for `TSD_PRODUCTION_ENABLED`, `TSD_NEWSLETTER_SIGNUP_ENABLED`, and `TSD_NEWSLETTER_SEND_ENABLED`. Acquisition can be enabled before delivery. Each newsletter additionally requires a valid `approved` object on the newest reviewed production edition and the provider key in the GitHub `production` environment. Site/content review is distinct from [newsletter copy and timing approval](../editorial/authoring-guide.md#newsletter-copy-and-approval). Missing metadata or `draft` skips without provider access; an approved edition without a key fails. A duplicate accepted identity is a successful no-op.
+
+Pull requests retain a fixture digest preview and use synthetic signup configuration. They never receive `BUTTONDOWN_API_KEY` and never run the send job. The workflow serializes each ref with `queue: max` without cancellation; `send-newsletter` also uses the `newsletter-production` group without cancellation. GitHub's queue limit is 100 pending runs per group; monitor cancellations beyond that limit and reconcile identities before recovery.
+
+Failure of deployment or its smoke check prevents sending. Failure of newsletter delivery leaves the deployed site intact and marks the workflow unsuccessful; recover the failed email job through the runbook. Changing a standing flag cannot recall an email already accepted by Buttondown. Reruns, historical rebuilds, and corrections never authorize an automatic second copy or historical backfill. Manual workflow dispatch remains Cloudflare project setup and does not send.
 
 ## Required Cloudflare project
 

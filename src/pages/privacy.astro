@@ -1,0 +1,27 @@
+---
+import ArticleLayout from '../layouts/ArticleLayout.astro';
+import { resolvePublicationContactUrl } from '../lib/newsletter-config';
+const contactUrl = resolvePublicationContactUrl({
+  TSD_PUBLICATION_CONTACT_URL: import.meta.env.TSD_PUBLICATION_CONTACT_URL,
+});
+---
+<ArticleLayout title="Privacy" canonical="/privacy" description="How The Security Diff handles newsletter subscriber information.">
+  <main id="main" class="reading-article">
+    <header class="article-opening"><h1>Privacy notice</h1><p class="dek">Newsletter subscriber information and your choices.</p><p class="article-meta">Effective <time datetime="2026-09-30">September 30, 2026</time></p></header>
+    <div class="article-body">
+      <h2>Email edition</h2>
+      <p>The only required subscriber field is your email address. We use it to deliver The Security Diff email edition after you confirm your subscription.</p>
+      <p>Buttondown processes subscriber information for confirmation, delivery, unsubscribe requests, bounce handling, and complaint handling. The Security Diff does not maintain a separate subscriber database and does not sell subscriber information.</p>
+      <h2>Unsubscribe and retention</h2>
+      <p>You can unsubscribe using the link in any email edition. Retention and suppression records are governed by Buttondown’s configuration and legitimate needs to prevent delivery abuse, handle complaints, and respect unsubscribe requests.</p>
+      <h2>Requests and contact</h2>
+      {contactUrl
+        ? <p>For requests to export or delete subscriber information, use our <a href={contactUrl}>monitored publication contact</a>.</p>
+        : <p>Email signup is currently unavailable. A publication contact for subscriber requests will be provided when signup opens.</p>}
+      <h2>Site privacy and changes</h2>
+      <p>The site does not use third-party analytics scripts, tracking pixels, advertising tags, or behavioral profiling. Buttondown analytics add-ons are outside this newsletter service.</p>
+      <p>This notice took effect on September 30, 2026. Material changes will be recorded here with their effective dates.</p>
+      <p><a href="/subscribe">Email edition information</a> · <a href="/rss.xml">Read via RSS</a></p>
+    </div>
+  </main>
+</ArticleLayout>

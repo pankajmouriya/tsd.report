@@ -1,0 +1,22 @@
+---
+import ArticleLayout from '../layouts/ArticleLayout.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+import { resolveNewsletterSignupConfig } from '../lib/newsletter-config';
+const config = resolveNewsletterSignupConfig({
+  TSD_NEWSLETTER_SIGNUP_ENABLED: import.meta.env.TSD_NEWSLETTER_SIGNUP_ENABLED,
+  BUTTONDOWN_USERNAME: import.meta.env.BUTTONDOWN_USERNAME,
+  TSD_PUBLICATION_CONTACT_URL: import.meta.env.TSD_PUBLICATION_CONTACT_URL,
+});
+---
+<ArticleLayout title="Subscribe" canonical="/subscribe" description="Receive a concise email digest when a reviewed edition of The Security Diff is published.">
+  <main id="main" class="reading-article">
+    <header class="article-opening"><h1>The email edition</h1><p class="dek">Security engineering, delivered when there is a reviewed edition to read.</p></header>
+    <div class="article-body">
+      <p>The Security Diff sends a concise digest when a reviewed edition is published. There is no fixed daily delivery promise.</p>
+      <p>Confirm your email address through Buttondown before receiving editions. You receive only editions sent after confirmation; earlier editions remain available in the <a href="/archive">archive</a>. You can unsubscribe using the link in any email.</p>
+      {!config && <p>Email signup is currently unavailable. You can follow the publication through <a href="/rss.xml">RSS</a>.</p>}
+      <p>Read our <a href="/privacy">privacy notice</a> for how subscriber information is handled.</p>
+    </div>
+    <NewsletterSignup />
+  </main>
+</ArticleLayout>

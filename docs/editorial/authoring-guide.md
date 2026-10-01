@@ -2,7 +2,7 @@
 
 Start here when adding a brief, choosing a lead, writing an essay, or preparing an agent-assisted draft. You should customize content, not rebuild a page.
 
-Verified against the local implementation on 2026-09-28. These instructions prepare **fixture previews** under the fixture directories. A separate production contract exists, but its directories remain empty and production release validation is blocked until genuinely reviewed content is added. Keep `fixture: true` in this workflow; removing it does not promote a fixture.
+The fixture workflow was verified on 2026-09-28; newsletter authoring instructions were added on 2026-09-30. These templates prepare **fixture previews** under the fixture directories. The separate production corpus now contains the reviewed 2026-09-29 edition; see [content environments](../design/content-environments.md) for genuine production authoring. Keep `fixture: true` in the fixture workflow; removing it does not promote a fixture.
 
 ## 1. Choose your starting point
 
@@ -173,13 +173,55 @@ Browser tests use the generated preview and expect port 4322 to be free. The cur
 
 For manual reading, run `npm run preview -- --host 127.0.0.1 --port 4324` after building. Inspect at 320/390/768/1024/1440px and both themes for layout-affecting changes. Preserve useful before/after screenshots locally.
 
-Finally, production validation must remain blocked while the reviewed production corpus is empty:
+For genuine production changes, validate the separate reviewed corpus:
 
 ```sh
 npm run validate:production
 ```
 
-Expected: nonzero exit containing `Production content requires at least one reviewed edition`. An unrelated error is not success. Run `npm run build:fixture` before further previewing. Passing preview checks is not authorization to deploy.
+Production validation rejects empty, fixture, draft, or unreviewed corpora. The reviewed 2026-09-29 edition resolved the earlier empty-corpus blocker. Run `npm run build:fixture` before further fixture previewing. Passing validation is not authorization to deploy or send email.
+
+## Newsletter copy and approval
+
+The optional `newsletter` object belongs to an edition JSON file. Absence means no email; `draft` permits preview only. Story/source review and newsletter approval are separate: the edition's `reviewed_by`/`reviewed_at` and article review establish content review, while `newsletter.approved_by`/`approved_at` record acceptance of the subject, preview, story selection, and send timing. Never copy a source reviewer into newsletter approval without their actual approval.
+
+Start with this draft fragment, replacing its copy with the intended edition copy:
+
+```json
+{
+  "newsletter": {
+    "status": "draft",
+    "subject": "The Security Diff — September 30, 2026",
+    "preview_text": "The reviewed security changes worth your attention."
+  }
+}
+```
+
+This is illustrative metadata, not a complete edition or a publication instruction. Write nonempty, single-line copy; the schema limits subject to 120 characters and preview to 200. Draft metadata has no approval fields. Add it to the newest edition in the intended corpus, then review the digest before changing status:
+
+```sh
+npm run newsletter:preview -- --mode fixture --output /private/tmp/tsd-newsletter-preview.html
+```
+
+For a genuinely reviewed production working draft, use `--mode production` instead. Rendering is local and needs no provider key. It fails if the newest edition has no newsletter object. The renderer selects the lead once, then remaining unique stories from section order followed by otherwise unplaced stories; it does not provide a separate email-selection field. Review all included stories, ordering, concise summaries, unknown intelligence values, the subject/title, preview sentence, canonical `/article/[slug]` links, dated edition link, and policy/privacy/RSS links. Local HTML is an editorial preview; an owner-only Buttondown test must verify delivered-template appearance and unsubscribe behavior before launch.
+
+Only after actual preview review and explicit approval, change to this approved shape:
+
+```json
+{
+  "newsletter": {
+    "status": "approved",
+    "subject": "The Security Diff — September 30, 2026",
+    "preview_text": "The reviewed security changes worth your attention.",
+    "approved_by": "<operator-supplied real approver>",
+    "approved_at": "2026-09-30T12:00:00Z"
+  }
+}
+```
+
+The approver placeholder and example timestamp are illustrative, **not a recorded review**. Replace both with the real approving person and actual UTC approval time before submitting a reviewed content pull request. Do not merge placeholders into production. Fixture approval examples never authorize delivery. The existing 2026-09-29 production edition has no newsletter approval; do not add it retroactively as part of feature setup.
+
+Approval does not bypass production deployment, signup/send flags, the provider key, or duplicate checks. Follow the [newsletter runbook](../operations/newsletter.md) for launch timing and recovery. Only the newest production edition is considered; previous editions are not backfilled. Corrections require an explicit site correction record and never automatically resend an accepted edition. A separate operational decision is required for an exceptional replacement email.
 
 ## 10. Troubleshooting
 
