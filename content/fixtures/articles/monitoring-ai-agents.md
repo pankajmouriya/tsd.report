@@ -20,6 +20,7 @@ references:
     supports: An entity should receive only the resources and authorizations needed for its function.
 related_story_ids:
   - cve-priority
+  - research-note
 ---
 
 Imagine a coding agent asked to update one dependency and open a pull request. The request sounds narrow. The available tools may not be. A shell can read unrelated files, a package manager can run installation hooks, a repository credential can alter more than one branch, and a browser session may already hold access to internal systems. The sentence given to the model describes intent; the surrounding runtime decides what the action can actually reach.

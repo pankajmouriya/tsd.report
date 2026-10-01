@@ -380,6 +380,12 @@ button, a { -webkit-tap-highlight-color: rgb(150 44 29 / .16); touch-action: man
   letter-spacing: .1em;
   text-transform: uppercase;
 }
+.story-destination-label {
+  display: inline;
+  margin-left: .35em;
+  color: var(--muted);
+  white-space: nowrap;
+}
 .lead h2 {
   max-width: 31ch;
   margin: 0 0 7px;
@@ -407,6 +413,28 @@ button, a { -webkit-tap-highlight-color: rgb(150 44 29 / .16); touch-action: man
 }
 .lead-figure { margin: 0; }
 .lead-figure figcaption { margin-top: 7px; color: var(--muted); font: var(--text-xs)/1.45 var(--sans); }
+.lead-research-panel {
+  padding: 22px 0;
+  border-block: 2px solid var(--ink);
+  background: var(--surface);
+  box-shadow: inset 18px 0 0 var(--surface), inset -18px 0 0 var(--surface);
+}
+.lead-research-panel > * { margin-inline: 18px; }
+.lead-research-panel h3 { margin-block: 8px 12px; font-size: clamp(1.6rem, 1.4rem + .8vw, 2.1rem); line-height: 1.08; }
+.lead-research-panel p { color: var(--muted); font: 700 var(--text-sm)/1.5 var(--sans); }
+.lead-research-kicker {
+  color: var(--accent) !important;
+  font-size: var(--text-xs) !important;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.external-story-cta {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--accent);
+  font: 800 var(--text-sm)/1.3 var(--sans);
+}
 .diagram-ground { fill: var(--surface); stroke: var(--rule); }
 .diagram-overline, .diagram-label { fill: var(--accent); font: 800 15px var(--sans); letter-spacing: 1.8px; }
 .diagram-title { fill: var(--ink); font: 600 37px var(--serif-display); }

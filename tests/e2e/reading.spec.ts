@@ -28,6 +28,25 @@ test('renders a concise historical brief with evidence and no contents disclosur
   await expect(page.getByRole('link', { name: 'CVE-2021-44228' })).toBeVisible();
 });
 
+test('keeps an internal provenance page for external research', async ({ page }) => {
+  await page.goto('/article/research-claims-and-interpretation');
+  await expect(page).toHaveURL(/\/article\/research-claims-and-interpretation$/);
+  await expect(page.getByRole('heading', { name: /Research notes should separate/ })).toBeVisible();
+  const original = page.getByRole('link', { name: 'Read original research ↗' });
+  await expect(original).toHaveAttribute('href', 'https://example.com/research-paper');
+  await expect(original).not.toHaveAttribute('target', '_blank');
+  await expect(page.locator('.external-provenance').getByRole('heading', { name: 'TSD Fixture Lab' })).toBeVisible();
+  await expect(page.locator('.external-provenance').getByText(/Retrieved Sep 26, 2026/)).toBeVisible();
+});
+
+test('uses the external destination for related research coverage', async ({ page }) => {
+  await page.goto('/article/agent-tool-boundaries');
+  await expect(page.getByRole('link', { name: /Research notes should separate/ })).toHaveAttribute(
+    'href',
+    'https://example.com/research-paper',
+  );
+});
+
 test('keeps evidence notes beside prose when space permits and inline on phones', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/article/agent-tool-boundaries');
