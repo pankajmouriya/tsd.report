@@ -32,6 +32,10 @@ def test_candidate_workflow_is_scheduled_review_only_and_least_privilege() -> No
     assert "data/candidates/vulnerability-watch" in text
     assert "data/production/vulnerability-watch" not in text
     assert "git push --force" not in text
+    preserve_candidate = text.index('cp "$candidate" "$temporary_candidate"')
+    clear_worktree_candidate = text.index('rm -- "$candidate"')
+    switch_existing_branch = text.index('git switch --create "$branch" --track "origin/$branch"')
+    assert preserve_candidate < clear_worktree_candidate < switch_existing_branch
     action_uses_are_pinned(document)
 
 
