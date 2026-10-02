@@ -1,5 +1,5 @@
 ---
-import type { Edition } from '../lib/schema';
+import type { Edition, VulnerabilityWatchSnapshot } from '../lib/schema';
 import { getStoryById, getStoryCategories } from '../lib/content';
 import EditionHeader from './EditionHeader.astro';
 import EditionFilters from './EditionFilters.astro';
@@ -8,14 +8,13 @@ import StoryCard from './StoryCard.astro';
 import VulnerabilityWatch from './VulnerabilityWatch.astro';
 import EditionFooter from './EditionFooter.astro';
 import NewsletterPrompt from './NewsletterPrompt.astro';
-interface Props { edition: Edition; previous?: string; next?: string; }
-const { edition, previous, next } = Astro.props;
+interface Props { edition: Edition; previous?: string; next?: string; vulnerabilityWatch?: VulnerabilityWatchSnapshot; }
+const { edition, previous, next, vulnerabilityWatch } = Astro.props;
 const lead = getStoryById(edition, edition.lead_story);
 const secondary = Object.values(edition.sections).flat().filter((id, index, ids) => id !== lead.id && ids.indexOf(id) === index).map((id) => getStoryById(edition, id));
 const originals = secondary.filter((story) => story.type === 'original');
 const research = secondary.filter((story) => story.type === 'research' || story.category === 'research');
 const reports = secondary.filter((story) => !originals.includes(story) && !research.includes(story));
-const hasVulnerabilities = edition.stories.some((story) => story.vulnerabilities.length > 0);
 ---
 <EditionHeader date={edition.date} count={edition.stories.length} previous={previous} next={next} />
 <EditionFilters categories={getStoryCategories(edition.stories)} />
@@ -23,7 +22,7 @@ const hasVulnerabilities = edition.stories.some((story) => story.vulnerabilities
   <div data-editorial-view>
     <div data-edition-section><LeadStory story={lead} /></div>
     {reports.length > 0 && <section class="editorial-section" aria-labelledby="daily-report-heading" data-edition-section><div class="section-heading section-heading-editorial"><div><p class="section-kicker">Daily report</p><h2 id="daily-report-heading">Today’s Security Briefs</h2></div><p>Selected for engineering relevance</p></div><div class="story-grid">{reports.map((story, index) => <StoryCard story={story} substantial={index < 3} />)}</div></section>}
-    {hasVulnerabilities && <VulnerabilityWatch stories={edition.stories} date={edition.date} />}
+    {vulnerabilityWatch && <VulnerabilityWatch snapshot={vulnerabilityWatch} />}
     {originals.length > 0 && <section class="editorial-section" aria-labelledby="original-writing-heading" data-edition-section><div class="section-heading section-heading-editorial"><div><p class="section-kicker">Original writing</p><h2 id="original-writing-heading">From the Editor</h2></div><p>{originals.length} stories</p></div><div class="story-grid editorial-feature-grid">{originals.map((story, index) => <StoryCard story={story} substantial={index === 0} />)}</div></section>}
     {research.length > 0 && <section class="editorial-section" aria-labelledby="research-heading" data-edition-section><div class="section-heading section-heading-editorial"><div><p class="section-kicker">Research notes</p><h2 id="research-heading">Research Worth Reading</h2></div><p>{research.length} stories</p></div><div class="story-grid research-grid">{research.map((story) => <StoryCard story={story} />)}</div></section>}
   </div>

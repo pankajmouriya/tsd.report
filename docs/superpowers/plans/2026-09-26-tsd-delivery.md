@@ -170,7 +170,7 @@ expect(() => articlePath('../archive')).toThrow();
 
 - [ ] Render the wide headline, split illustration/summary lead, impact, affected technology, source links, and supported action.
 - [ ] Render the ruled three/two/one-column grid with no duplicate lead or repeated section entries.
-- [ ] Add a compact Vulnerability Watch keyed by unique CVE, with separate probability/percentile semantics and dated evidence links.
+- [x] Add a compact Vulnerability Watch keyed by unique CVE, with separate probability/percentile semantics and dated evidence links.
 - [ ] Render original and research sections using the shared story model and explicit content labels.
 - [ ] Create an original technical SVG with readable labels and equivalent text. Do not trace or copy the reference illustration.
 - [ ] Inspect dense/long/null fixtures in both themes; confirm no clipped text or accidental page overflow.
@@ -361,12 +361,12 @@ Newsletter update — 2026-09-30: the user approved the architecture for a free-
 | --- | --- | --- |
 | Planning | Written; awaiting implementation review | Product spec, design baseline, AGENTS.md, this plan |
 | A | Complete locally; reading system verified 2026-09-27 | 61 static pages; 19 unit tests and 34 generated-preview Chromium journeys pass; type/content/link checks pass; production build rejects fixtures with the required message. Unique four-story Vulnerabilities count, single filtered results list, invalid/history URL state, no-JavaScript fallback, theme persistence, content-sized paper sheets, Grenze Gotisch masthead and Newsreader editorial typography, compact semantic reading pages, citation return navigation, evidence-note reflow, short fallbacks, print/forced-color/blocked-font behavior, and 767/768/1099/1100px column thresholds are covered. Impeccable detector returned `[]`. Homepage evidence is under `/private/tmp/tsd-refinement-review/` and `/private/tmp/tsd-production-typography/`; the 36-capture reading matrix is under `/private/tmp/tsd-reading-experience/after/`. All recorded pages fit their viewports. Local font and texture assets total 238,087 bytes. Git commit remains unavailable because `.git` is read-only in this workspace. |
-| B | Not started | Depends on content contract |
-| C | Not started | Depends on recorded inputs and adapters |
+| B | In progress — Vulnerability Watch subset implemented locally | Bounded CISA/FIRST/NVD collection, normalized recent KEVs, raw/normalized/enriched artifacts, manifest, replay, and failure isolation are implemented; general news collection, URL clustering, and the complete source registry remain. |
+| C | In progress — Vulnerability Watch subset implemented locally | Field-attributed CISA KEV, FIRST EPSS, NVD CVSS/reference enrichment, deterministic thresholds/ranking, cross-language validation, and explicit NVD degradation are implemented; GitHub/OSV/vendor adapters and full conflict history remain. |
 | D | Not started | Provider none is an acceptable V1 mode |
 | E | Not started | Initial Markdown covered in A |
 | F | Not started | Depends on generated content |
-| G | In progress — workflow definitions verified locally; production prerequisites blocked | SemVer release, security, candidate and Cloudflare deployment workflows added; see the 2026-09-28 workflow evidence below. No hosted deployment performed. |
+| G | In progress — workflow definitions verified locally; production prerequisites blocked | SemVer release, security, Cloudflare deployment, daily Vulnerability Watch candidate, and trusted label-promotion workflows are defined. Hosted Vulnerability Watch triggers, PR updates, label promotion, and deployment remain unverified. |
 | H | Deferred | Outside initial release |
 
 At each completed milestone, append the date/revision, changed paths, exact commands and outcomes, screenshot paths and viewport/theme coverage, deviations, and remaining limitations. Check off only verified work.
@@ -558,3 +558,17 @@ Verification used cached supported Node 24.21.0. Contract RED tests failed becau
 Visual evidence: `/private/tmp/tsd-genrec-review/manifest.json` records 20 final captures for the homepage edition and internal provenance page at 320/390/768/1024/1440px in light and dark themes. All 20 resolve the exact arXiv v2 destination and report zero document overflow. Manual inspection covered the research lead/source panel, current-tab cue, mobile headline, focus outline, provenance, dark mode, absence of copied paper artwork, and absence of an empty vulnerability table. The first production matrix exposed a 15px 320px headline overflow; element diagnostics isolated the long headline as the source, and the final matrix passed after the responsive wrapping/type fix.
 
 Boundaries: this branch records reviewed production content but does not deploy it. No newsletter approval, provider call, email send, DNS change, merge, or production publication occurred. The branch was pushed and opened as [PR #4](https://github.com/pankajmouriya/tsd.report/pull/4) against `main`; merge and deployment remain governed by existing release gates.
+
+### Automated Vulnerability Watch — 2026-10-02
+
+Status: the milestone B/C/G Vulnerability Watch subset is implemented and verified locally on `main`. It creates an independent daily candidate from recent CISA KEVs, requires FIRST EPSS probability of at least 50% and percentile of at least 95%, enriches from NVD when available, and retains at most ten without weakening those thresholds. Production reads only reviewed snapshots. No branch was pushed, no pull request was opened, no production snapshot was created, and no deployment ran.
+
+Changed paths: `pipeline/`, `pyproject.toml`, `uv.lock`, `.python-version`, recorded pipeline tests, the generated watch schema and TypeScript contract, watch data loading and rendering, homepage/date/CVE integration, `.github/workflows/{vulnerability-watch,promote-vulnerability-watch,validate}.yml`, the operator runbook, README indexes, feature design/plan, and this design/delivery record.
+
+Verification: Python format/lint passed and 29 tests passed. Astro/TypeScript reported zero diagnostics across 80 files; 292 Vitest tests passed. Schema regeneration was byte-stable. Fixture validation/build/link checks passed with three editions, 17 entries, one watch snapshot, and 63 pages. Production validation/build/link checks passed with two editions, two entries, zero published watch snapshots, and 22 pages. Two recorded replays were byte-identical. The configured full browser run passed 61 Chromium journeys with two deliberately inapplicable acquisition-paused cases skipped.
+
+Live evidence: the 2026-10-02 probe under `/private/tmp/tsd-vulnerability-watch-final/` reported CISA, FIRST, and NVD healthy and selected three of 39 recent KEVs. The result passed both Python and TypeScript validation and stayed outside repository data. It selected `CVE-2026-85706` (EPSS 92.956%, percentile 99.83%), `CVE-2026-20079` (88.18%, 99.765%), and `CVE-2026-71362` (87.507%, 99.755%). The source response produced five or six references per entry; unknown reference publication dates remain `null`.
+
+Visual evidence: `/private/tmp/tsd-watch-review/` covers the checked-in empty state at 320/390/768/1024/1440 px in both themes, with no document overflow and keyboard-visible source links. `/private/tmp/tsd-watch-populated/` covers an isolated three-row live-data rendering at 390/1440 px in both themes. The temporary fixture was removed after review and the normal fixture output was restored.
+
+Remaining boundaries: the hosted schedule, candidate PR creation/reuse, `publish-vulnerability-watch` permission gate, promotion commit, branch protection, merge publication, and deployment need GitHub evidence. NVD failure behavior is recorded-test verified; the optional API key path was not exercised live. General news collection, clustering, GitHub/OSV/vendor adapters, full conflict history, and unattended merge publication remain outside this subset.

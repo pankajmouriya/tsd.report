@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import * as schemas from '../../src/lib/schema';
 
 const fixtureEdition = {
@@ -15,6 +17,65 @@ const fixtureEdition = {
     }],
     signal: { score: 1, label: 'standard', reasons: ['Test only'] }, vulnerabilities: [], body: [], fixture: true,
   }],
+};
+
+const watchEntry = {
+  rank: 1,
+  cve: 'CVE-2026-12345',
+  kev: {
+    source_id: 'cisa-kev',
+    date_added: '2026-09-20',
+    due_date: '2026-10-10',
+    vendor_project: 'Example Vendor',
+    product: 'Example Product',
+    vulnerability_name: 'Example Product Vulnerability',
+    required_action: 'Apply mitigations per vendor instructions.',
+    known_ransomware_campaign_use: 'Unknown',
+    notes: null,
+  },
+  epss: {
+    source_id: 'first-epss',
+    probability: 0.75,
+    percentile: 0.98,
+    score_date: '2026-10-02',
+  },
+  cvss: {
+    source_id: 'nvd',
+    score: 9.8,
+    version: '3.1',
+    vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
+    issuer: 'nvd@nist.gov',
+  },
+  description: 'An example vulnerability used by the test contract.',
+  references: [{
+    source_id: 'nvd',
+    name: 'NVD record',
+    url: 'https://nvd.nist.gov/vuln/detail/CVE-2026-12345',
+    type: 'government',
+    published_at: '2026-09-18T00:00:00Z',
+    retrieved_at: '2026-10-02T06:17:00Z',
+  }],
+};
+
+const watchBase = {
+  schema_version: 1,
+  date: '2026-10-02',
+  generated_at: '2026-10-02T06:17:00Z',
+  selection: {
+    lookback_days: 30,
+    epss_probability_min: 0.5,
+    epss_percentile_min: 0.95,
+    limit: 10,
+    ranking_version: 'kev-epss-v1',
+    window_start: '2026-09-03',
+    window_end: '2026-10-02',
+  },
+  sources: [
+    { id: 'cisa-kev', name: 'CISA KEV', url: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog', status: 'ok', retrieved_at: '2026-10-02T06:17:00Z', data_date: '2026-10-02', error: null },
+    { id: 'first-epss', name: 'FIRST EPSS', url: 'https://api.first.org/data/v1/epss', status: 'ok', retrieved_at: '2026-10-02T06:17:00Z', data_date: '2026-10-02', error: null },
+    { id: 'nvd', name: 'NVD', url: 'https://services.nvd.nist.gov/rest/json/cves/2.0', status: 'ok', retrieved_at: '2026-10-02T06:17:00Z', data_date: null, error: null },
+  ],
+  entries: [watchEntry],
 };
 
 describe('editionSchema', () => {
@@ -197,5 +258,80 @@ describe('editionSchema', () => {
       ...withoutFixture,
       stories: withoutFixture.stories.map((story) => ({ ...story, sources: [] })),
     }).success).toBe(false);
+  });
+});
+
+describe('Vulnerability Watch schemas', () => {
+  it.each([
+    ['candidate', schemas.vulnerabilityWatchCandidateSchema],
+    ['published', schemas.vulnerabilityWatchPublishedSchema],
+    ['fixture', schemas.vulnerabilityWatchFixtureSchema],
+  ] as const)('keeps the shared %s contract fixture valid', (name, schema) => {
+    const payload = JSON.parse(readFileSync(resolve(`tests/fixtures/vulnerability-watch/${name}.json`), 'utf8'));
+    expect(schema.safeParse(payload).success).toBe(true);
+  });
+
+  it('accepts strict candidate, published, and fixture states', () => {
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({ ...watchBase, status: 'candidate' }).success).toBe(true);
+    expect(schemas.vulnerabilityWatchPublishedSchema.safeParse({
+      ...watchBase,
+      status: 'published',
+      reviewed_by: 'pankajmouriya',
+      reviewed_at: '2026-10-02T07:00:00Z',
+      review_pr: 'https://github.com/pankajmouriya/tsd.report/pull/42',
+    }).success).toBe(true);
+    expect(schemas.vulnerabilityWatchFixtureSchema.safeParse({
+      ...watchBase,
+      status: 'fixture',
+      fixture: true,
+    }).success).toBe(true);
+  });
+
+  it('rejects candidates with review metadata or unknown keys', () => {
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({
+      ...watchBase,
+      status: 'candidate',
+      reviewed_by: 'premature-review',
+    }).success).toBe(false);
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({
+      ...watchBase,
+      status: 'candidate',
+      publish_now: true,
+    }).success).toBe(false);
+  });
+
+  it('requires review evidence on published snapshots', () => {
+    expect(schemas.vulnerabilityWatchPublishedSchema.safeParse({ ...watchBase, status: 'published' }).success).toBe(false);
+    expect(schemas.vulnerabilityWatchPublishedSchema.safeParse({
+      ...watchBase,
+      status: 'published', reviewed_by: 'reviewer', reviewed_at: '2026-10-02T07:00:00Z', review_pr: 'http://github.com/example/repo/pull/1',
+    }).success).toBe(false);
+  });
+
+  it('enforces thresholds, at most ten unique CVEs, and contiguous ranks', () => {
+    const entries = Array.from({ length: 10 }, (_, index) => ({
+      ...watchEntry,
+      rank: index + 1,
+      cve: `CVE-2026-${12345 + index}`,
+    }));
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({ ...watchBase, status: 'candidate', entries }).success).toBe(true);
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({ ...watchBase, status: 'candidate', entries: [...entries, { ...watchEntry, rank: 11, cve: 'CVE-2026-99999' }] }).success).toBe(false);
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({ ...watchBase, status: 'candidate', entries: [{ ...watchEntry, epss: { ...watchEntry.epss, probability: 0.499 } }] }).success).toBe(false);
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({ ...watchBase, status: 'candidate', entries: [{ ...watchEntry, rank: 2 }] }).success).toBe(false);
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({ ...watchBase, status: 'candidate', entries: [watchEntry, { ...watchEntry, rank: 2 }] }).success).toBe(false);
+  });
+
+  it.each([
+    'http://example.com/reference',
+    'javascript:alert(1)',
+    'https://reader:secret@example.com/reference',
+  ])('rejects unsafe evidence URL %s', (url) => {
+    const entries = [{ ...watchEntry, references: [{ ...watchEntry.references[0], url }] }];
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({ ...watchBase, status: 'candidate', entries }).success).toBe(false);
+  });
+
+  it('preserves explicit nulls for unavailable NVD enrichment', () => {
+    const entries = [{ ...watchEntry, cvss: null, description: null, references: [] }];
+    expect(schemas.vulnerabilityWatchCandidateSchema.safeParse({ ...watchBase, status: 'candidate', entries }).success).toBe(true);
   });
 });

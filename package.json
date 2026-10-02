@@ -22,7 +22,10 @@
     "generate:schema": "node --import tsx scripts/generate-schema.ts",
     "check:links": "node --import tsx scripts/check-links.ts",
     "newsletter:preview": "node --import tsx scripts/newsletter/render.ts",
-    "newsletter:send": "node --import tsx scripts/newsletter/send.ts"
+    "newsletter:send": "node --import tsx scripts/newsletter/send.ts",
+    "test:pipeline": "uv run --locked pytest -q",
+    "lint:pipeline": "uv run --locked ruff check pipeline tests/pipeline",
+    "watch:replay": "uv run --locked python -m pipeline.cli replay"
   },
   "dependencies": {
     "astro": "7.3.5",

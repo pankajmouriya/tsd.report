@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EditionView from '../components/EditionView.astro';
 import { getEditions, getLatestEdition } from '../lib/content';
+import { getLatestVulnerabilityWatch } from '../lib/vulnerability-watch';
 const edition = getLatestEdition(); const editions = getEditions();
+const vulnerabilityWatch = getLatestVulnerabilityWatch();
 ---
-<BaseLayout canonical="/"><EditionView edition={edition} previous={editions[1]?.date} /></BaseLayout>
+<BaseLayout canonical="/"><EditionView edition={edition} previous={editions[1]?.date} vulnerabilityWatch={vulnerabilityWatch} /></BaseLayout>

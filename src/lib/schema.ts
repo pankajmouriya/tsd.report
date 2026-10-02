@@ -43,6 +43,17 @@ const externalDestinationSchema = z.url().superRefine((value, context) => {
   }
 });
 
+const httpsUrlSchema = z.url().superRefine((value, context) => {
+  if (!URL.canParse(value)) return;
+  const url = new URL(value);
+  if (url.protocol !== 'https:') {
+    context.addIssue({ code: 'custom', message: 'Evidence URLs must use HTTPS', input: value });
+  }
+  if (url.username || url.password) {
+    context.addIssue({ code: 'custom', message: 'Evidence URLs must not contain credentials', input: value });
+  }
+});
+
 const storyFields = {
   id: z.string().min(1),
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
@@ -140,6 +151,132 @@ export const productionEditionSchema = z.object({
   stories: z.array(productionStorySchema).min(1),
 }).strict().superRefine(validateEdition);
 
+const vulnerabilityWatchSelectionSchema = z.object({
+  lookback_days: z.literal(30),
+  epss_probability_min: z.literal(0.5),
+  epss_percentile_min: z.literal(0.95),
+  limit: z.literal(10),
+  ranking_version: z.literal('kev-epss-v1'),
+  window_start: z.iso.date(),
+  window_end: z.iso.date(),
+}).strict();
+
+const vulnerabilityWatchSourceSchema = z.object({
+  id: z.enum(['cisa-kev', 'first-epss', 'nvd']),
+  name: z.string().trim().min(1),
+  url: httpsUrlSchema,
+  status: z.enum(['ok', 'degraded']),
+  retrieved_at: z.iso.datetime(),
+  data_date: z.iso.date().nullable(),
+  error: z.string().trim().min(1).nullable(),
+}).strict().superRefine((source, context) => {
+  if (source.status === 'ok' && source.error !== null) {
+    context.addIssue({ code: 'custom', path: ['error'], message: 'Successful sources cannot include an error', input: source.error });
+  }
+  if (source.status === 'degraded' && source.error === null) {
+    context.addIssue({ code: 'custom', path: ['error'], message: 'Degraded sources require an error', input: source.error });
+  }
+});
+
+const vulnerabilityWatchReferenceSchema = z.object({
+  source_id: z.enum(['cisa-kev', 'first-epss', 'nvd', 'vendor']),
+  name: z.string().trim().min(1),
+  url: httpsUrlSchema,
+  type: z.enum(['government', 'vendor', 'research', 'community']),
+  published_at: z.iso.datetime().nullable(),
+  retrieved_at: z.iso.datetime(),
+}).strict();
+
+const vulnerabilityWatchEntrySchema = z.object({
+  rank: z.number().int().min(1).max(10),
+  cve: z.string().regex(/^CVE-\d{4}-\d{4,}$/),
+  kev: z.object({
+    source_id: z.literal('cisa-kev'),
+    date_added: z.iso.date(),
+    due_date: z.iso.date(),
+    vendor_project: z.string().trim().min(1),
+    product: z.string().trim().min(1),
+    vulnerability_name: z.string().trim().min(1),
+    required_action: z.string().trim().min(1),
+    known_ransomware_campaign_use: z.enum(['Known', 'Unknown']),
+    notes: z.string().trim().min(1).nullable(),
+  }).strict(),
+  epss: z.object({
+    source_id: z.literal('first-epss'),
+    probability: z.number().min(0).max(1),
+    percentile: z.number().min(0).max(1),
+    score_date: z.iso.date(),
+  }).strict(),
+  cvss: z.object({
+    source_id: z.literal('nvd'),
+    score: z.number().min(0).max(10),
+    version: z.string().trim().min(1),
+    vector: z.string().trim().min(1),
+    issuer: z.string().trim().min(1),
+  }).strict().nullable(),
+  description: z.string().trim().min(1).nullable(),
+  references: z.array(vulnerabilityWatchReferenceSchema),
+}).strict();
+
+const vulnerabilityWatchBaseFields = {
+  schema_version: z.literal(1),
+  date: z.iso.date(),
+  generated_at: z.iso.datetime(),
+  selection: vulnerabilityWatchSelectionSchema,
+  sources: z.array(vulnerabilityWatchSourceSchema).length(3),
+  entries: z.array(vulnerabilityWatchEntrySchema).max(10),
+};
+
+function validateVulnerabilityWatch(
+  snapshot: {
+    date: string;
+    selection: z.infer<typeof vulnerabilityWatchSelectionSchema>;
+    sources: Array<z.infer<typeof vulnerabilityWatchSourceSchema>>;
+    entries: Array<z.infer<typeof vulnerabilityWatchEntrySchema>>;
+  },
+  context: z.core.$RefinementCtx,
+) {
+  if (snapshot.selection.window_end !== snapshot.date) {
+    context.addIssue({ code: 'custom', path: ['selection', 'window_end'], message: 'Selection window must end on the snapshot date', input: snapshot.selection.window_end });
+  }
+  const sourceIds = snapshot.sources.map((source) => source.id);
+  if (new Set(sourceIds).size !== sourceIds.length || !['cisa-kev', 'first-epss', 'nvd'].every((id) => sourceIds.includes(id as typeof sourceIds[number]))) {
+    context.addIssue({ code: 'custom', path: ['sources'], message: 'Each configured source must appear exactly once', input: snapshot.sources });
+  }
+  const cves = new Set<string>();
+  snapshot.entries.forEach((entry, index) => {
+    if (entry.rank !== index + 1) {
+      context.addIssue({ code: 'custom', path: ['entries', index, 'rank'], message: 'Entry ranks must be contiguous and ordered', input: entry.rank });
+    }
+    if (cves.has(entry.cve)) {
+      context.addIssue({ code: 'custom', path: ['entries', index, 'cve'], message: 'Watch CVEs must be unique', input: entry.cve });
+    }
+    cves.add(entry.cve);
+    if (entry.epss.probability < snapshot.selection.epss_probability_min || entry.epss.percentile < snapshot.selection.epss_percentile_min) {
+      context.addIssue({ code: 'custom', path: ['entries', index, 'epss'], message: 'Entry does not meet the snapshot EPSS thresholds', input: entry.epss });
+    }
+  });
+}
+
+export const vulnerabilityWatchCandidateSchema = z.object({
+  ...vulnerabilityWatchBaseFields,
+  status: z.literal('candidate'),
+}).strict().superRefine(validateVulnerabilityWatch);
+
+export const vulnerabilityWatchPublishedSchema = z.object({
+  ...vulnerabilityWatchBaseFields,
+  status: z.literal('published'),
+  reviewed_by: z.string().trim().min(1),
+  reviewed_at: z.iso.datetime(),
+  review_pr: httpsUrlSchema,
+}).strict().superRefine(validateVulnerabilityWatch);
+
+export const vulnerabilityWatchFixtureSchema = z.object({
+  ...vulnerabilityWatchBaseFields,
+  status: z.literal('fixture'),
+  fixture: z.literal(true),
+}).strict().superRefine(validateVulnerabilityWatch);
+
 // Compatibility aliases for existing fixture authoring tools.
 export const storySchema = fixtureStorySchema;
 export const editionSchema = fixtureEditionSchema;
@@ -154,3 +291,8 @@ export type Edition = FixtureEdition | ProductionEdition;
 export type Newsletter = z.infer<typeof newsletterSchema>;
 export type Vulnerability = z.infer<typeof vulnerabilitySchema>;
 export type Source = z.infer<typeof sourceSchema>;
+export type VulnerabilityWatchCandidate = z.infer<typeof vulnerabilityWatchCandidateSchema>;
+export type VulnerabilityWatchPublished = z.infer<typeof vulnerabilityWatchPublishedSchema>;
+export type VulnerabilityWatchFixture = z.infer<typeof vulnerabilityWatchFixtureSchema>;
+export type VulnerabilityWatchSnapshot = VulnerabilityWatchCandidate | VulnerabilityWatchPublished | VulnerabilityWatchFixture;
+export type VulnerabilityWatchEntry = VulnerabilityWatchSnapshot['entries'][number];

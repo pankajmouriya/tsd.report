@@ -545,7 +545,7 @@ button, a { -webkit-tap-highlight-color: rgb(150 44 29 / .16); touch-action: man
 }
 .vuln-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 1180px;
   border-collapse: collapse;
   font-family: var(--sans);
   font-variant-numeric: tabular-nums lining-nums;
@@ -562,9 +562,21 @@ button, a { -webkit-tap-highlight-color: rgb(150 44 29 / .16); touch-action: man
 .vuln-table th:nth-child(2),
 .vuln-table th:nth-child(3),
 .vuln-table th:nth-child(4),
+.vuln-table th:nth-child(5),
 .vuln-table td:nth-child(2),
 .vuln-table td:nth-child(3),
-.vuln-table td:nth-child(4) { text-align: right; }
+.vuln-table td:nth-child(4),
+.vuln-table td:nth-child(5) { text-align: right; }
+.watch-policy,
+.watch-empty,
+.watch-degraded,
+.watch-sources { color: var(--muted); font: var(--text-sm)/1.55 var(--sans); }
+.watch-policy { max-width: 78ch; margin: -2px 0 16px; }
+.watch-empty { margin: 18px 0; padding: 18px 0; border-block: 1px solid var(--rule); }
+.watch-degraded { margin: 14px 0 0; }
+.watch-sources { margin: 14px 0 0; }
+.watch-references { min-width: 12rem; margin: 0; padding-left: 1rem; }
+.watch-references li + li { margin-top: 4px; }
 
 .page-footer {
   display: flex;

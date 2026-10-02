@@ -18,6 +18,7 @@ Read in this order:
 4. [Delivery plan](superpowers/plans/2026-09-26-tsd-delivery.md) — detailed prototype tasks, later milestones, release gates, and evidence ledger.
 5. [Production deployment plan](superpowers/plans/2026-09-27-tsd-production-deployment.md) — provider decision, preview and production CI/CD, security headers, DNS, release approval, daily candidate automation, smoke checks, and rollback.
 6. [Buttondown newsletter implementation plan](superpowers/plans/2026-09-30-tsd-buttondown-newsletter.md) — task requirements, implemented provider/workflow rulings, verification, and remaining live rollout gates; execution evidence is in the delivery ledger.
+7. [Automated Vulnerability Watch design](superpowers/specs/2026-10-02-tsd-vulnerability-watch-automation-design.md) and [implementation plan](superpowers/plans/2026-10-02-tsd-vulnerability-watch-automation.md) — authoritative-source selection, independent snapshots, ranking, review promotion, and verification.
 
 Supporting design notes:
 
@@ -32,4 +33,5 @@ The canonical article route is `/article/[slug]`. Milestone A is implemented loc
 
 - [Release process and workflow setup](operations/release-process.md) — pull request validation and previews, main-branch Direct Upload, GitHub and Cloudflare settings, first-publication checks, and manual rollback.
 - [Buttondown newsletter operations](operations/newsletter.md) — provider setup, configuration locations, approval and preview, independent rollout gates, identity reconciliation, pause/recovery, key rotation, privacy, and the 80/100 capacity decision.
+- [Vulnerability Watch operations](operations/vulnerability-watch.md) — daily candidates, source authority, thresholds, replay, label approval, failure handling, and recovery.
 - [Cloudflare account and `tsd.report` DNS setup](operations/cloudflare-domain-setup.md) — exact Cloudflare onboarding, GoDaddy nameserver migration, DNS verification, and DNSSEC steps.

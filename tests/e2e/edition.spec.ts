@@ -5,6 +5,10 @@ test('renders a complete newspaper edition', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'The Security Diff', exact: true })).toBeVisible();
   await expect(page.getByText('Fixture preview', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Vulnerability Watch', exact: true })).toBeVisible();
+  await expect(page.getByText('No recent KEV entries met both high EPSS thresholds for this snapshot.')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'CISA Known Exploited Vulnerabilities Catalog' })).toHaveAttribute('href', /^https:\/\//);
+  await expect(page.getByRole('link', { name: 'FIRST Exploit Prediction Scoring System' })).toHaveAttribute('href', /^https:\/\//);
+  await expect(page.locator('[data-vulnerability-row]')).toHaveCount(0);
   await expect(page.locator('.story-card h3 a').first()).toHaveAttribute('href', /\/article\//);
 });
 

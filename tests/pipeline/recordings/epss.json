@@ -1,0 +1,12 @@
+{
+  "status": "OK",
+  "status-code": 200,
+  "version": "1.0",
+  "total": 2,
+  "offset": 0,
+  "limit": 100,
+  "data": [
+    {"cve": "CVE-2026-12345", "epss": "0.750000000", "percentile": "0.980000000", "date": "2026-10-02"},
+    {"cve": "CVE-2026-12346", "epss": "0.620000000", "percentile": "0.960000000", "date": "2026-10-02"}
+  ]
+}

@@ -1,6 +1,8 @@
 node_modules/
+.venv/
 dist/
 .astro/
+artifacts/
 playwright-report/
 test-results/
 __pycache__/
