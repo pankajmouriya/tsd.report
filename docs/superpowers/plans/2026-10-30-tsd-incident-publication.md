@@ -10,6 +10,8 @@
 
 **Spec:** [Approved design](../specs/2026-10-30-tsd-incident-publication-design.md).
 
+**Execution status:** Local implementation and verification are recorded in the main delivery ledger. Clean committed-tree checks passed 77 Python and 307 TypeScript tests, type checking and production build/link checks; twelve incident browser journeys passed. Hosted bot-PR/approval/deployment acceptance remains open, so activation flags remain unset. The detailed task checklist below is retained as the acceptance/review checklist rather than marking unexercised hosted gates complete.
+
 ## Constraints
 
 - `/article/[slug]` remains canonical. Existing editions are immutable.
