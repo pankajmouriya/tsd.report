@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {"id":"aikido","name":"Aikido","url":"https://www.aikido.dev/blog/rss.xml","format":"feed","link_hosts":["www.aikido.dev"]},
+    {"id":"cloudflare","name":"Cloudflare","url":"https://blog.cloudflare.com/rss/","format":"feed","link_hosts":["blog.cloudflare.com"]},
+    {"id":"mozilla-security","name":"Mozilla Security","url":"https://blog.mozilla.org/security/feed/","format":"feed","link_hosts":["blog.mozilla.org"]},
+    {"id":"pypi-created","name":"PyPI announcements","url":"https://blog.pypi.org/feed_rss_created.xml","format":"feed","link_hosts":["blog.pypi.org"]},
+    {"id":"pypi-updated","name":"PyPI updates","url":"https://blog.pypi.org/feed_rss_updated.xml","format":"feed","link_hosts":["blog.pypi.org"]},
+    {"id":"nodejs","name":"Node.js","url":"https://nodejs.org/en/feed/blog.xml","format":"feed","link_hosts":["nodejs.org"]},
+    {"id":"php-releases","name":"PHP releases","url":"https://www.php.net/releases/feed.php","format":"feed","link_hosts":["www.php.net"]},
+    {"id":"php-news","name":"PHP news","url":"https://www.php.net/feed.atom","format":"feed","link_hosts":["www.php.net"]},
+    {"id":"litellm","name":"LiteLLM","url":"https://docs.litellm.ai/blog/rss.xml","format":"feed","link_hosts":["docs.litellm.ai"]},
+    {"id":"microsoft-security","name":"Microsoft Security","url":"https://www.microsoft.com/en-us/security/blog/feed/","format":"feed","link_hosts":["www.microsoft.com"]},
+    {"id":"socket","name":"Socket","url":"https://socket.dev/blog","format":"html","link_hosts":["socket.dev"],"path_prefix":"/blog/"},
+    {"id":"stepsecurity","name":"StepSecurity","url":"https://www.stepsecurity.io/blog","format":"html","link_hosts":["www.stepsecurity.io"],"path_prefix":"/blog/"},
+    {"id":"wiz","name":"Wiz","url":"https://www.wiz.io/blog","format":"html","link_hosts":["www.wiz.io"],"path_prefix":"/blog/"},
+    {"id":"datadog","name":"Datadog Security Labs","url":"https://securitylabs.datadoghq.com/","format":"html","link_hosts":["securitylabs.datadoghq.com"],"path_prefix":"/articles/"},
+    {"id":"reversinglabs","name":"ReversingLabs","url":"https://www.reversinglabs.com/blog","format":"html","link_hosts":["www.reversinglabs.com"],"path_prefix":"/blog/"},
+    {"id":"openssf-malicious","name":"OpenSSF Malicious Packages changes","url":"https://api.github.com/repos/ossf/malicious-packages/commits?path=osv&per_page=30","format":"github-commits","link_hosts":["github.com"]},
+    {"id":"github-advisories","name":"GitHub Advisory Database changes","url":"https://api.github.com/repos/github/advisory-database/commits?path=advisories&per_page=30","format":"github-commits","link_hosts":["github.com"]}
+  ],
+  "article_hosts": ["nodejs.org","www.php.net","thephp.foundation","docs.litellm.ai","www.litellm.ai","blog.pypi.org","socket.dev","www.stepsecurity.io","www.aikido.dev","www.wiz.io","securitylabs.datadoghq.com","www.reversinglabs.com","www.microsoft.com","blog.cloudflare.com","blog.mozilla.org","emudhra.com","www.cert-in.org.in","www.cisa.gov","github.com"]
+}

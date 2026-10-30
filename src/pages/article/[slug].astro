@@ -10,6 +10,8 @@ import { findEditionForStory, findStory, findStoryById, getContentMode, getStori
 import { articlePath, cvePath, editionPath, isExternalStory, storyDestination } from '../../lib/routes';
 import { formatShortDate } from '../../lib/format';
 import StoryDestinationLabel from '../../components/StoryDestinationLabel.astro';
+import IncidentBody from '../../components/IncidentBody.astro';
+import { getIncidentForStory } from '../../lib/content';
 
 export async function getStaticPaths() {
   const mode = getContentMode();
@@ -38,6 +40,7 @@ const statusLabel = mode === 'fixture'
   ? story.type === 'cve' ? 'Historical fixture' : article?.data.credit ?? 'Fixture preview'
   : article?.data.credit ?? story.author ?? 'The Security Diff';
 const primarySource = story.sources[0];
+const incident = getIncidentForStory(story.id);
 ---
 <ArticleLayout title={story.title} description={story.summary} canonical={articlePath(story.slug)} editionDate={edition?.date}>
   <main id="main" class:list={['reading-article', `reading-article--${structure}`]}>
@@ -46,7 +49,7 @@ const primarySource = story.sources[0];
       <h1>{story.title}</h1>
       <p class="dek">{story.summary}</p>
       <p class="article-meta">
-        <span>{statusLabel}</span> · <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time>
+        <span>{incident && !incident.review ? 'Unreviewed incident draft' : statusLabel}</span> · <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time>
         {mode === 'fixture' && article?.data.status === 'unreviewed-fixture' && <span class="article-status">Unreviewed fixture</span>}
       </p>
     </header>
@@ -68,7 +71,7 @@ const primarySource = story.sources[0];
     {structure === 'brief' && <aside class="brief-decision" aria-label="Supported action"><strong>Supported action</strong><p>{story.action}</p></aside>}
     {article && <ArticleContents {headings} />}
 
-    {Content ? <div class="article-body"><Content /></div> : <ArticleBody paragraphs={story.body} />}
+    {incident ? <IncidentBody {incident} /> : Content ? <div class="article-body"><Content /></div> : <ArticleBody paragraphs={story.body} />}
 
     {story.type === 'original' && <NewsletterPrompt context="article" />}
 
