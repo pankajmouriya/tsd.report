@@ -49,7 +49,7 @@ const incident = getIncidentForStory(story.id);
       <h1>{story.title}</h1>
       <p class="dek">{story.summary}</p>
       <p class="article-meta">
-        <span>{incident && !incident.review ? 'Unreviewed incident draft' : statusLabel}</span> · <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time>
+        <span>{incident && !incident.review ? 'Unreviewed incident draft' : incident?.candidate.schema_version === 2 ? 'Curated by The Security Diff' : statusLabel}</span> · <time datetime={story.published_at}>{formatShortDate(story.published_at)}</time>
         {mode === 'fixture' && article?.data.status === 'unreviewed-fixture' && <span class="article-status">Unreviewed fixture</span>}
       </p>
     </header>
@@ -57,14 +57,14 @@ const incident = getIncidentForStory(story.id);
     {isExternalStory(story) && (
       <aside class="external-provenance" aria-label="Original source">
         <div>
-          <p class="external-provenance-kicker">Curated external work</p>
+          <p class="external-provenance-kicker">{story.type === 'incident' ? 'Original incident report' : 'Curated external work'}</p>
           <h2>{primarySource.name}</h2>
           <p>
             {primarySource.published_at && <>Published <time datetime={primarySource.published_at}>{formatShortDate(primarySource.published_at)}</time> · </>}
             Retrieved <time datetime={primarySource.retrieved_at}>{formatShortDate(primarySource.retrieved_at)}</time>
           </p>
         </div>
-        <a class="external-story-cta" href={storyDestination(story)}>Read original research <span>↗</span></a>
+        <a class="external-story-cta" href={storyDestination(story)}>{story.type === 'incident' ? 'Read original report' : 'Read original research'} <span>↗</span></a>
       </aside>
     )}
 

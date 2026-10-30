@@ -16,6 +16,8 @@ The source registry is `config/incident-sources.json`: ten feeds, five public re
 
 Candidates live under `data/candidates/incidents/`. Published records live under `data/production/incidents/<incident_id>/<revision>.json`; they contain the unchanged authorized candidate, content hash, actual GitHub Approve review or editor merge event, and publication time. The homepage includes the latest twenty incident identities plus the latest editorial edition; canonical article/category/tag/feed discovery includes the publication catalogue. Dated editions continue using their frozen snapshots. The same canonical incident identity may appear in multiple dated snapshots, while unrelated duplicate IDs/slugs still fail validation.
 
+New incident identities use candidate schema version 2 with a validated `destination_source_id`. The source is an original or official report in the evidence packet. The homepage shows a short brief; its headline and other reader-facing links open that source. `/article/[slug]` remains a stable TSD provenance record, not a rewritten copy of the external report. Previously published version 1 incidents and their corrections remain readable without altering their immutable records. An unpublished version 1 first-revision candidate must be updated and revalidated before publication.
+
 ## Activation gates
 
 Integrate and validate the feature-code PR normally. Do not use the content publisher to merge a feature-code PR. New workflow dispatches require the workflow definitions to exist on the default branch; a local or feature-branch test does not establish hosted acceptance.
