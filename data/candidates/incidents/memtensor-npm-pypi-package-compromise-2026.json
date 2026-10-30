@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "incident_id": "memtensor-npm-pypi-package-compromise-2026",
+  "revision": 1,
+  "classification": "supply-chain-compromise",
+  "occurred_at": null,
+  "evidence_as_of": "2026-10-30T08:52:44.593872Z",
+  "supersedes": null,
+  "correction_note": null,
+  "sources": [
+    {
+      "id": "socket",
+      "name": "Socket Research",
+      "url": "https://socket.dev/blog/memtensor-compromise",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:44.593872Z",
+      "data_date": "2026-09-23"
+    }
+  ],
+  "facts": [
+    {
+      "id": "incident",
+      "statement": "a threat actor published malicious releases of two MemTensor packages on two registries",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "npm",
+      "statement": "@memtensor/memos-cloud-openclaw-plugin versions 0.1.21 , 0.1.23 and 0.1.25",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "pypi",
+      "statement": "MemoryOS version 2.0.34 , the Python package for MemTensor's MemOS memory framework.",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "payload",
+      "statement": "Every malicious release bundles a Go binary named sckit , built for Linux, macOS and Windows on both x64 and arm64",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "launch",
+      "statement": "The npm plugin starts it when the OpenClaw gateway starts, and again on every memory recall with the user's prompt text. The PyPI package starts it as soon as the memos module is imported.",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "target",
+      "statement": "Targets include npm, PyPI, GitHub, GitLab, AWS, Vault and SSH secrets.",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    }
+  ],
+  "editorial": {
+    "title": "MemTensor package releases carried a cross-platform credential collector",
+    "summary": "Socket’s package analysis identifies malicious releases in both the MemTensor npm plugin and the MemoryOS package on PyPI. The packages included a Go binary that searched developer environments for secrets. This is one distribution compromise spanning two registries, not two unrelated stories.",
+    "why_it_matters": "The payload was embedded in expected packages and could start during ordinary plugin or Python use. Teams need to trace installed artifacts and executions across both ecosystems, then assess credentials available to the affected processes.",
+    "action": "Check lockfiles, build logs and local installations for the named releases. Isolate hosts that executed affected artifacts, retain forensic evidence, remove the compromised packages, and rotate credentials accessible to the process from a clean environment. Check current maintainer and registry guidance before reinstalling.",
+    "tags": [
+      "supply-chain",
+      "npm",
+      "pypi",
+      "credential-theft"
+    ],
+    "affected_technologies": [
+      "MemTensor MemOS",
+      "OpenClaw plugin",
+      "Python environments"
+    ],
+    "claim_ids": [
+      "incident",
+      "npm",
+      "pypi",
+      "payload",
+      "launch",
+      "target"
+    ],
+    "sections": [
+      {
+        "heading": "One campaign across two registries",
+        "paragraphs": [
+          "Socket reports malicious npm releases of @memtensor/memos-cloud-openclaw-plugin at 0.1.21, 0.1.23 and 0.1.25, plus MemoryOS 2.0.34 on PyPI. The package names serve different integration paths, but the research describes a shared credential-collection payload. An inventory limited to one language ecosystem can therefore miss related exposure.",
+          "The version list comes from Socket’s analysis at publication time. Registry availability and any subsequent clean release can change; operators should use current upstream and registry records for replacement decisions. A package name in a dependency file alone does not prove a malicious version was installed or executed."
+        ],
+        "claim_ids": [
+          "incident",
+          "npm",
+          "pypi"
+        ]
+      },
+      {
+        "heading": "What execution can reach",
+        "paragraphs": [
+          "The report describes a bundled Go binary named sckit for major desktop and server platforms. In the npm plugin, the binary starts with the OpenClaw gateway and during memory recall. In the Python package, it starts when the memos module is imported. Those trigger points matter when deciding which hosts and logs to examine.",
+          "Socket’s static analysis indicates the binary searches for npm, PyPI, GitHub, GitLab, AWS, Vault and SSH secrets. The report supports a credential-theft capability. It does not establish that every installation had those secrets, or that every attempted exfiltration succeeded."
+        ],
+        "claim_ids": [
+          "payload",
+          "launch",
+          "target"
+        ]
+      },
+      {
+        "heading": "Investigate before replacing",
+        "paragraphs": [
+          "Correlate exact installed versions with execution history, process context and available credentials. Preserve artifacts and network evidence where feasible, then remove affected installations and rotate at-risk credentials from a clean host. Review publishing tokens as well as application secrets because both package ecosystems appear in the reported target set.",
+          "Use the linked original analysis for indicators and current maintainer notices for package status. Do not substitute a guessed safe version for a verified registry or maintainer update."
+        ],
+        "claim_ids": [
+          "npm",
+          "pypi",
+          "target"
+        ]
+      }
+    ]
+  }
+}
