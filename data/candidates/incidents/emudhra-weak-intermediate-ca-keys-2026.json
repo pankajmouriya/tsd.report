@@ -5,7 +5,7 @@
   "revision": 1,
   "classification": "certificate-trust",
   "occurred_at": null,
-  "evidence_as_of": "2026-10-30T08:52:45.195936Z",
+  "evidence_as_of": "2026-10-30T09:13:31.319549Z",
   "supersedes": null,
   "correction_note": null,
   "sources": [
@@ -15,17 +15,17 @@
       "url": "https://emudhra.com/en/post/certificate-security-incident/",
       "type": "vendor",
       "published_at": null,
-      "retrieved_at": "2026-10-30T08:52:43.682952Z",
+      "retrieved_at": "2026-10-30T09:13:29.413532Z",
       "data_date": "2026-10-30"
     },
     {
-      "id": "mozilla",
-      "name": "Mozilla Security",
-      "url": "https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/",
-      "type": "vendor",
+      "id": "github-mozilla",
+      "name": "GitHub advisory on Mozilla OneCRL response",
+      "url": "https://github.com/advisories/GHSA-vr39-qqr3-x9v4",
+      "type": "community",
       "published_at": null,
-      "retrieved_at": "2026-10-30T08:52:44.337154Z",
-      "data_date": "2026-10-20"
+      "retrieved_at": "2026-10-30T09:13:30.247973Z",
+      "data_date": "2026-10-21"
     },
     {
       "id": "cloudflare",
@@ -33,7 +33,7 @@
       "url": "https://blog.cloudflare.com/emudhra-certificate-compromise/",
       "type": "research",
       "published_at": null,
-      "retrieved_at": "2026-10-30T08:52:44.619210Z",
+      "retrieved_at": "2026-10-30T09:13:30.686348Z",
       "data_date": "2026-10-20"
     },
     {
@@ -42,11 +42,19 @@
       "url": "https://www.aikido.dev/blog/emudhra-ca-compromise",
       "type": "research",
       "published_at": null,
-      "retrieved_at": "2026-10-30T08:52:45.195936Z",
+      "retrieved_at": "2026-10-30T09:13:31.319549Z",
       "data_date": "2026-10-22"
     }
   ],
   "facts": [
+    {
+      "id": "recoverable",
+      "statement": "the private keys associated with eight of our emSign G3 intermediate TLS CAs were recoverable.",
+      "source_ids": [
+        "emudhra"
+      ],
+      "state": "reported"
+    },
     {
       "id": "weak",
       "statement": "Eight intermediate (issuing) CAs in our Global TLS business were revoked because their published keys were weak.",
@@ -57,7 +65,7 @@
     },
     {
       "id": "root",
-      "statement": "Intermediate keys were revoked, not root keys. The weakness was in the keys of the eight intermediates.",
+      "statement": "Intermediate keys were revoked, not root keys.",
       "source_ids": [
         "emudhra"
       ],
@@ -81,15 +89,15 @@
     },
     {
       "id": "mozilla",
-      "statement": "blocking the affected certificates in Firefox using OneCRL",
+      "statement": "Mozilla blocked compromised intermediate eMudhra certificates via OneCRL on the 17th of October",
       "source_ids": [
-        "mozilla"
+        "github-mozilla"
       ],
       "state": "reported"
     },
     {
       "id": "transition",
-      "statement": "We are already in the process of moving our impacted G3 customers and our broader non-impacted TLS customers to alternate certificates at no cost.",
+      "statement": "moving our impacted G3 customers and our broader non-impacted TLS customers to alternate certificates at no cost.",
       "source_ids": [
         "emudhra"
       ],
@@ -106,7 +114,7 @@
   ],
   "editorial": {
     "title": "eMudhra weak intermediate keys prompt browser distrust and certificate migration",
-    "summary": "eMudhra says eight intermediate certificate authorities had weak, recoverable keys and were revoked. Mozilla blocked the affected certificates in Firefox. The issuer says its root key was not compromised, while root-store distrust and certificate migration create a separate operational impact for customers.",
+    "summary": "eMudhra says eight intermediate certificate authorities had weak, recoverable keys and were revoked. A GitHub advisory records Mozilla’s OneCRL block for the affected certificates. The issuer says its root key was not compromised, while root-store distrust and certificate migration create a separate operational impact for customers.",
     "why_it_matters": "Certificate trust depends on both the issuing hierarchy and client update behavior. A revocation can protect some clients promptly while stale trust stores and services that do not check revocation need separate review.",
     "action": "Identify certificates and trust stores that chain to the affected eMudhra hierarchy; follow the issuer and platform vendors’ replacement guidance. Update client trust stores where applicable and verify service continuity after reissuing certificates. Preserve any evidence of suspicious certificate use for investigation.",
     "tags": [
@@ -120,6 +128,7 @@
       "Firefox"
     ],
     "claim_ids": [
+      "recoverable",
       "weak",
       "root",
       "mozilla",
@@ -132,10 +141,11 @@
       {
         "heading": "What the issuer and browser report",
         "paragraphs": [
-          "eMudhra says eight Global TLS intermediate authorities were created with weak published keys and then revoked. Its statement expressly distinguishes the intermediate keys from the root key: the root was distrusted as a precaution, not reported as cryptographically compromised. Mozilla says it blocked the affected intermediates in Firefox through OneCRL.",
+          "eMudhra says eight Global TLS intermediate authorities were created with weak published keys and then revoked. Its statement expressly distinguishes the intermediate keys from the root key: the root was distrusted as a precaution, not reported as cryptographically compromised. A GitHub advisory record says Mozilla blocked the affected intermediates through OneCRL.",
           "The issuer also says the weak intermediates had not issued publicly trusted end-entity certificates, based on its investigation to date. That statement limits a direct claim about certificates signed by those intermediates. It does not eliminate the separate migration work caused by distrust of a higher-level hierarchy."
         ],
         "claim_ids": [
+          "recoverable",
           "weak",
           "root",
           "mozilla",
