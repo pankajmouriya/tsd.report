@@ -53,6 +53,23 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run validate:fixture
+      - name: Require a promoted Watch snapshot before review-ready validation
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'automation/vulnerability-watch-') && !github.event.pull_request.draft
+        env:
+          WATCH_BRANCH: ${{ github.head_ref }}
+        run: |
+          watch_date="${WATCH_BRANCH#automation/vulnerability-watch-}"
+          if ! [[ "$watch_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "::error::Invalid Vulnerability Watch branch date"
+            exit 1
+          fi
+          candidate="data/candidates/vulnerability-watch/$watch_date.json"
+          published="data/production/vulnerability-watch/$watch_date.json"
+          if [ -e "$candidate" ] || [ ! -f "$published" ]; then
+            echo "::error::Apply publish-vulnerability-watch and wait for promotion before marking this PR ready or merging it"
+            exit 1
+          fi
+          npm run validate:production
       - run: npm run build:fixture
       - run: npm run newsletter:preview -- --mode fixture
       - run: npm run check:links
