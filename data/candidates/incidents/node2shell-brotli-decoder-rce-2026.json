@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "incident_id": "node2shell-brotli-decoder-rce-2026",
+  "revision": 1,
+  "classification": "dependency-vulnerability",
+  "occurred_at": null,
+  "evidence_as_of": "2026-10-30T08:52:44.247538Z",
+  "supersedes": null,
+  "correction_note": null,
+  "sources": [
+    {
+      "id": "nodejs",
+      "name": "Node.js Security Releases",
+      "url": "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+      "type": "vendor",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:43.755765Z",
+      "data_date": "2026-10-21"
+    },
+    {
+      "id": "aikido",
+      "name": "Aikido",
+      "url": "https://www.aikido.dev/blog/node2shell-nodejs-brotli-rce-cve-2026-111497",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:44.247538Z",
+      "data_date": "2026-10-22"
+    }
+  ],
+  "facts": [
+    {
+      "id": "cve",
+      "statement": "Node.js Brotli decoder out-of-bounds write permits remote code execution (CVE-2026-111497) - (high)",
+      "source_ids": [
+        "nodejs"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "mechanism",
+      "statement": "An invalid block switch was reported as a temporary need for more input instead of a permanent format error",
+      "source_ids": [
+        "nodejs"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "precondition",
+      "statement": "An attacker who can supply Brotli data that an application decompresses with node:zlib can corrupt process memory",
+      "source_ids": [
+        "nodejs"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "affected",
+      "statement": "This vulnerability affects Node.js 26.x , 24.x , and 22.x .",
+      "source_ids": [
+        "nodejs"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "releases",
+      "statement": "Node.js v22.23.4 Node.js v24.22.1 Node.js v26.12.1",
+      "source_ids": [
+        "nodejs"
+      ],
+      "state": "reported"
+    }
+  ],
+  "editorial": {
+    "title": "Node2Shell: Brotli decoder bug reaches Node.js process memory",
+    "summary": "The Node.js project rates CVE-2026-111497 high severity. Malformed Brotli data can drive an out-of-bounds write when an application decompresses attacker-supplied input through node:zlib. The affected supported release lines are 22.x, 24.x and 26.x. This is a runtime vulnerability, not evidence that Node.js distribution was compromised.",
+    "why_it_matters": "The critical question for operators is whether untrusted compressed data can reach the bundled decoder in their service. A vulnerable runtime alone does not establish remote exploitability in every deployment, but a reachable decompression path can place process memory at risk.",
+    "action": "Inventory Node.js versions in services that process external compressed input. Follow the project’s security releases for each supported line, redeploy the patched runtime and verify the running process version. Review logging and incident indicators separately if suspicious compressed input was received.",
+    "tags": [
+      "nodejs",
+      "brotli",
+      "dependency-vulnerability",
+      "remote-code-execution"
+    ],
+    "affected_technologies": [
+      "Node.js",
+      "Brotli decoder",
+      "node:zlib"
+    ],
+    "claim_ids": [
+      "cve",
+      "mechanism",
+      "precondition",
+      "affected",
+      "releases"
+    ],
+    "sections": [
+      {
+        "heading": "The fault in the decoder",
+        "paragraphs": [
+          "The Node.js advisory describes an invalid Brotli block switch being treated as a temporary request for more input instead of a permanent format error. The streaming decoder could then keep appending bytes beyond an internal buffer. The project says a caller that decompresses attacker-controlled Brotli data through node:zlib can suffer memory corruption, a crash, disclosure or remote code execution.",
+          "The advisory labels CVE-2026-111497 as high severity. That rating is separate from a report of exploitation in the wild. Neither the advisory nor the supporting research establishes that every service with Node.js accepts attacker-controlled Brotli streams."
+        ],
+        "claim_ids": [
+          "cve",
+          "mechanism",
+          "precondition"
+        ]
+      },
+      {
+        "heading": "Locate reachable deployments",
+        "paragraphs": [
+          "The project lists the 22.x, 24.x and 26.x release lines as affected. The relevant exposure is a decompression call fed by untrusted bytes, which may sit behind an API, a file-processing path or another application layer. Review those paths and their input controls before assigning deployment-specific risk.",
+          "The project links security releases v22.23.4, v24.22.1 and v26.12.1. Confirm the exact runtime used by running services and container images after updating. A lockfile or source-code dependency declaration is not proof that a production process has restarted on the corrected binary."
+        ],
+        "claim_ids": [
+          "affected",
+          "releases"
+        ]
+      },
+      {
+        "heading": "What the evidence does not show",
+        "paragraphs": [
+          "A published proof of concept demonstrates a possible path, but it does not establish active exploitation of a particular organization. If you find suspicious input or crashes, preserve logs and process evidence for a separate incident investigation.",
+          "This report focuses on the Node.js bundled decoder. Other products with their own Brotli copies need their own vendor advisories and should not inherit a Node.js fix claim automatically."
+        ],
+        "claim_ids": [
+          "precondition",
+          "cve"
+        ]
+      }
+    ]
+  }
+}
