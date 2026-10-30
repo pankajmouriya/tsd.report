@@ -6,7 +6,7 @@ Researched: 2026-10-30. Status: source catalogue and editorial recommendations; 
 
 Cover compromised packages and releases, CI/CD and publishing compromises, malicious dependencies, major dependency/runtime vulnerabilities, and certificate-trust incidents. These need different labels: a vulnerable runtime does not establish that its software distribution was compromised, and a public proof of concept does not establish exploitation in the wild. A CVE is optional for incident coverage.
 
-The editor selected scheduled discovery with on-demand Codex drafting, followed by an Approve review that automatically merges and deploys after validation. Monitoring collects leads; it does not declare them confirmed or publish them.
+The editor selected scheduled discovery with on-demand Codex drafting, followed by editorial authorization and deployment after validation. Monitoring collects leads; it does not declare them confirmed or publish them. Apply the [story-selection policy](incident-selection.md) to grouped events, keeping duplicate reports as references and official or original sources authoritative for their own claims.
 
 ## Recommended sources
 

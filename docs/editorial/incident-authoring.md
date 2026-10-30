@@ -1,10 +1,12 @@
 # Drafting an incident with Codex
 
-This workflow prepares a content-only, bot-authored summary PR. Scheduled monitoring collects leads; it does not generate prose or publish. The operator runbook is [incident publication](../operations/incidents.md). The [source catalogue](incident-sources.md) lists the initial reporting queue.
+This workflow prepares a content-only, bot-authored summary PR. Scheduled monitoring collects leads; it does not generate prose or publish. Apply the [story-selection policy](incident-selection.md) to the grouped event before drafting. The operator runbook is [incident publication](../operations/incidents.md). The [source catalogue](incident-sources.md) lists the initial reporting queue.
 
 ## Ask for a draft
 
 An editor can ask: “Draft an incident summary from these source URLs” or “Investigate this lead from the TSD incident leads issue.” Codex should read this guide and the original evidence, then prepare the candidate. Do not label an item a supply-chain attack merely because a vulnerable dependency is involved.
+
+Before preparing a PR, record in the working notes the editorial lane, evidence-gate result, 0–10 selection score with its four components, grouped lead URLs, the primary source for each authoritative claim, and the distinct reader value. A score does not approve publication. If the editor requests a lower-scoring story, record the reason; never waive the evidence gate. If the lead belongs to ecosystem news or a technical explainer, retain it for that lane instead of forcing it into this incident candidate contract.
 
 Use at least one maintainer, government or original-research source. More links do not establish independent corroboration. Keep source conflicts, unknown values and investigation updates explicit. Separate the March and October LiteLLM incidents.
 

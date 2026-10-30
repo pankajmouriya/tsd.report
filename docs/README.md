@@ -8,6 +8,7 @@ Start with the [authoring guide](editorial/authoring-guide.md): copyable templat
 - [Agent-assisted workflow](editorial/agent-workflow.md) — constrained drafting, evidence handoff, proposed output schema, and automation gaps.
 - [Editorial seed rationale](editorial/editorial-seed-rationale.md) — existing examples and future candidates.
 - [Incident sources](editorial/incident-sources.md) — researched monitoring channels, ten verified feed endpoints, and the initial incident reporting queue.
+- [Incident story selection](editorial/incident-selection.md) — keep discovery broad, group duplicate leads, rank story candidates, and choose the correct editorial lane.
 - [Incident authoring](editorial/incident-authoring.md) — capture original evidence, prepare constrained Codex copy, and submit a content-only bot PR.
 - [Approved incident publication design](superpowers/specs/2026-10-30-tsd-incident-publication-design.md) — scheduled discovery, on-demand Codex drafts, and approval-triggered merge/deployment.
 
