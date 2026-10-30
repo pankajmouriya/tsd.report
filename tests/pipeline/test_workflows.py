@@ -29,6 +29,7 @@ def test_candidate_workflow_is_scheduled_review_only_and_least_privilege() -> No
     assert "pipeline.cli collect" in text
     assert "automation/vulnerability-watch-" in text
     assert "gh pr create" in text
+    assert "--draft" in text  # A candidate-only PR cannot be merged before label promotion.
     assert "data/candidates/vulnerability-watch" in text
     assert "data/production/vulnerability-watch" not in text
     assert "git push --force" not in text
@@ -58,6 +59,7 @@ def test_promotion_workflow_uses_a_trusted_label_gate_without_executing_candidat
 
 def test_pull_request_validation_runs_locked_pipeline_checks() -> None:
     document, text = workflow("validate.yml")
+    assert "ready_for_review" in document["on"]["pull_request"]["types"]
     assert "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97" in text
     assert "astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9" in text
     assert "uv sync --locked" in text
