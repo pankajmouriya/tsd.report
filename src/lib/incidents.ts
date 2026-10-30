@@ -47,6 +47,11 @@ export function loadIncidentPreview(root = process.cwd()): IncidentCandidate | u
 
 export function incidentStory(candidate: IncidentCandidate, publication?: IncidentPublication): Story {
   const copy = candidate.editorial;
+  const destination = candidate.schema_version === 2
+    ? candidate.sources.find((source) => source.id === candidate.destination_source_id)
+    : undefined;
+  const destinationId = candidate.schema_version === 2 ? candidate.destination_source_id : null;
+  if (candidate.schema_version === 2 && !destination) throw new Error('Incident destination source missing');
   const common = {
     id: `incident-${candidate.incident_id}`, slug: candidate.incident_id, title: copy.title,
     type: 'incident' as const, category: candidate.classification === 'dependency-vulnerability' ? 'vulnerabilities' as const : 'supply-chain' as const,
@@ -54,9 +59,13 @@ export function incidentStory(candidate: IncidentCandidate, publication?: Incide
     updated_at: candidate.revision > 1 ? publication?.published_at ?? candidate.evidence_as_of : null,
     summary: copy.summary, why_it_matters: copy.why_it_matters, action: copy.action,
     affected_technologies: copy.affected_technologies, tags: copy.tags,
-    sources: candidate.sources.map(({ data_date: _dataDate, ...source }) => source),
+    sources: [...candidate.sources].sort((left, right) =>
+      left.id === destinationId ? -1 : right.id === destinationId ? 1 : 0)
+      .map(({ data_date: _dataDate, ...source }) => source),
     signal: { score: 70, label: 'recommended' as const, reasons: ['Selected for incident reporting'] },
-    vulnerabilities: [], body: copy.sections.flatMap((section) => section.paragraphs), author: null,
+    vulnerabilities: [], body: candidate.schema_version === 1 ? candidate.editorial.sections.flatMap((section) => section.paragraphs) : [],
+    author: null,
+    ...(destination ? { destination_url: destination.url } : {}),
   };
   return publication ? { ...common, status: 'published', reviewed_by: publication.review.actor,
     reviewed_at: publication.review.approval_kind === 'merge' ? publication.review.merged_at : publication.review.reviewed_at }

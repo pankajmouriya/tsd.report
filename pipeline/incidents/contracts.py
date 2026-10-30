@@ -63,11 +63,19 @@ def validate_candidate(payload: dict) -> dict:
         raise ValueError("Duplicate evidence identity")
     if not any(source["type"] != "community" for source in sources):
         raise ValueError("Primary or original research evidence required")
+    if payload["schema_version"] == 2 and not any(
+        source["id"] == payload["destination_source_id"] and source["type"] != "community"
+        for source in sources
+    ):
+        raise ValueError("External destination must identify an original or official source")
+    if payload["schema_version"] == 2 and not any(
+        payload["destination_source_id"] in fact["source_ids"] for fact in facts
+    ):
+        raise ValueError("External destination must support a captured fact")
     if any(set(fact["source_ids"]) - source_ids for fact in facts):
         raise ValueError("Unknown source reference")
-    cited = editorial["claim_ids"] + [
-        ref for section in editorial["sections"] for ref in section["claim_ids"]
-    ]
+    sections = editorial.get("sections", [])
+    cited = editorial["claim_ids"] + [ref for section in sections for ref in section["claim_ids"]]
     if set(cited) - fact_ids:
         raise ValueError("Unknown claim reference")
     if payload["revision"] == 1:
@@ -83,7 +91,7 @@ def validate_candidate(payload: dict) -> dict:
     prose = "\n".join(
         [editorial[key] for key in ("title", "summary", "why_it_matters", "action")]
         + editorial["affected_technologies"]
-        + [text for section in editorial["sections"] for text in [section["heading"], *section["paragraphs"]]]
+        + [text for section in sections for text in [section["heading"], *section["paragraphs"]]]
     )
     if re.search(r"</?[a-z!]|javascript:|https?://|!\[", prose, re.I):
         raise ValueError("Editorial copy must be inert text with source-id citations")

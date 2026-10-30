@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from pipeline.incidents.contracts import content_hash
+from pipeline.incidents.contracts import content_hash, make_publication
 from pipeline.incidents.publisher import (
     candidate_path,
     eligible_review,
@@ -131,6 +131,9 @@ class FakeGitHub:
 
     def __init__(self):
         self.candidate = packet()
+        self.candidate["schema_version"] = 2
+        self.candidate["destination_source_id"] = self.candidate["sources"][0]["id"]
+        del self.candidate["editorial"]["sections"]
         del self.candidate["fixture"]
         self.candidate["incident_id"] = "reported-release"
         self.candidate["sources"][0]["url"] = "https://nodejs.org/en/security"
@@ -212,6 +215,40 @@ def test_publisher_preserves_reviewed_copy_and_retries_without_rewriting_it():
     assert publish(github, 7)["status"] == "deployment-queued"
     assert github.commits == 1
     assert len(github.dispatches) == 2
+
+
+def test_new_legacy_article_packet_cannot_publish_as_an_external_brief():
+    github = FakeGitHub()
+    github.candidate = packet()
+    del github.candidate["fixture"]
+    github.candidate["incident_id"] = "reported-release"
+    github.candidate["sources"][0]["url"] = "https://nodejs.org/en/security"
+    with pytest.raises(ValueError, match="short external brief"):
+        publish(github, 7)
+    assert not github.records
+
+
+def test_previously_published_legacy_article_can_still_recover_deployment():
+    github = FakeGitHub()
+    github.candidate = packet()
+    del github.candidate["fixture"]
+    github.candidate["incident_id"] = "reported-release"
+    github.candidate["sources"][0]["url"] = "https://nodejs.org/en/security"
+    github.pr.update(merged=True, state="closed", merged_at="2026-10-30T07:00:00Z")
+    review = {
+        "approval_kind": "review",
+        "actor": "pankajmouriya",
+        "reviewed_at": github.review["submitted_at"],
+        "head_sha": SHA,
+        "review_id": github.review["id"],
+        "pr_number": 7,
+        "pr_url": "https://github.com/example/newspaper/pull/7",
+    }
+    github.records[publication_path(github.candidate)] = make_publication(
+        github.candidate, review, "2026-10-30T07:05:00Z"
+    )
+    assert publish(github, 7)["status"] == "deployment-queued"
+    assert github.commits == 0
 
 
 def test_editor_merge_publishes_with_real_merge_metadata_and_is_idempotent():

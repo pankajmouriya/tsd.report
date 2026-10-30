@@ -6,7 +6,7 @@ const { candidate, review } = incident;
 ---
 <div class="article-body">
   {candidate.correction_note && <aside class="evidence-note"><strong>Correction</strong><p>{candidate.correction_note}</p></aside>}
-  {candidate.editorial.sections.map((section) => {
+  {(candidate.schema_version === 1 ? candidate.editorial.sections : []).map((section) => {
     const ids = new Set(candidate.facts.filter((fact) => section.claim_ids.includes(fact.id)).flatMap((fact) => fact.source_ids));
     const sources = candidate.sources.filter((source) => ids.has(source.id));
     return <section><h2>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}

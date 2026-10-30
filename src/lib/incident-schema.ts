@@ -20,8 +20,13 @@ export const incidentEditorialSchema = z.object({
   }).strict()).min(1).max(12),
 }).strict();
 
-export const incidentCandidateBaseSchema = z.object({
-  schema_version: z.literal(1), status: z.literal('candidate'), fixture: z.literal(true).optional(),
+export const incidentBriefEditorialSchema = incidentEditorialSchema.omit({ sections: true }).extend({
+  title: text.max(120), summary: text.max(340), why_it_matters: text.max(240), action: text.max(240),
+  affected_technologies: z.array(text.max(100)).max(5),
+});
+
+const candidateFields = {
+  status: z.literal('candidate'), fixture: z.literal(true).optional(),
   incident_id: identifier, revision: z.number().int().min(1).max(10000),
   classification: z.enum(['supply-chain-compromise', 'dependency-vulnerability', 'certificate-trust']),
   occurred_at: z.iso.datetime().nullable(), evidence_as_of: z.iso.datetime(),
@@ -35,8 +40,13 @@ export const incidentCandidateBaseSchema = z.object({
     id: identifier, statement: text, source_ids: references,
     state: z.enum(['confirmed', 'reported', 'disputed', 'unknown']),
   }).strict()).min(1).max(100),
-  editorial: incidentEditorialSchema,
-}).strict();
+};
+
+const legacyCandidateSchema = z.object({ schema_version: z.literal(1), ...candidateFields,
+  editorial: incidentEditorialSchema }).strict();
+const briefCandidateSchema = z.object({ schema_version: z.literal(2), ...candidateFields,
+  destination_source_id: identifier, editorial: incidentBriefEditorialSchema }).strict();
+export const incidentCandidateBaseSchema = z.discriminatedUnion('schema_version', [legacyCandidateSchema, briefCandidateSchema]);
 
 export function candidateIssues(candidate: z.infer<typeof incidentCandidateBaseSchema>): string[] {
   const issues: string[] = [];
@@ -52,13 +62,22 @@ export function candidateIssues(candidate: z.infer<typeof incidentCandidateBaseS
   if (!candidate.sources.some((source) => source.type !== 'community')) issues.push('Primary or original research evidence required');
   for (const fact of candidate.facts) if (fact.source_ids.some((id) => !sourceIds.has(id))) issues.push('Unknown source reference');
   const { editorial } = candidate;
-  const citedIds = [...editorial.claim_ids, ...editorial.sections.flatMap((section) => section.claim_ids)];
+  const sections = candidate.schema_version === 1 ? candidate.editorial.sections : [];
+  const citedIds = [...editorial.claim_ids, ...sections.flatMap((section) => section.claim_ids)];
   if (citedIds.some((id) => !factIds.has(id))) issues.push('Unknown claim reference');
+  if (candidate.schema_version === 2 && !candidate.sources.some((source) =>
+    source.id === candidate.destination_source_id && source.type !== 'community')) {
+    issues.push('External destination must identify an original or official source');
+  }
+  if (candidate.schema_version === 2 && !candidate.facts.some((fact) =>
+    fact.source_ids.includes(candidate.destination_source_id))) {
+    issues.push('External destination must support a captured fact');
+  }
   if ((candidate.revision === 1 && (candidate.supersedes !== null || candidate.correction_note !== null)) ||
       (candidate.revision > 1 && (!candidate.supersedes || !candidate.correction_note))) issues.push('Invalid correction chain');
   if (candidate.sources.some((source) => Date.parse(source.retrieved_at) > Date.parse(candidate.evidence_as_of))) issues.push('Evidence as-of precedes retrieval');
   const prose = [editorial.title, editorial.summary, editorial.why_it_matters, editorial.action,
-    ...editorial.affected_technologies, ...editorial.sections.flatMap((section) => [section.heading, ...section.paragraphs])].join('\n');
+    ...editorial.affected_technologies, ...sections.flatMap((section) => [section.heading, ...section.paragraphs])].join('\n');
   if (/<\/?[a-z!]|javascript:|https?:\/\/|!\[/i.test(prose)) issues.push('Editorial copy must be inert text with source-id citations');
   const tokens = (value: string) => (value.match(/CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+|\b[vV]?\d+\.\d+(?:\.\d+)*(?:[-+][a-zA-Z0-9.-]+)?\b/g) ?? []).map((token) => token.replace(/^[vV](?=\d)/, ''));
   const evidence = new Set(tokens(candidate.facts.map((fact) => fact.statement).join('\n')));

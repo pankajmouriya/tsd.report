@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { incidentCandidateSchema, incidentPublicationSchema } from '../../src/lib/incident-schema';
 import { composeHomepage, incidentContentHash, incidentStory, selectLatestPublications } from '../../src/lib/incidents';
 import { getEditions, validateContentMode } from '../../src/lib/content';
+import { storyDestination, storyIdentityPath } from '../../src/lib/routes';
 
 const candidate = () => JSON.parse(readFileSync('tests/fixtures/incidents/candidate.json', 'utf8'));
 
@@ -41,6 +42,27 @@ describe('incident contract', () => {
   it('hashes the shared packet exactly as Python does', () => {
     expect(incidentContentHash(candidate())).toBe('014c3c75b17ca7d20fc3654edbb11564a8bba392098ff706773dc59613122663');
   });
+  it('requires a cited original source for a short external incident brief', () => {
+    const value = candidate();
+    value.schema_version = 2;
+    value.destination_source_id = value.sources[0].id;
+    delete value.editorial.sections;
+    const parsed = incidentCandidateSchema.parse(value);
+    const story = incidentStory(parsed);
+    expect(storyDestination(story)).toBe(value.sources[0].url);
+    expect(storyIdentityPath(story)).toBe(`/article/${value.incident_id}`);
+    expect(story.body).toEqual([]);
+    expect(() => incidentCandidateSchema.parse({ ...value, destination_source_id: 'missing' })).toThrow();
+    const community = structuredClone(value);
+    community.sources[0].type = 'community';
+    expect(() => incidentCandidateSchema.parse(community)).toThrow();
+    const unsupportedSource = structuredClone(value);
+    unsupportedSource.sources.push({ ...unsupportedSource.sources[0], id: 'other-report' });
+    unsupportedSource.destination_source_id = 'other-report';
+    expect(() => incidentCandidateSchema.parse(unsupportedSource)).toThrow();
+    expect(() => incidentCandidateSchema.parse({ ...value, editorial: { ...value.editorial, sections: [] } })).toThrow();
+    expect(() => incidentCandidateSchema.parse({ ...value, editorial: { ...value.editorial, summary: 'a'.repeat(341) } })).toThrow();
+  });
   it('rejects publishing a synthetic scenario even with review-shaped metadata', () => {
     expect(() => incidentPublicationSchema.parse({
       schema_version: 1, status: 'published', candidate: candidate(),
@@ -64,6 +86,25 @@ describe('incident contract', () => {
     expect(incidentPublicationSchema.parse(record).review.approval_kind).toBe('merge');
     expect(() => incidentPublicationSchema.parse({ ...record, review: { ...record.review, review_id: 1 } })).toThrow();
     expect(() => incidentPublicationSchema.parse({ ...record, review: { ...record.review, reviewed_at: record.review.merged_at } })).toThrow();
+  });
+  it('publishes a short external brief without changing its internal identity', () => {
+    const value = candidate();
+    value.schema_version = 2;
+    value.incident_id = 'reported-release';
+    value.destination_source_id = value.sources[0].id;
+    value.sources[0].url = 'https://nodejs.org/en/security';
+    delete value.fixture;
+    delete value.editorial.sections;
+    const record = incidentPublicationSchema.parse({
+      schema_version: 1, status: 'published', candidate: value,
+      content_sha256: incidentContentHash(value), published_at: '2026-10-30T06:00:00Z',
+      review: { approval_kind: 'merge', actor: 'editor', merged_at: '2026-10-30T05:30:00Z',
+        merge_sha: 'c'.repeat(40), head_sha: 'b'.repeat(40), pr_number: 1,
+        pr_url: 'https://github.com/example/newspaper/pull/1' },
+    });
+    const story = incidentStory(record.candidate, record);
+    expect(storyDestination(story)).toBe('https://nodejs.org/en/security');
+    expect(storyIdentityPath(story)).toBe('/article/reported-release');
   });
 });
 

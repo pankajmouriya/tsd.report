@@ -108,6 +108,8 @@ def propose(github, branch):
     github.regular_file(f"data/candidates/incidents/{matched[1]}.json", head)
     candidate = github.file(f"data/candidates/incidents/{matched[1]}.json", head)
     validate_candidate(candidate)
+    if candidate["schema_version"] == 1 and candidate["revision"] == 1:
+        raise ValueError("New incidents require a short external brief with an original source")
     require_real_candidate(candidate)
     if candidate["incident_id"] != matched[1] or candidate["revision"] != int(matched[2]):
         raise ValueError("Candidate identity does not match branch")
@@ -124,6 +126,16 @@ def propose(github, branch):
         pr = existing[0]
     else:
         copy = candidate["editorial"]
+        destination_id = candidate.get("destination_source_id")
+        destination = next(
+            (source for source in candidate["sources"] if source["id"] == destination_id),
+            None,
+        )
+        reader_destination = (
+            ["## Reader destination", f"[{markdown_text(destination['name'])}](<{destination['url']}>)"]
+            if destination
+            else []
+        )
         body = "\n\n".join(
             [
                 "## Summary",
@@ -132,12 +144,13 @@ def propose(github, branch):
                 markdown_text(copy["why_it_matters"]),
                 "## Supported action",
                 markdown_text(copy["action"]),
+                *reader_destination,
                 "## Evidence",
                 *[
                     f"- [{markdown_text(source['name'])}](<{source['url']}>)"
                     for source in candidate["sources"]
                 ],
-                "The candidate check links to the actual head-bound article preview "
+                "The candidate check links to the actual head-bound preview "
                 "and retains its evidence packet. "
                 "Approve only after reading both. New editorial changes require fresh approval. "
                 "Website review does not authorize newsletter delivery.",

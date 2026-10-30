@@ -107,6 +107,12 @@ def load_pr(github: GitHub, number: int):
     if candidate is None:
         raise ValueError("Candidate file missing at reviewed head")
     validate_pr_scope(pr, files, candidate, github.repository)
+    if candidate["schema_version"] == 1 and candidate["revision"] == 1:
+        main = github.api("git/ref/heads/main")["object"]["sha"]
+        existing = github.file(publication_path(candidate), main)
+        if existing is None:
+            raise ValueError("New incidents require a short external brief with an original source")
+        validate_publication(existing)
     return pr, candidate
 
 

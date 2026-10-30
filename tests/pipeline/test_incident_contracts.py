@@ -65,6 +65,30 @@ def test_hash_is_stable_and_changes_when_editorial_copy_changes():
     assert content_hash(changed) != content_hash(value)
 
 
+def test_short_external_brief_requires_an_original_source_and_no_article_body():
+    value = candidate()
+    value["schema_version"] = 2
+    value["destination_source_id"] = value["sources"][0]["id"]
+    del value["editorial"]["sections"]
+    assert validate_candidate(value) == value
+    value["destination_source_id"] = "missing"
+    with pytest.raises(ValueError, match="destination"):
+        validate_candidate(value)
+    value["destination_source_id"] = value["sources"][0]["id"]
+    value["editorial"]["sections"] = []
+    with pytest.raises(ValueError):
+        validate_candidate(value)
+    del value["editorial"]["sections"]
+    value["sources"].append({**value["sources"][0], "id": "other-report"})
+    value["destination_source_id"] = "other-report"
+    with pytest.raises(ValueError, match="captured fact"):
+        validate_candidate(value)
+    value["destination_source_id"] = value["sources"][0]["id"]
+    value["editorial"]["summary"] = "a" * 341
+    with pytest.raises(ValueError):
+        validate_candidate(value)
+
+
 def test_merge_publication_requires_real_merge_metadata_without_review_fields():
     value = candidate()
     del value["fixture"]
