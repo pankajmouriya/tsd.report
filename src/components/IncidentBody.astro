@@ -1,0 +1,21 @@
+---
+import type { IncidentCandidate, IncidentPublication } from '../lib/incident-schema';
+interface Props { incident: { candidate: IncidentCandidate; review: IncidentPublication['review'] | null }; }
+const { incident } = Astro.props;
+const { candidate, review } = incident;
+---
+<div class="article-body">
+  {candidate.correction_note && <aside class="evidence-note"><strong>Correction</strong><p>{candidate.correction_note}</p></aside>}
+  {candidate.editorial.sections.map((section) => {
+    const ids = new Set(candidate.facts.filter((fact) => section.claim_ids.includes(fact.id)).flatMap((fact) => fact.source_ids));
+    const sources = candidate.sources.filter((source) => ids.has(source.id));
+    return <section><h2>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      <p class="article-meta">Evidence: {sources.map((source, index) => <>{index ? ' · ' : ''}<a href={source.url}>{source.name}</a></>)}</p></section>;
+  })}
+  <section>
+    <h2>Evidence and review</h2>
+    <p>Incident date: {candidate.occurred_at ? <time datetime={candidate.occurred_at}>{candidate.occurred_at.slice(0, 10)}</time> : 'Unknown'}. Evidence checked <time datetime={candidate.evidence_as_of}>{candidate.evidence_as_of.slice(0, 10)}</time>.</p>
+    {review ? <p>Reviewed by {review.actor} · <a href={review.pr_url}>Editorial review</a></p> : <p>Unreviewed draft. This article is not published.</p>}
+    {candidate.facts.some((fact) => fact.state === 'disputed' || fact.state === 'unknown') && <p>Some evidence remains disputed or unknown. The summary preserves those limits.</p>}
+  </section>
+</div>

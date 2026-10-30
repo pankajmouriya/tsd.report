@@ -77,3 +77,7 @@ These rules apply throughout this repository. Direct user instructions take prec
 ## Completion record
 
 For each milestone, record in the delivery plan: status, changed paths, commands/results, visual evidence paths, deviations, and remaining blockers. A checked box means verified work, not intent.
+
+## Incident reporting
+
+When asked to draft an incident, read `docs/editorial/incident-authoring.md` and use its separate captured-evidence and editorial-copy inputs. Follow `docs/operations/incidents.md` for bot PR creation and publication. Only the editor's real GitHub approval of the current content revision authorizes the incident publisher; design or code approval never marks an article reviewed.

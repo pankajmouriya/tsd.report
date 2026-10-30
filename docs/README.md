@@ -7,6 +7,9 @@ Start with the [authoring guide](editorial/authoring-guide.md): copyable templat
 - [Editorial recipes](editorial/content-recipes.md) — adaptable outlines for all eight story types.
 - [Agent-assisted workflow](editorial/agent-workflow.md) — constrained drafting, evidence handoff, proposed output schema, and automation gaps.
 - [Editorial seed rationale](editorial/editorial-seed-rationale.md) — existing examples and future candidates.
+- [Incident sources](editorial/incident-sources.md) — researched monitoring channels, ten verified feed endpoints, and the initial incident reporting queue.
+- [Incident authoring](editorial/incident-authoring.md) — capture original evidence, prepare constrained Codex copy, and submit a content-only bot PR.
+- [Approved incident publication design](superpowers/specs/2026-10-30-tsd-incident-publication-design.md) — scheduled discovery, on-demand Codex drafts, and approval-triggered merge/deployment.
 
 ## Product and implementation
 
@@ -30,6 +33,8 @@ Supporting design notes:
 The canonical article route is `/article/[slug]`. Milestone A is implemented locally as a fixture prototype, including the reading pages. Live ingestion and production publication remain future work; see the delivery ledger for verification and limitations. No deployment is recorded.
 
 ## Operations
+
+- [Incident publication](operations/incidents.md) — activation gates, source monitoring, real candidate previews, approval/merge/deployment and recovery.
 
 - [Release process and workflow setup](operations/release-process.md) — pull request validation and previews, main-branch Direct Upload, GitHub and Cloudflare settings, first-publication checks, and manual rollback.
 - [Buttondown newsletter operations](operations/newsletter.md) — provider setup, configuration locations, approval and preview, independent rollout gates, identity reconciliation, pause/recovery, key rotation, privacy, and the 80/100 capacity decision.

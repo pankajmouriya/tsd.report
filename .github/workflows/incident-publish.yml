@@ -1,0 +1,44 @@
+name: Publish approved incident
+on:
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Incident PR to re-evaluate after validation or for recovery
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  actions: write
+concurrency:
+  group: incident-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: >-
+      vars.TSD_INCIDENT_PUBLISH_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.pull_request.head.repo.full_name == github.repository &&
+        github.event.pull_request.user.login == 'github-actions[bot]' &&
+        startsWith(github.event.pull_request.head.ref, 'automation/incident-')))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.21'
+      - run: uv sync --locked
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
+        run: uv run --locked python -m pipeline.incidents.cli publish --pr "$PR_NUMBER"

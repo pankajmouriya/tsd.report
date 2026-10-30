@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { composeHomepage, incidentStory, loadIncidentPreview, loadIncidentPublications } from './incidents';
 import {
   fixtureEditionSchema,
   productionEditionSchema,
@@ -45,12 +46,16 @@ export function validateContentMode(mode: string, selectedEditions: Edition[] = 
   }
   const ids = new Set<string>();
   const slugs = new Set<string>();
+  const identities = new Map<string, { slug: string; type: string }>();
   for (const edition of selectedEditions) {
     for (const story of edition.stories) {
-      if (ids.has(story.id)) throw new Error(`Duplicate story id across editions: ${story.id}`);
-      if (slugs.has(story.slug)) throw new Error(`Duplicate story slug across editions: ${story.slug}`);
+      const previous = identities.get(story.id);
+      const snapshotOfIncident = story.type === 'incident' && story.id.startsWith('incident-') && previous?.type === 'incident' && previous.slug === story.slug;
+      if (ids.has(story.id) && !snapshotOfIncident) throw new Error(`Duplicate story id across editions: ${story.id}`);
+      if (slugs.has(story.slug) && !snapshotOfIncident) throw new Error(`Duplicate story slug across editions: ${story.slug}`);
       ids.add(story.id);
       slugs.add(story.slug);
+      identities.set(story.id, { slug: story.slug, type: story.type });
     }
   }
 }
@@ -75,6 +80,27 @@ export function loadEditions(mode: ContentMode, projectRoot = process.cwd()): Ed
 }
 
 const editions = loadEditions(contentMode);
+const incidentPublications = contentMode === 'production' ? loadIncidentPublications() : [];
+const incidentPreview = loadIncidentPreview();
+if (incidentPreview && contentMode !== 'production') throw new Error('Incident previews require the production content corpus');
+const incidentStories: Story[] = [
+  ...(incidentPreview ? [incidentStory(incidentPreview)] : []),
+  ...incidentPublications.filter((record) => record.candidate.incident_id !== incidentPreview?.incident_id).map((record) => incidentStory(record.candidate, record)),
+];
+
+for (const incident of incidentStories) {
+  for (const edition of editions) for (const existing of edition.stories) {
+    if (incident.slug === existing.slug && incident.id !== existing.id) throw new Error('Incident slug collides with an archived story');
+  }
+}
+
+export function getHomepageEdition() { return composeHomepage(getLatestEdition(), incidentStories); }
+export function isIncidentPreview(): boolean { return incidentPreview !== undefined; }
+export function isSyntheticIncidentPreview(): boolean { return incidentPreview?.fixture === true; }
+export function getIncidentForStory(id: string) {
+  if (incidentPreview && id === `incident-${incidentPreview.incident_id}`) return { candidate: incidentPreview, review: null };
+  return incidentPublications.find((record) => id === `incident-${record.candidate.incident_id}`);
+}
 
 export function getContentMode(): ContentMode {
   return contentMode;
@@ -96,7 +122,7 @@ export function findEdition(date: string): Edition | undefined {
 
 export function getStories(): Story[] {
   const bySlug = new Map<string, Story>();
-  for (const edition of editions) for (const story of edition.stories) bySlug.set(story.slug, story);
+  for (const story of [...incidentStories, ...editions.flatMap<Story>((edition) => edition.stories)]) if (!bySlug.has(story.slug)) bySlug.set(story.slug, story);
   return [...bySlug.values()];
 }
 
@@ -116,7 +142,7 @@ export function findStoryById(id: string): Story | undefined {
   return getStories().find((story) => story.id === id);
 }
 
-export function getStoryById(edition: Edition, id: string): Story {
+export function getStoryById(edition: { stories: Story[] }, id: string): Story {
   const story = edition.stories.find((candidate) => candidate.id === id);
   if (!story) throw new Error(`Unknown story ${id}`);
   return story;

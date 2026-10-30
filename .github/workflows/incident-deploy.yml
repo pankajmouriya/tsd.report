@@ -1,0 +1,143 @@
+name: Deploy approved incident
+on:
+  workflow_dispatch:
+    inputs:
+      publication_sha:
+        description: Immutable publication commit on main
+        required: true
+        type: string
+      pr_number:
+        description: Original reviewed incident PR
+        required: true
+        type: string
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: incident-deployment
+  cancel-in-progress: false
+jobs:
+  authorize:
+    if: vars.TSD_INCIDENT_PUBLISH_ENABLED == 'true' && vars.TSD_PRODUCTION_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      incident: ${{ steps.authorize.outputs.incident }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.21'
+      - run: uv sync --locked
+      - id: authorize
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLICATION_SHA: ${{ inputs.publication_sha }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: uv run --locked python -m pipeline.incidents.cli verify-deployment --pr "$PR_NUMBER" --sha "$PUBLICATION_SHA"
+  secret-scan:
+    needs: authorize
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.publication_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+  deploy:
+    needs: [authorize, secret-scan]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    concurrency:
+      group: production-site-upload
+      cancel-in-progress: false
+    environment: production
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      PUBLICATION_SHA: ${{ inputs.publication_sha }}
+      PR_NUMBER: ${{ inputs.pr_number }}
+      INCIDENT_ID: ${{ needs.authorize.outputs.incident }}
+      ASTRO_TELEMETRY_DISABLED: '1'
+      TSD_INCIDENT_PREVIEW: ''
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.publication_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.21'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: uv sync --locked
+      - run: npm ci
+      - run: uv run --locked ruff check pipeline tests/pipeline
+      - run: uv run --locked pytest -q
+      - run: npm run check
+      - run: npm test
+      - run: npm run validate:production
+      - name: Build only reviewed production content
+        env:
+          CONTENT_MODE: production
+          TSD_DEPLOYMENT_SHA: ${{ inputs.publication_sha }}
+          TSD_NEWSLETTER_SIGNUP_ENABLED: ${{ vars.TSD_NEWSLETTER_SIGNUP_ENABLED }}
+          BUTTONDOWN_USERNAME: ${{ vars.BUTTONDOWN_USERNAME }}
+          TSD_PUBLICATION_CONTACT_URL: ${{ vars.TSD_PUBLICATION_CONTACT_URL }}
+        run: npm run build
+      - run: npm run check:links
+      - name: Retain the previous successful deployment for recovery
+        id: previous
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+        run: uv run --locked python -m pipeline.incidents.cloudflare snapshot --snapshot "$RUNNER_TEMP/previous-deployment.json"
+      - name: Upload the current reviewed publication
+        id: upload
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+        run: |
+          current="$(git ls-remote origin refs/heads/main | cut -f1)"
+          test "$current" = "$PUBLICATION_SHA" || { echo 'A newer main revision superseded this build. Re-dispatch publication to deploy current main.' >&2; exit 1; }
+          npx --no-install wrangler pages deploy dist --project-name "$CLOUDFLARE_PROJECT_NAME" --branch main --commit-hash "$PUBLICATION_SHA"
+      - name: Verify the public article, homepage and served revision
+        id: verify
+        env:
+          CONTENT_MODE: production
+        run: uv run --locked python -m pipeline.incidents.verify_live --incident "$INCIDENT_ID" --sha "$PUBLICATION_SHA"
+      - name: Restore the previous deployment after an unsuccessful upload or verification
+        if: failure() && steps.previous.outcome == 'success' && (steps.upload.outcome == 'failure' || steps.verify.outcome == 'failure')
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+        run: uv run --locked python -m pipeline.incidents.cloudflare rollback --snapshot "$RUNNER_TEMP/previous-deployment.json" --sha "$PUBLICATION_SHA"
+      - name: Record verified publication on its PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Published and verified https://tsd.report/article/$INCIDENT_ID at revision $PUBLICATION_SHA."
+      - name: Report unsuccessful publication verification
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Publication was not verified. Review the deployment and recovery results at https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID before retrying."

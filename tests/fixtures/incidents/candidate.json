@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "fixture": true,
+  "incident_id": "synthetic-release-alert",
+  "revision": 1,
+  "classification": "supply-chain-compromise",
+  "occurred_at": null,
+  "evidence_as_of": "2026-10-30T05:00:00Z",
+  "supersedes": null,
+  "correction_note": null,
+  "sources": [{
+    "id": "example-maintainer",
+    "name": "Synthetic maintainer statement",
+    "url": "https://example.com/security/synthetic-release",
+    "type": "vendor",
+    "published_at": "2026-10-29T12:00:00Z",
+    "retrieved_at": "2026-10-30T05:00:00Z",
+    "data_date": null
+  }],
+  "facts": [{
+    "id": "reported-change",
+    "statement": "This synthetic exercise describes an untrusted release. The maintainer asks operators to examine their build records. Affected versions and exploitation are unknown.",
+    "source_ids": ["example-maintainer"],
+    "state": "reported"
+  }],
+  "editorial": {
+    "title": "Synthetic release incident for preview verification",
+    "summary": "A synthetic incident exercises source attribution, unknown values and same-day publication. This is a fixture, not a report of a real compromise.",
+    "why_it_matters": "The exercise shows how a release can cross a software trust boundary.",
+    "action": "For this synthetic exercise, examine build records and retain evidence before deciding what to replace.",
+    "tags": ["supply-chain", "synthetic"],
+    "affected_technologies": ["Synthetic build tool"],
+    "claim_ids": ["reported-change"],
+    "sections": [{
+      "heading": "What is known",
+      "paragraphs": ["This synthetic exercise describes an untrusted release and an investigation by a fictional maintainer. It exists only to verify the newspaper's candidate preview and publication controls.", "Affected versions, fixed versions and exploitation remain unknown. This fixture must never be promoted to production."],
+      "claim_ids": ["reported-change"]
+    }]
+  }
+}

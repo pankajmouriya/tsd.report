@@ -1,0 +1,102 @@
+name: Validate incident candidate
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Same-repository bot incident PR
+        required: true
+        type: string
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  actions: write
+concurrency:
+  group: incident-validation-${{ inputs.pr_number || github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  candidate:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.user.login == 'github-actions[bot]' &&
+       startsWith(github.event.pull_request.head.ref, 'automation/incident-'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: preview
+    env:
+      PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out trusted implementation only
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.21'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: uv sync --locked
+      - name: Fetch and validate only candidate data at its exact head
+        id: candidate
+        run: uv run --locked python -m pipeline.incidents.cli load-pr --pr "$PR_NUMBER" --output "$RUNNER_TEMP/candidate.json"
+      - name: Stage the preview packet
+        env:
+          INCIDENT_ID: ${{ steps.candidate.outputs.incident }}
+        run: |
+          mkdir -p data/candidates/incidents
+          cp "$RUNNER_TEMP/candidate.json" "data/candidates/incidents/$INCIDENT_ID.json"
+      - run: npm ci
+      - name: Verify fact excerpts against independently fetched source evidence
+        run: uv run --locked python -m pipeline.incidents.cli verify-evidence --input "$RUNNER_TEMP/candidate.json" --run-dir artifacts/incident-evidence
+      - run: uv run --locked ruff check pipeline tests/pipeline
+      - run: uv run --locked pytest -q
+      - run: npm run check
+      - run: npm test
+      - name: Verify generated contracts
+        run: |
+          npm run generate:schema
+          git diff --exit-code -- schemas/
+      - name: Build the actual candidate against production content
+        env:
+          CONTENT_MODE: production
+          TSD_INCIDENT_PREVIEW: ${{ steps.candidate.outputs.incident }}
+        run: |
+          npm run validate:content
+          npm run build
+          npm run check:links
+      - name: Retain reviewable candidate preview and evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: incident-preview-${{ env.PR_NUMBER }}-${{ steps.candidate.outputs.head }}
+          path: |
+            dist/
+            ${{ runner.temp }}/candidate.json
+            artifacts/incident-evidence/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Publish isolated noindex preview
+        if: vars.TSD_PREVIEW_ENABLED == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+          CANDIDATE_HEAD: ${{ steps.candidate.outputs.head }}
+        run: npx --no-install wrangler pages deploy dist --project-name "$CLOUDFLARE_PROJECT_NAME" --branch "incident-$PR_NUMBER-$CANDIDATE_HEAD"
+      - name: Report head-bound preview check and re-evaluate approval
+        if: always() && steps.candidate.outputs.head != ''
+        env:
+          CANDIDATE_HEAD: ${{ steps.candidate.outputs.head }}
+          CONCLUSION: ${{ job.status == 'success' && 'success' || 'failure' }}
+          PREVIEW_PROJECT: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+          TSD_PREVIEW_ENABLED: ${{ vars.TSD_PREVIEW_ENABLED }}
+        run: uv run --locked python -m pipeline.incidents.cli check --pr "$PR_NUMBER" --head "$CANDIDATE_HEAD" --conclusion "$CONCLUSION"

@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EditionView from '../components/EditionView.astro';
-import { assertContentMode, getEditions, getLatestEdition } from '../lib/content';
+import { assertContentMode, getEditions, getHomepageEdition } from '../lib/content';
 import { getLatestVulnerabilityWatch } from '../lib/vulnerability-watch';
 assertContentMode();
-const edition = getLatestEdition();
+const edition = getHomepageEdition();
 const editions = getEditions();
 const vulnerabilityWatch = getLatestVulnerabilityWatch();
 ---

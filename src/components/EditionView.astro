@@ -1,5 +1,6 @@
 ---
 import type { Edition, VulnerabilityWatchSnapshot } from '../lib/schema';
+import type { HomepageEdition } from '../lib/incidents';
 import { getStoryById, getStoryCategories } from '../lib/content';
 import EditionHeader from './EditionHeader.astro';
 import EditionFilters from './EditionFilters.astro';
@@ -8,7 +9,7 @@ import StoryCard from './StoryCard.astro';
 import VulnerabilityWatch from './VulnerabilityWatch.astro';
 import EditionFooter from './EditionFooter.astro';
 import NewsletterPrompt from './NewsletterPrompt.astro';
-interface Props { edition: Edition; previous?: string; next?: string; vulnerabilityWatch?: VulnerabilityWatchSnapshot; }
+interface Props { edition: Edition | HomepageEdition; previous?: string; next?: string; vulnerabilityWatch?: VulnerabilityWatchSnapshot; }
 const { edition, previous, next, vulnerabilityWatch } = Astro.props;
 const lead = getStoryById(edition, edition.lead_story);
 const secondary = Object.values(edition.sections).flat().filter((id, index, ids) => id !== lead.id && ids.indexOf(id) === index).map((id) => getStoryById(edition, id));
