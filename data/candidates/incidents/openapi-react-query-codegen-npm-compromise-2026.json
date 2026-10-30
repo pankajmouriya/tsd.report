@@ -1,11 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "candidate",
   "incident_id": "openapi-react-query-codegen-npm-compromise-2026",
   "revision": 1,
   "classification": "supply-chain-compromise",
   "occurred_at": null,
-  "evidence_as_of": "2026-10-30T09:21:14.772423Z",
+  "evidence_as_of": "2026-10-30T10:55:18.541913Z",
   "supersedes": null,
   "correction_note": null,
   "sources": [
@@ -15,7 +15,7 @@
       "url": "https://github.com/7nohe/openapi-react-query-codegen/security/advisories/GHSA-9pvf-vcx3-x239",
       "type": "vendor",
       "published_at": null,
-      "retrieved_at": "2026-10-30T09:21:11.763336Z",
+      "retrieved_at": "2026-10-30T10:54:20.930683Z",
       "data_date": "2026-08-28"
     },
     {
@@ -24,7 +24,7 @@
       "url": "https://socket.dev/blog/openapi-react-query-codegen-npm-compromise",
       "type": "research",
       "published_at": null,
-      "retrieved_at": "2026-10-30T09:21:12.933999Z",
+      "retrieved_at": "2026-10-30T10:54:22.298869Z",
       "data_date": "2026-08-28"
     },
     {
@@ -33,7 +33,7 @@
       "url": "https://github.com/7nohe/openapi-react-query-codegen/issues/217",
       "type": "vendor",
       "published_at": null,
-      "retrieved_at": "2026-10-30T09:21:14.772423Z",
+      "retrieved_at": "2026-10-30T10:54:23.254141Z",
       "data_date": "2026-08-28"
     }
   ],
@@ -56,7 +56,7 @@
     },
     {
       "id": "payload",
-      "statement": "Each executes an obfuscated payload on install.",
+      "statement": "0.5.4 , 1.6.3 , 2.2.1 , 3.0.3 have no install script at all and execute via binding.gyp alone.",
       "source_ids": [
         "maintainer"
       ],
@@ -64,7 +64,7 @@
     },
     {
       "id": "latest",
-      "statement": "The latest dist-tag pointed at the malicious 3.0.4 from 20:19:29Z until it was restored to 3.0.2 at approximately 22:51Z.",
+      "statement": "latest dist-tag pointed at the malicious 3.0.4",
       "source_ids": [
         "maintainer"
       ],
@@ -101,13 +101,22 @@
         "maintainer"
       ],
       "state": "reported"
+    },
+    {
+      "id": "prerelease-boundary",
+      "statement": "The two 0.0.0-* prereleases carry a malicious preinstall but not the payload files",
+      "source_ids": [
+        "maintainer"
+      ],
+      "state": "reported"
     }
   ],
+  "destination_source_id": "maintainer",
   "editorial": {
-    "title": "OpenAPI codegen release workflow let a comment trigger poisoned npm versions",
-    "summary": "The maintainer of @7nohe/openapi-react-query-codegen says an attacker abused a GitHub Actions release workflow to publish ten malicious npm versions on August 28. The workflow accepted a pull-request comment as a release trigger without checking author association. The affected artifacts carried install-time code, and the latest tag briefly pointed at one of them.",
-    "why_it_matters": "A package can bear expected publishing provenance even when the workflow that produced it has an authorization flaw. Consumers need exact version and install-history checks; maintainers need to review who can start release jobs and what untrusted pull-request code those jobs execute.",
-    "action": "Check lockfiles and npm installation logs against the maintainer’s affected-version list. Investigate hosts that installed affected artifacts, rotate exposed credentials from a clean environment, and use the project’s current advisory for replacement. Audit release workflows for comment-triggered jobs with publishing permissions.",
+    "title": "OpenAPI codegen's comment-triggered release shipped malicious npm versions",
+    "summary": "The maintainer says an unguarded pull-request comment started a release workflow that published ten malicious @7nohe/openapi-react-query-codegen versions. Eight numbered versions included payload files; two prereleases had install hooks pointing to missing files. The latest tag briefly pointed to a malicious version.",
+    "why_it_matters": "A public comment crossed into a job with publishing rights. Consumers need exact version checks, while maintainers need to review who can start release jobs.",
+    "action": "Compare lockfiles and install logs with the advisory's version list. Investigate hosts that installed affected versions and rotate exposed credentials from a clean environment. Audit comment-triggered release jobs with publishing rights.",
     "tags": [
       "supply-chain",
       "npm",
@@ -123,52 +132,9 @@
       "releases",
       "payload",
       "latest",
-      "prior",
       "root-cause",
       "workflow",
-      "trigger-removed",
-      "upstream"
-    ],
-    "sections": [
-      {
-        "heading": "What the maintainer confirmed",
-        "paragraphs": [
-          "The project’s security advisory lists ten malicious @7nohe/openapi-react-query-codegen versions published during a short August 28 window. It says the artifacts execute an obfuscated payload during installation. Socket’s independent package research identified the same release burst and investigated the distributed files.",
-          "The maintainer records that the latest dist-tag briefly pointed to malicious 3.0.4 before returning to 3.0.2. A historical lockfile can still refer to a bad artifact after a tag changes. The advisory says versions published before August 28 were outside the affected set; that is a project-specific scope statement, not a generic guarantee for all dependencies."
-        ],
-        "claim_ids": [
-          "releases",
-          "payload",
-          "latest",
-          "prior"
-        ]
-      },
-      {
-        "heading": "The release boundary that failed",
-        "paragraphs": [
-          "The maintainer says its workflow reacted to an issue_comment event without an author-association gate. An attacker could use the allowed comment path to start a job that checked out untrusted pull-request code while holding publishing authority. The problem was the workflow’s authorization and execution context, not merely the presence of an unfamiliar comment.",
-          "The upstream response removed that trigger and deprecated the ten malicious versions, with removal requested from npm security. A deprecation notice and changed dist-tag help future installs, but they do not undo an earlier installation or establish that a host kept its credentials private."
-        ],
-        "claim_ids": [
-          "root-cause",
-          "workflow",
-          "trigger-removed",
-          "upstream"
-        ]
-      },
-      {
-        "heading": "Decide exposure by artifact and execution",
-        "paragraphs": [
-          "Compare resolved versions in lockfiles with the exact affected set in the maintainer advisory. Then inspect installation timestamps and build logs to determine whether the malicious package was installed or executed. A transient latest tag may have affected an unpinned install even if the current tag is clean.",
-          "For affected execution environments, preserve evidence, assess credentials available to the package process and rebuild from known-good artifacts. A separate release-workflow review should check comment permissions, pull-request checkout behavior and token privileges before normal publishing resumes."
-        ],
-        "claim_ids": [
-          "releases",
-          "latest",
-          "payload",
-          "root-cause"
-        ]
-      }
+      "prerelease-boundary"
     ]
   }
 }
