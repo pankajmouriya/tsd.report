@@ -15,7 +15,7 @@ const { candidate, review } = incident;
   <section>
     <h2>Evidence and review</h2>
     <p>Incident date: {candidate.occurred_at ? <time datetime={candidate.occurred_at}>{candidate.occurred_at.slice(0, 10)}</time> : 'Unknown'}. Evidence checked <time datetime={candidate.evidence_as_of}>{candidate.evidence_as_of.slice(0, 10)}</time>.</p>
-    {review ? <p>Reviewed by {review.actor} · <a href={review.pr_url}>Editorial review</a></p> : <p>Unreviewed draft. This article is not published.</p>}
+    {review ? <p>{review.approval_kind === 'merge' ? 'Merged by' : 'Reviewed by'} {review.actor} · <a href={review.pr_url}>Editorial {review.approval_kind === 'merge' ? 'merge' : 'review'}</a></p> : <p>Unreviewed draft. This article is not published.</p>}
     {candidate.facts.some((fact) => fact.state === 'disputed' || fact.state === 'unknown') && <p>Some evidence remains disputed or unknown. The summary preserves those limits.</p>}
   </section>
 </div>

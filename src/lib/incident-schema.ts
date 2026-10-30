@@ -72,20 +72,30 @@ export const incidentCandidateSchema = incidentCandidateBaseSchema.superRefine((
   for (const message of candidateIssues(candidate)) context.addIssue({ code: 'custom', message, input: candidate });
 });
 
+const approvalFields = {
+  actor: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9-]{0,38}$/),
+  head_sha: z.string().regex(/^[a-f0-9]{40}$/),
+  pr_number: z.number().int().positive(), pr_url: httpsUrl,
+};
+
+const incidentApprovalSchema = z.union([
+  z.object({ ...approvalFields, approval_kind: z.literal('review').optional(),
+    reviewed_at: z.iso.datetime(), review_id: z.number().int().positive() }).strict(),
+  z.object({ ...approvalFields, approval_kind: z.literal('merge'),
+    merged_at: z.iso.datetime(), merge_sha: z.string().regex(/^[a-f0-9]{40}$/) }).strict(),
+]);
+
 export const incidentPublicationBaseSchema = z.object({
   schema_version: z.literal(1), status: z.literal('published'), candidate: incidentCandidateBaseSchema,
   content_sha256: z.string().regex(/^[a-f0-9]{64}$/), published_at: z.iso.datetime(),
-  review: z.object({
-    actor: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9-]{0,38}$/), reviewed_at: z.iso.datetime(),
-    head_sha: z.string().regex(/^[a-f0-9]{40}$/), review_id: z.number().int().positive(),
-    pr_number: z.number().int().positive(), pr_url: httpsUrl,
-  }).strict(),
+  review: incidentApprovalSchema,
 }).strict();
 
 export const incidentPublicationSchema = incidentPublicationBaseSchema.superRefine((publication, context) => {
   for (const message of candidateIssues(publication.candidate)) context.addIssue({ code: 'custom', message, input: publication });
   if (publication.candidate.fixture) context.addIssue({ code: 'custom', message: 'Cannot publish fixture content', input: publication });
-  if (Date.parse(publication.review.reviewed_at) > Date.parse(publication.published_at)) context.addIssue({ code: 'custom', message: 'Publication precedes review', input: publication });
+  const authorizedAt = publication.review.approval_kind === 'merge' ? publication.review.merged_at : publication.review.reviewed_at;
+  if (Date.parse(authorizedAt) > Date.parse(publication.published_at)) context.addIssue({ code: 'custom', message: 'Publication precedes editorial authorization', input: publication });
 });
 
 export type IncidentCandidate = z.infer<typeof incidentCandidateSchema>;
