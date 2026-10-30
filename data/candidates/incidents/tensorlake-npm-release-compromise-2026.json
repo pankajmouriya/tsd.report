@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "incident_id": "tensorlake-npm-release-compromise-2026",
+  "revision": 1,
+  "classification": "supply-chain-compromise",
+  "occurred_at": null,
+  "evidence_as_of": "2026-10-30T09:21:16.101548Z",
+  "supersedes": null,
+  "correction_note": null,
+  "sources": [
+    {
+      "id": "maintainer",
+      "name": "TensorLake security advisory",
+      "url": "https://github.com/tensorlakeai/tensorlake/security/advisories/GHSA-8g63-53c9-65j2",
+      "type": "vendor",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T09:21:11.851094Z",
+      "data_date": "2026-10-08"
+    },
+    {
+      "id": "socket",
+      "name": "Socket Research",
+      "url": "https://socket.dev/blog/tensorlake-compromise",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T09:21:13.236049Z",
+      "data_date": "2026-10-08"
+    },
+    {
+      "id": "aikido",
+      "name": "Aikido",
+      "url": "https://www.aikido.dev/blog/tensorlake-npm-package-compromised",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T09:21:15.202525Z",
+      "data_date": "2026-10-08"
+    },
+    {
+      "id": "stepsecurity",
+      "name": "StepSecurity research",
+      "url": "https://www.stepsecurity.io/blog/tensorlake-npm-compromised-hostage-token-worm",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T09:21:16.101548Z",
+      "data_date": "2026-10-08"
+    }
+  ],
+  "facts": [
+    {
+      "id": "release",
+      "statement": "version 0.5.144 of tensorlake was published to npm using a compromised maintainer account.",
+      "source_ids": [
+        "maintainer"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "provenance",
+      "statement": "the package carries valid npm provenance.",
+      "source_ids": [
+        "maintainer"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "scope",
+      "statement": "Only the npm package was affected, the PyPI and crates.io tensorlake packages and the tensorlake CLI were not.",
+      "source_ids": [
+        "maintainer"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "install",
+      "statement": "executed during package installation via a preinstall hook.",
+      "source_ids": [
+        "maintainer"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "monitor",
+      "statement": "The payload also installs a persistent service named gh-token-monitor that deletes the user's home directory if the stolen GitHub token is revoked .",
+      "source_ids": [
+        "maintainer"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "order",
+      "statement": "Remove it before rotating any GitHub token",
+      "source_ids": [
+        "maintainer"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "prior",
+      "statement": "Version 0.5.143 and all prior versions are unaffected.",
+      "source_ids": [
+        "maintainer"
+      ],
+      "state": "reported"
+    }
+  ],
+  "editorial": {
+    "title": "TensorLake npm release carried a credential stealer and destructive persistence",
+    "summary": "TensorLake says an attacker used a compromised maintainer account to publish tensorlake 0.5.144 through its own npm release workflow. The package had valid provenance, but its install hook executed malicious code. The maintainer says the npm package was affected while its PyPI, crates.io and CLI distributions were outside this incident’s scope.",
+    "why_it_matters": "This case shows the boundary of a valid build attestation: it records where an artifact was built, even when the source and workflow have been compromised. Response order also matters because the maintainer reports a persistent monitor that can delete a user’s home directory after token revocation.",
+    "action": "Check lockfiles and build records for tensorlake 0.5.144. For any host that ran install scripts, follow TensorLake’s current containment sequence before rotating GitHub tokens; isolate and investigate the host, remove the reported monitor safely, then rotate exposed credentials from a clean environment and rebuild from trusted artifacts.",
+    "tags": [
+      "supply-chain",
+      "npm",
+      "tensorlake",
+      "credential-theft"
+    ],
+    "affected_technologies": [
+      "tensorlake npm SDK",
+      "Developer workstations",
+      "CI systems"
+    ],
+    "claim_ids": [
+      "release",
+      "provenance",
+      "scope",
+      "install",
+      "monitor",
+      "order",
+      "prior"
+    ],
+    "sections": [
+      {
+        "heading": "A trusted publishing path carried untrusted code",
+        "paragraphs": [
+          "TensorLake’s security advisory says a compromised maintainer account published version 0.5.144 to npm after malicious code was pushed into its repository. The project’s own release workflow produced the artifact, so npm provenance could still be valid. That attestation should be read as build origin evidence, not as an assertion that the source was safe.",
+          "The maintainer explicitly limits the affected distributions to npm. Its PyPI and crates.io packages and the TensorLake CLI were not included in the reported compromise. Socket and StepSecurity separately analyzed the malicious npm artifact. An inventory should use the exact package and version rather than treating every TensorLake installation as compromised."
+        ],
+        "claim_ids": [
+          "release",
+          "provenance",
+          "scope"
+        ]
+      },
+      {
+        "heading": "Installation created two risks",
+        "paragraphs": [
+          "The advisory says the payload executed through an npm preinstall hook, before an application needed to call the SDK. It describes theft of credentials available to that process and an attempt to spread through other packages and repositories the victim could write to. Whether a particular token was stolen still requires host and account evidence.",
+          "The same advisory describes a persistent service called gh-token-monitor. It warns that revoking a stolen GitHub token while that monitor is present can trigger deletion of the user’s home directory. This is a response-order hazard, not a reason to leave tokens active indefinitely. Preserve evidence and use the maintainer’s current removal procedure with incident responders."
+        ],
+        "claim_ids": [
+          "install",
+          "monitor",
+          "order"
+        ]
+      },
+      {
+        "heading": "Containment and replacement",
+        "paragraphs": [
+          "Search lockfiles and build logs for 0.5.144 and establish whether install scripts actually ran on developer machines or CI. The maintainer identifies 0.5.143 and earlier as unaffected by this release. Verify any later replacement from the current maintainer advisory rather than assuming the newest version is safe.",
+          "For affected hosts, isolate first, follow the documented order for removing persistence, rotate accessible credentials from a clean environment and inspect publishing activity for unauthorized changes. A package rollback alone does not establish host integrity or undo credential exposure."
+        ],
+        "claim_ids": [
+          "release",
+          "prior",
+          "monitor",
+          "order"
+        ]
+      }
+    ]
+  }
+}
