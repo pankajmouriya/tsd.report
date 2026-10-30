@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "incident_id": "ghostaction-october-2026-workflow-injection",
+  "revision": 1,
+  "classification": "supply-chain-compromise",
+  "occurred_at": null,
+  "evidence_as_of": "2026-10-30T08:52:44.406578Z",
+  "supersedes": null,
+  "correction_note": null,
+  "sources": [
+    {
+      "id": "socket",
+      "name": "Socket Research",
+      "url": "https://socket.dev/blog/ghostaction-cloud-credentials",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:44.406578Z",
+      "data_date": "2026-10-09"
+    }
+  ],
+  "facts": [
+    {
+      "id": "accounts",
+      "statement": "two compromised maintainer accounts committed a workflow named security-audit.yml into 346 repositories",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "secrets",
+      "statement": "merging GitHub Actions secret theft with a new sweep of the working tree and full git history for cloud credentials",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "expanded",
+      "statement": "more than 500 GitHub accounts that committed the malicious workflow to tens of thousands of repositories since October 7, 2026",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "case",
+      "statement": "kitao/pyxel is the clearest confirmed case of publishing credentials being targeted by a successful run.",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "action",
+      "statement": "Treat any completed run as successful exfiltration of the named secrets.",
+      "source_ids": [
+        "socket"
+      ],
+      "state": "reported"
+    }
+  ],
+  "editorial": {
+    "title": "GhostAction workflow injection extends from CI secrets to repository history",
+    "summary": "Socket’s October investigation found malicious GitHub Actions workflows added through compromised maintainer accounts. Its initial case study covered 346 repositories; a later update identified a wider set of accounts and repositories. The workflow sought both CI secrets and credentials exposed in source or git history.",
+    "why_it_matters": "A workflow in a repository can inherit the project’s automation privileges. Its presence is a warning to inspect execution history; a completed malicious run changes the response from a repository cleanup to a credential-exposure investigation.",
+    "action": "Search repositories and workflow history for the injected security-audit.yml file, preserve run logs, remove the unauthorized workflow, rotate secrets available to any completed run, and review repository history for exposed credentials.",
+    "tags": [
+      "github-actions",
+      "supply-chain",
+      "credential-theft"
+    ],
+    "affected_technologies": [
+      "GitHub Actions",
+      "Source repositories"
+    ],
+    "claim_ids": [
+      "accounts",
+      "secrets",
+      "expanded",
+      "case",
+      "action"
+    ],
+    "sections": [
+      {
+        "heading": "What the researchers observed",
+        "paragraphs": [
+          "Socket reports that two compromised maintainer accounts added a workflow called security-audit.yml to 346 repositories during an October burst. The file was presented as a security audit, but its behavior was credential collection. Its reach included automation secrets and a sweep of the working tree and git history for credentials.",
+          "Socket later expanded its observation to more than 500 accounts committing the workflow to tens of thousands of repositories since October 7. Those figures describe different observation windows. They are not independent counts of successful exfiltration, and the report should not be read as evidence that every affected repository ran the workflow."
+        ],
+        "claim_ids": [
+          "accounts",
+          "secrets",
+          "expanded"
+        ]
+      },
+      {
+        "heading": "Why execution history matters",
+        "paragraphs": [
+          "A committed workflow is a trust-boundary breach because a repository file can run with privileges attached to Actions jobs. Socket identifies kitao/pyxel as the clearest case in which publishing credentials were targeted by a successful run. For each repository, examine whether the injected workflow was merely present or actually executed, then map the specific job permissions and secrets accessible at that time.",
+          "A repository may also have credentials committed elsewhere in its history. Removing the workflow file does not remove those credentials, nor does it undo a completed run. Review relevant branches, history and run artifacts before narrowing the exposure scope."
+        ],
+        "claim_ids": [
+          "case",
+          "secrets"
+        ]
+      },
+      {
+        "heading": "Response boundary",
+        "paragraphs": [
+          "Socket advises treating a completed run as exfiltration of the named secrets. Rotate those credentials, invalidate sessions where possible, and inspect downstream publishing or cloud activity. For repositories without a completed run, retain evidence and check whether other workflow paths or tokens were abused.",
+          "The published research does not establish compromise of every downstream consumer of these repositories. Keep the investigation tied to observed workflow execution, available privileges and subsequent account activity."
+        ],
+        "claim_ids": [
+          "action",
+          "accounts"
+        ]
+      }
+    ]
+  }
+}
