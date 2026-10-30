@@ -1,11 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "candidate",
   "incident_id": "polinrider-packagist-dev-branch-compromise-2026",
   "revision": 1,
   "classification": "supply-chain-compromise",
   "occurred_at": null,
-  "evidence_as_of": "2026-10-30T09:21:12.149788Z",
+  "evidence_as_of": "2026-10-30T10:55:19.312984Z",
   "supersedes": null,
   "correction_note": null,
   "sources": [
@@ -15,7 +15,7 @@
       "url": "https://socket.dev/blog/polinrider-github-packagist",
       "type": "research",
       "published_at": null,
-      "retrieved_at": "2026-10-30T09:21:12.149788Z",
+      "retrieved_at": "2026-10-30T10:54:21.121048Z",
       "data_date": "2026-09-17"
     }
   ],
@@ -54,7 +54,7 @@
     },
     {
       "id": "unknown",
-      "statement": "preventing researchers from determining the campaign’s full repository-level reach.",
+      "statement": "preventing researchers from determining the campaign\u2019s full repository-level reach.",
       "source_ids": [
         "socket"
       ],
@@ -77,11 +77,12 @@
       "state": "reported"
     }
   ],
+  "destination_source_id": "socket",
   "editorial": {
-    "title": "PolinRider reached a Packagist development branch through compromised Git access",
-    "summary": "Socket found malicious code in development versions of the visanduma/nova-two-factor Packagist package and traces the changes to a compromised developer account. Its report identifies no malicious stable release at the time it was written. The meaningful exposure check is whether a project resolved the affected development branch or executed compromised repository content.",
-    "why_it_matters": "The campaign can move through source collaboration before a formal package release. A registry listing or cumulative download count cannot establish how many installations executed malicious code; direct branch consumers and developers opening a compromised repository need separate checks.",
-    "action": "Inspect Composer constraints and lockfiles for dev-main or other affected development references, preserve repository and workstation evidence, and avoid the branch until the maintainer confirms a clean state. If suspect code executed, investigate the host and rotate accessible credentials from a trusted environment.",
+    "title": "PolinRider planted malware in Packagist development branches",
+    "summary": "Socket researchers found malicious code in development versions of visanduma/nova-two-factor and traced the changes to a compromised developer account. They had not identified a malicious stable release at the time of their report; exposure depends on use of affected development branches or repository content.",
+    "why_it_matters": "This campaign can spread through source collaboration before a stable package release. Download totals do not establish how many users ran the malicious code.",
+    "action": "Check Composer constraints and lockfiles for dev-main; avoid affected development branches until the repository is confirmed clean. If suspect code ran, investigate affected systems and rotate accessible credentials from a trusted host.",
     "tags": [
       "supply-chain",
       "packagist",
@@ -96,51 +97,8 @@
     "claim_ids": [
       "package",
       "scope",
-      "timeline",
       "account",
-      "unknown",
-      "execution",
       "guidance"
-    ],
-    "sections": [
-      {
-        "heading": "The observed Packagist scope",
-        "paragraphs": [
-          "Socket reports malicious code in visanduma/nova-two-factor’s dev-main version as the PolinRider campaign expanded into Packagist. It says the malicious content was in unstable dev versions and that it had not identified a malicious stable release at publication time. This is a narrower finding than saying every installation of the package was compromised.",
-          "The research traces malicious changes to the LaHiRu developer account and says the organization’s repositories showed compromise dating back to mid-June. Private-repository contribution activity limited Socket’s ability to determine total repository reach. Those unknowns should remain open rather than becoming a campaign-wide installation estimate."
-        ],
-        "claim_ids": [
-          "package",
-          "scope",
-          "timeline",
-          "account",
-          "unknown"
-        ]
-      },
-      {
-        "heading": "Source collaboration is part of the path",
-        "paragraphs": [
-          "PolinRider uses compromised Git access to put payloads into normal development material. Socket documents samples that can trigger when a developer opens a repository in a compatible editor, as well as other build and test paths. That makes a checked-out repository relevant even if no stable package release was pulled.",
-          "For Packagist users, inspect whether Composer resolved a development branch and which commit it selected. For developers and maintainers, review account access, unexpected history changes and automatic execution paths in the repository. A source cleanup alone cannot establish integrity after a payload ran on a workstation."
-        ],
-        "claim_ids": [
-          "account",
-          "execution",
-          "scope"
-        ]
-      },
-      {
-        "heading": "Bound the response",
-        "paragraphs": [
-          "Socket advises avoiding dev-main until the repository is confirmed clean. Hold the affected development dependency, compare it with a reviewed commit or stable release, and retain the resolved revision as investigation evidence.",
-          "If a host opened or built compromised source and executed a suspicious path, isolate it, investigate available credentials and rebuild from a trusted state. The original research does not establish that every stable consumer or all private repositories experienced execution or exfiltration."
-        ],
-        "claim_ids": [
-          "guidance",
-          "scope",
-          "unknown"
-        ]
-      }
     ]
   }
 }
