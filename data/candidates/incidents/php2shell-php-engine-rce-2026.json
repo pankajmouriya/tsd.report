@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "incident_id": "php2shell-php-engine-rce-2026",
+  "revision": 1,
+  "classification": "dependency-vulnerability",
+  "occurred_at": null,
+  "evidence_as_of": "2026-10-30T08:52:46.142918Z",
+  "supersedes": null,
+  "correction_note": null,
+  "sources": [
+    {
+      "id": "php-foundation",
+      "name": "The PHP Foundation",
+      "url": "https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/",
+      "type": "vendor",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:43.712708Z",
+      "data_date": "2026-10-21"
+    },
+    {
+      "id": "wiz",
+      "name": "Wiz Research",
+      "url": "https://www.wiz.io/blog/php2shell-php-rce",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:44.180737Z",
+      "data_date": "2026-10-21"
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare",
+      "url": "https://blog.cloudflare.com/php-vulnerabilities-waf-protection/",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:44.614474Z",
+      "data_date": "2026-10-21"
+    },
+    {
+      "id": "socket",
+      "name": "Socket",
+      "url": "https://socket.dev/blog/php-critical-rce-patches",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:45.655145Z",
+      "data_date": "2026-10-21"
+    },
+    {
+      "id": "aikido",
+      "name": "Aikido",
+      "url": "https://www.aikido.dev/blog/critical-vulnerabilities-in-php-php2shell",
+      "type": "research",
+      "published_at": null,
+      "retrieved_at": "2026-10-30T08:52:46.142918Z",
+      "data_date": "2026-10-21"
+    }
+  ],
+  "facts": [
+    {
+      "id": "releases",
+      "statement": "the PHP project released PHP 8.5.12, 8.4.27, 8.3.36, and 8.2.35.",
+      "source_ids": [
+        "php-foundation"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "impact",
+      "statement": "under the right conditions, allow an unauthenticated attacker to execute code on servers running PHP.",
+      "source_ids": [
+        "php-foundation"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "oom",
+      "statement": "CVE-2026-109618 / GHSA-w8hw-w9fx-j79w : RCE via OOM corruption (out-of-memory)",
+      "source_ids": [
+        "php-foundation"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "stale",
+      "statement": "CVE-2026-109619 / GHSA-6wmf-4rv5-p3rp : RCE via stale global state",
+      "source_ids": [
+        "php-foundation"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "demonstration",
+      "statement": "Pre-authentication RCE on WordPress, Drupal and Joomla",
+      "source_ids": [
+        "wiz"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "waf-deployed",
+      "statement": "Cloudflare has developed and deployed web application firewall (WAF) protections",
+      "source_ids": [
+        "cloudflare"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "waf-limit",
+      "statement": "Customers who have changed session.upload_progress.name are not covered by the WAF rule.",
+      "source_ids": [
+        "cloudflare"
+      ],
+      "state": "reported"
+    }
+  ],
+  "editorial": {
+    "title": "PHP2Shell exposes a PHP engine boundary across web applications",
+    "summary": "The PHP project released security updates for two engine flaws tracked as CVE-2026-109618 and CVE-2026-109619. Under the conditions described by the PHP Foundation, an unauthenticated request can reach code execution. This is a major runtime vulnerability, not a compromise of PHP packages or its release process.",
+    "why_it_matters": "The vulnerable boundary is inside PHP, so updating a framework or plugin alone does not address the engine flaws. Applications and hosting stacks need to identify the PHP runtime actually serving requests, including long-lived workers and containers.",
+    "action": "Inventory PHP runtimes that handle untrusted requests, apply the PHP project’s security releases or a vendor backport for the affected branch, and restart or replace the relevant workers. Treat WAF rules as an interim layer and confirm their coverage against your configuration.",
+    "tags": [
+      "php",
+      "dependency-vulnerability",
+      "remote-code-execution"
+    ],
+    "affected_technologies": [
+      "PHP runtime",
+      "PHP-FPM",
+      "Web servers"
+    ],
+    "claim_ids": [
+      "oom",
+      "stale",
+      "impact",
+      "demonstration",
+      "releases",
+      "waf-deployed",
+      "waf-limit"
+    ],
+    "sections": [
+      {
+        "heading": "What the project disclosed",
+        "paragraphs": [
+          "The PHP Foundation describes two related memory-safety failures in the PHP engine. One concerns out-of-memory cleanup that can leave partially initialized internal state; the other concerns stale global state after a fatal error. The same application can expose different paths depending on how PHP is configured and how requests reach the worker.",
+          "The project lists CVE-2026-109618 for the out-of-memory path and CVE-2026-109619 for the stale-state path. Wiz Research separately documents demonstrated code execution in selected configurations. A demonstration establishes feasibility, but it does not prove that a particular installation was exploited."
+        ],
+        "claim_ids": [
+          "oom",
+          "stale",
+          "impact",
+          "demonstration"
+        ]
+      },
+      {
+        "heading": "Where the decision sits",
+        "paragraphs": [
+          "The project released PHP 8.5.12, 8.4.27, 8.3.36 and 8.2.35 to address the two disclosed flaws. Operators should check the runtime version on each serving host, not just application lockfiles. Distribution packages may use backported fixes, so verify the vendor advisory and package changelog before deciding whether a version string is vulnerable.",
+          "Cloudflare reports deploying protection against known request patterns, while warning that some configurations are outside its rule coverage. A network rule cannot establish that the underlying engine has been repaired. The practical priority remains the PHP runtime update and replacement or restart of processes using the old binary."
+        ],
+        "claim_ids": [
+          "releases",
+          "waf-deployed",
+          "waf-limit"
+        ]
+      },
+      {
+        "heading": "What remains uncertain",
+        "paragraphs": [
+          "Exposure depends on whether a susceptible PHP runtime handles attacker-controlled requests and whether the necessary request path is available. The project’s advisory and the linked research should guide configuration-specific checks. Public research and attack traffic are distinct from proof that any individual site was compromised.",
+          "Preserve relevant request and process logs if suspicious traffic appears, and investigate separately from patching. This report covers the two named engine CVEs; other PHP advisories require their own assessment."
+        ],
+        "claim_ids": [
+          "impact",
+          "oom",
+          "stale"
+        ]
+      }
+    ]
+  }
+}
