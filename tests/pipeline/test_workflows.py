@@ -1,3 +1,5 @@
+import os
+import subprocess
 from pathlib import Path
 
 import yaml
@@ -29,6 +31,7 @@ def test_candidate_workflow_is_scheduled_review_only_and_least_privilege() -> No
     assert "pipeline.cli collect" in text
     assert "automation/vulnerability-watch-" in text
     assert "gh pr create" in text
+    assert "--draft" in text  # A candidate-only PR cannot be merged before label promotion.
     assert "data/candidates/vulnerability-watch" in text
     assert "data/production/vulnerability-watch" not in text
     assert "git push --force" not in text
@@ -58,9 +61,54 @@ def test_promotion_workflow_uses_a_trusted_label_gate_without_executing_candidat
 
 def test_pull_request_validation_runs_locked_pipeline_checks() -> None:
     document, text = workflow("validate.yml")
+    assert "ready_for_review" in document["on"]["pull_request"]["types"]
+    assert "Require a promoted Watch snapshot before review-ready validation" in text
+    assert "npm run validate:production" in text
     assert "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97" in text
     assert "astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9" in text
     assert "uv sync --locked" in text
     assert "npm run test:pipeline" in text
     assert "npm run lint:pipeline" in text
     action_uses_are_pinned(document)
+
+
+def test_ready_watch_pr_requires_a_promoted_snapshot(tmp_path: Path) -> None:
+    document, _ = workflow("validate.yml")
+    step = next(
+        step
+        for step in document["jobs"]["quality"]["steps"]
+        if step.get("name") == "Require a promoted Watch snapshot before review-ready validation"
+    )
+    assert "!github.event.pull_request.draft" in step["if"]
+    watch_date = "2026-10-30"
+    candidate = tmp_path / f"data/candidates/vulnerability-watch/{watch_date}.json"
+    published = tmp_path / f"data/production/vulnerability-watch/{watch_date}.json"
+    candidate.parent.mkdir(parents=True)
+    candidate.write_text("{}")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    npm = bin_dir / "npm"
+    npm.write_text("#!/bin/sh\nexit 0\n")
+    npm.chmod(0o755)
+    env = {
+        **os.environ,
+        "WATCH_BRANCH": f"automation/vulnerability-watch-{watch_date}",
+        "PATH": f"{bin_dir}:{os.environ['PATH']}",
+    }
+
+    def run_gate() -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["bash", "-e", "-o", "pipefail", "-c", step["run"]],
+            cwd=tmp_path,
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    assert "Apply publish-vulnerability-watch" in run_gate().stdout
+    candidate.unlink()
+    assert "Apply publish-vulnerability-watch" in run_gate().stdout
+    published.parent.mkdir(parents=True)
+    published.write_text("{}")
+    assert run_gate().returncode == 0
