@@ -1,6 +1,6 @@
 # Incident discovery and publication operations
 
-Status: integrated; the hosted monitor and candidate preview were exercised. The first content PR was manually merged without an Approve review, so publication recovery requires the editor-merge gate described below. No model API, database, CMS or reader account is required.
+Status: integrated and hosted first-article publication verified on 2026-10-30. The monitor and candidate preview were exercised; PR #23's real editor merge was recovered through the merged editor-merge gate and deployed at revision `8a561ba9afd84e40825fd3c45dc6af8522a93b64`. No model API, database, CMS or reader account is required.
 
 ## Workflows and data
 
