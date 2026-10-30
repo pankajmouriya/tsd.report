@@ -1,5 +1,5 @@
 import json
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -159,10 +159,30 @@ def test_compose_candidate_marks_nvd_degraded_without_changing_kev_or_epss() -> 
     assert nvd_source.error == "NVD enrichment unavailable for 1 of 1 selected CVEs"
 
 
-def test_compose_candidate_rejects_stale_cisa_or_epss_sources() -> None:
+@pytest.mark.parametrize("catalog_date", [date(2026, 9, 30), date(2026, 9, 25), date(2026, 8, 1)])
+def test_compose_candidate_accepts_unchanged_kev_catalog_fetched_for_this_run(catalog_date: date) -> None:
     catalog, epss, nvd = inputs()
-    catalog.source = catalog.source.model_copy(update={"data_date": date(2026, 9, 30)})
-    with pytest.raises(ValueError, match="CISA KEV catalog is not current"):
+    catalog.source = catalog.source.model_copy(update={"data_date": catalog_date})
+    catalog.records[0] = catalog.records[0].model_copy(update={"date_added": catalog_date})
+    snapshot = compose_candidate(
+        watch_date=date(2026, 10, 2),
+        generated_at=NOW,
+        catalog=catalog,
+        epss=epss,
+        nvd_by_cve=nvd,
+        nvd_errors={},
+    )
+    assert snapshot.sources[0].data_date == catalog_date
+    assert snapshot.sources[0].retrieved_at == NOW
+    assert len(snapshot.entries) == (1 if catalog_date >= date(2026, 9, 3) else 0)
+    validate_interchange(snapshot.model_dump(mode="json"), ROOT / "schemas/vulnerability-watch.schema.json")
+
+
+@pytest.mark.parametrize("catalog_date", [None, date(2026, 10, 3)])
+def test_compose_candidate_rejects_missing_or_future_kev_release_date(catalog_date: date | None) -> None:
+    catalog, epss, nvd = inputs()
+    catalog.source = catalog.source.model_copy(update={"data_date": catalog_date})
+    with pytest.raises(ValueError, match="CISA KEV catalog date"):
         compose_candidate(
             watch_date=date(2026, 10, 2),
             generated_at=NOW,
@@ -172,8 +192,28 @@ def test_compose_candidate_rejects_stale_cisa_or_epss_sources() -> None:
             nvd_errors={},
         )
 
+
+@pytest.mark.parametrize("retrieval_days_ago", [2, -1])
+def test_compose_candidate_rejects_old_or_future_kev_retrieval(retrieval_days_ago: int) -> None:
     catalog, epss, nvd = inputs()
-    epss.source = epss.source.model_copy(update={"data_date": date(2026, 9, 30)})
+    catalog.source = catalog.source.model_copy(
+        update={"retrieved_at": NOW - timedelta(days=retrieval_days_ago)}
+    )
+    with pytest.raises(ValueError, match="CISA KEV retrieval is not current"):
+        compose_candidate(
+            watch_date=date(2026, 10, 2),
+            generated_at=NOW,
+            catalog=catalog,
+            epss=epss,
+            nvd_by_cve=nvd,
+            nvd_errors={},
+        )
+
+
+@pytest.mark.parametrize("score_date", [None, date(2026, 9, 30), date(2026, 10, 3)])
+def test_compose_candidate_rejects_missing_stale_or_future_epss_date(score_date: date | None) -> None:
+    catalog, epss, nvd = inputs()
+    epss.source = epss.source.model_copy(update={"data_date": score_date})
     with pytest.raises(ValueError, match="FIRST EPSS dataset is not current"):
         compose_candidate(
             watch_date=date(2026, 10, 2),

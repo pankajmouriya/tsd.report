@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -72,6 +72,35 @@ def _references(
     return list(by_url.values())
 
 
+def validate_source_freshness(
+    *,
+    watch_date: date,
+    generated_at: datetime,
+    catalog: KevCatalog,
+    epss: EpssDataset,
+) -> None:
+    # KEV is updated when entries change, not daily. Check retrieval freshness
+    # separately and retain dateReleased as the catalog's actual evidence date.
+    retrieved_date = catalog.source.retrieved_at.astimezone(UTC).date()
+    run_date = generated_at.astimezone(UTC).date()
+    if not 0 <= (run_date - retrieved_date).days <= 1:
+        raise ValueError(
+            f"CISA KEV retrieval is not current for this run (retrieved={retrieved_date}, run={run_date})"
+        )
+    catalog_date = catalog.source.data_date
+    if catalog_date is None or catalog_date > watch_date:
+        raise ValueError(
+            f"CISA KEV catalog date is missing or later than the watch date "
+            f"(catalog={catalog_date}, watch={watch_date})"
+        )
+    recent = select_recent_kev(catalog.records, watch_date=watch_date, lookback_days=30)
+    if recent and (epss.source.data_date is None or not 0 <= (watch_date - epss.source.data_date).days <= 1):
+        raise ValueError(
+            f"FIRST EPSS dataset is not current for the watch date "
+            f"(dataset={epss.source.data_date}, watch={watch_date})"
+        )
+
+
 def compose_candidate(
     *,
     watch_date: date,
@@ -81,11 +110,8 @@ def compose_candidate(
     nvd_by_cve: dict[str, NvdEnrichment | None],
     nvd_errors: dict[str, str],
 ) -> CandidateSnapshot:
-    if catalog.source.data_date is None or not 0 <= (watch_date - catalog.source.data_date).days <= 1:
-        raise ValueError("CISA KEV catalog is not current for the watch date")
+    validate_source_freshness(watch_date=watch_date, generated_at=generated_at, catalog=catalog, epss=epss)
     recent = select_recent_kev(catalog.records, watch_date=watch_date, lookback_days=30)
-    if recent and (epss.source.data_date is None or not 0 <= (watch_date - epss.source.data_date).days <= 1):
-        raise ValueError("FIRST EPSS dataset is not current for the watch date")
     ranked = rank_entries(
         recent,
         epss.records,

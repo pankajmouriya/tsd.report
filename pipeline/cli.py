@@ -12,7 +12,12 @@ import truststore
 from pipeline.collectors.cisa_kev import CISA_KEV_URL, CisaKevCollector
 from pipeline.collectors.epss import EPSS_URL, EpssCollector
 from pipeline.collectors.nvd import NVD_URL, NvdCollector
-from pipeline.compose import compose_candidate, promote_candidate, validate_interchange
+from pipeline.compose import (
+    compose_candidate,
+    promote_candidate,
+    validate_interchange,
+    validate_source_freshness,
+)
 from pipeline.http import BoundedHttpClient
 from pipeline.models import CandidateSnapshot
 from pipeline.ranking import rank_entries, select_recent_kev
@@ -79,8 +84,11 @@ def _collect(
     live_rate_limit: bool,
 ) -> int:
     catalog = CisaKevCollector(http).collect()
+    write_json_atomic(run_dir / "raw" / "cisa-kev.json", catalog.raw)
     recent = select_recent_kev(catalog.records, watch_date=watch_date, lookback_days=30)
     epss = EpssCollector(http).collect([record.cve for record in recent])
+    write_json_atomic(run_dir / "raw" / "epss.json", epss.raw)
+    validate_source_freshness(watch_date=watch_date, generated_at=generated_at, catalog=catalog, epss=epss)
     ranked = rank_entries(
         recent,
         epss.records,
@@ -113,8 +121,6 @@ def _collect(
     payload = snapshot.model_dump(mode="json")
     validate_interchange(payload, ROOT / "schemas/vulnerability-watch.schema.json")
 
-    write_json_atomic(run_dir / "raw" / "cisa-kev.json", catalog.raw)
-    write_json_atomic(run_dir / "raw" / "epss.json", epss.raw)
     for cve, enrichment in nvd_by_cve.items():
         if enrichment is not None:
             write_json_atomic(run_dir / "raw" / "nvd" / f"{cve}.json", enrichment.raw)
