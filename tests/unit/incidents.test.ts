@@ -50,6 +50,21 @@ describe('incident contract', () => {
         pr_url: 'https://github.com/example/newspaper/pull/1' },
     })).toThrow();
   });
+  it('accepts an editor merge record and rejects fabricated review fields', () => {
+    const value = candidate(); delete value.fixture;
+    value.incident_id = 'reported-release';
+    value.sources[0].url = 'https://nodejs.org/en/security';
+    const record = {
+      schema_version: 1, status: 'published', candidate: value,
+      content_sha256: incidentContentHash(value), published_at: '2026-10-30T06:00:00Z',
+      review: { approval_kind: 'merge', actor: 'editor', merged_at: '2026-10-30T05:30:00Z',
+        merge_sha: 'c'.repeat(40), head_sha: 'b'.repeat(40), pr_number: 1,
+        pr_url: 'https://github.com/example/newspaper/pull/1' },
+    };
+    expect(incidentPublicationSchema.parse(record).review.approval_kind).toBe('merge');
+    expect(() => incidentPublicationSchema.parse({ ...record, review: { ...record.review, review_id: 1 } })).toThrow();
+    expect(() => incidentPublicationSchema.parse({ ...record, review: { ...record.review, reviewed_at: record.review.merged_at } })).toThrow();
+  });
 });
 
 describe('incident homepage and revisions', () => {

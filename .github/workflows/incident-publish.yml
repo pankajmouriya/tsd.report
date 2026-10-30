@@ -2,6 +2,8 @@ name: Publish approved incident
 on:
   pull_request_review:
     types: [submitted, edited, dismissed]
+  pull_request_target:
+    types: [closed]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -23,7 +25,8 @@ jobs:
       (github.event_name == 'workflow_dispatch' ||
        (github.event.pull_request.head.repo.full_name == github.repository &&
         github.event.pull_request.user.login == 'github-actions[bot]' &&
-        startsWith(github.event.pull_request.head.ref, 'automation/incident-')))
+        startsWith(github.event.pull_request.head.ref, 'automation/incident-') &&
+        (github.event_name != 'pull_request_target' || github.event.pull_request.merged == true)))
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:

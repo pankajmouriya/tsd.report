@@ -4,7 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from pipeline.incidents.contracts import content_hash, make_publication, validate_candidate
+from pipeline.incidents.contracts import (
+    content_hash,
+    make_publication,
+    validate_candidate,
+    validate_publication,
+)
 
 ROOT = Path(__file__).parents[2]
 
@@ -58,6 +63,29 @@ def test_hash_is_stable_and_changes_when_editorial_copy_changes():
     changed = copy.deepcopy(value)
     changed["editorial"]["title"] += " updated"
     assert content_hash(changed) != content_hash(value)
+
+
+def test_merge_publication_requires_real_merge_metadata_without_review_fields():
+    value = candidate()
+    del value["fixture"]
+    value["incident_id"] = "reported-release"
+    value["sources"][0]["url"] = "https://nodejs.org/en/security"
+    authorization = {
+        "approval_kind": "merge",
+        "actor": "editor",
+        "merged_at": "2026-10-30T05:30:00Z",
+        "merge_sha": "c" * 40,
+        "head_sha": "b" * 40,
+        "pr_number": 1,
+        "pr_url": "https://github.com/example/newspaper/pull/1",
+    }
+    publication = make_publication(value, authorization, "2026-10-30T06:00:00Z")
+    assert validate_publication(publication) == publication
+    for extra in ({"review_id": 1}, {"reviewed_at": "2026-10-30T05:30:00Z"}):
+        invalid = copy.deepcopy(publication)
+        invalid["review"].update(extra)
+        with pytest.raises(ValueError):
+            validate_publication(invalid)
 
 
 def test_version_substrings_and_v_prefixes_do_not_bypass_evidence_checks():

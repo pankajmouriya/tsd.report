@@ -33,6 +33,7 @@ def test_monitor_and_publisher_activation_are_explicit_and_preview_is_real():
     preview = (ROOT / ".github/workflows/incident-validate.yml").read_text()
     assert "TSD_INCIDENT_MONITOR_ENABLED" in monitor
     assert "TSD_INCIDENT_PUBLISH_ENABLED" in publisher
+    assert "pull_request_target:" in publisher and "types: [closed]" in publisher
     assert "TSD_INCIDENT_PREVIEW:" in preview and "CONTENT_MODE: production" in preview
     assert "build:fixture" not in preview
     assert "load-pr" in preview and "check --pr" in preview

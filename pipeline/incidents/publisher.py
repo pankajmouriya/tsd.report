@@ -49,13 +49,48 @@ def eligible_review(pr, reviews, editor=EDITOR):
         if review["state"] != "PENDING":
             latest[review["user"]["login"].lower()] = review
     approved = latest.get(editor.lower())
-    if not approved or approved["state"] != "APPROVED" or approved["commit_id"] != pr["head"]["sha"]:
-        raise ValueError("Waiting for the editor's approval of the current head")
     if any(review["state"] == "CHANGES_REQUESTED" for review in latest.values()):
         raise ValueError("An active review requests changes")
-    if pr.get("merged_at") and approved["submitted_at"] > pr["merged_at"]:
-        raise ValueError("Approval must precede merge")
-    return approved
+    if approved and approved["state"] == "APPROVED" and approved["commit_id"] == pr["head"]["sha"]:
+        if pr.get("merged_at") and approved["submitted_at"] > pr["merged_at"]:
+            raise ValueError("Approval must precede merge")
+        return approved
+    if (
+        pr.get("merged")
+        and (pr.get("merged_by") or {}).get("login", "").lower() == editor.lower()
+        and re.fullmatch(r"[a-f0-9]{40}", pr.get("merge_commit_sha") or "")
+        and pr.get("merged_at")
+    ):
+        return {
+            "id": None,
+            "approval_kind": "merge",
+            "merge_sha": pr["merge_commit_sha"],
+            "user": pr["merged_by"],
+            "submitted_at": pr["merged_at"],
+        }
+    raise ValueError("Waiting for the editor's approval of the current head")
+
+
+def approval_record(approved, head, number, repository):
+    common = {
+        "actor": approved["user"]["login"],
+        "head_sha": head,
+        "pr_number": number,
+        "pr_url": f"https://github.com/{repository}/pull/{number}",
+    }
+    if approved.get("approval_kind") == "merge":
+        return {
+            **common,
+            "approval_kind": "merge",
+            "merged_at": approved["submitted_at"],
+            "merge_sha": approved["merge_sha"],
+        }
+    return {
+        **common,
+        "approval_kind": "review",
+        "reviewed_at": approved["submitted_at"],
+        "review_id": approved["id"],
+    }
 
 
 def load_pr(github: GitHub, number: int):
@@ -122,7 +157,9 @@ def publish(github: GitHub, number: int):
     existing = github.file(path, main)
     if existing:
         validate_publication(existing)
-        if existing["content_sha256"] != digest or existing["review"]["review_id"] != approved["id"]:
+        if existing["content_sha256"] != digest or existing["review"] != approval_record(
+            approved, pr["head"]["sha"], number, github.repository
+        ):
             raise ValueError("Published incident revision is immutable")
         commit = main
     else:
@@ -136,14 +173,7 @@ def publish(github: GitHub, number: int):
             previous = github.file(previous_path, main)
             if not previous or validate_publication(previous)["content_sha256"] != candidate["supersedes"]:
                 raise ValueError("Correction does not supersede the immutable previous revision")
-        review = {
-            "actor": approved["user"]["login"],
-            "reviewed_at": approved["submitted_at"],
-            "head_sha": pr["head"]["sha"],
-            "review_id": approved["id"],
-            "pr_number": number,
-            "pr_url": f"https://github.com/{github.repository}/pull/{number}",
-        }
+        review = approval_record(approved, pr["head"]["sha"], number, github.repository)
         record = make_publication(candidate, review, datetime.now(UTC).isoformat().replace("+00:00", "Z"))
         commit = github.publication_commit(main, candidate_path(candidate), path, record)
     github.dispatch("incident-deploy.yml", {"publication_sha": commit, "pr_number": str(number)})

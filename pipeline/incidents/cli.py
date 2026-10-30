@@ -13,7 +13,14 @@ from pipeline.incidents.contracts import content_hash, validate_candidate, valid
 from pipeline.incidents.discovery import discover
 from pipeline.incidents.evidence import capture, source_text, verify_fact_quotes
 from pipeline.incidents.github import GitHub, decode_packet
-from pipeline.incidents.publisher import CHECK_NAME, candidate_path, load_pr, publish, require_real_candidate
+from pipeline.incidents.publisher import (
+    CHECK_NAME,
+    approval_record,
+    candidate_path,
+    load_pr,
+    publish,
+    require_real_candidate,
+)
 from pipeline.incidents.sources import fetch, load_registry
 from pipeline.storage import write_json_atomic
 
@@ -69,7 +76,9 @@ def check(github, number, head, conclusion):
         and os.environ.get("TSD_PREVIEW_ENABLED") == "true"
         and re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", project)
     ):
-        preview_url = f"https://incident-{number}-{head}.{project}.pages.dev/"
+        actual_url = os.environ.get("INCIDENT_PREVIEW_URL", "")
+        if re.fullmatch(rf"https://[a-z0-9]+\.{re.escape(project)}\.pages\.dev/?", actual_url):
+            preview_url = actual_url
     details = {"details_url": preview_url} if preview_url else {}
     github.api(
         "check-runs",
@@ -83,7 +92,8 @@ def check(github, number, head, conclusion):
             "conclusion": conclusion,
             "output": {
                 "title": f"Incident candidate: {conclusion}",
-                "summary": f"Candidate SHA-256: `{digest}`. "
+                "summary": (f"[Read the candidate preview]({preview_url})\n\n" if preview_url else "")
+                + f"Candidate SHA-256: `{digest}`. "
                 f"Validation and preview apply only to head `{head}`.",
             },
         },
@@ -305,11 +315,10 @@ def main(argv=None):
             from pipeline.incidents.publisher import eligible_review
 
             approved = eligible_review(pr, github.pages(f"pulls/{args.pr}/reviews"))
-            if (
-                publication["review"]["review_id"] != approved["id"]
-                or publication["review"]["actor"] != approved["user"]["login"]
+            if publication["review"] != approval_record(
+                approved, pr["head"]["sha"], args.pr, github.repository
             ):
-                raise ValueError("Deployment publication does not match the real editor review")
+                raise ValueError("Deployment publication does not match the editor's GitHub action")
             if (
                 publication["content_sha256"] != content_hash(candidate)
                 or publication["review"]["head_sha"] != pr["head"]["sha"]

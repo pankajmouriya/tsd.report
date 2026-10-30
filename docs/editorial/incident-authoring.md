@@ -74,7 +74,7 @@ Use the resulting bot-authored PR, rather than opening it under Pankaj's CLI ide
 
 ## Review and corrections
 
-Pankaj's GitHub Approve review authorizes only the current head. New editorial commits need fresh approval. Passing checks after an earlier approval re-evaluate publication automatically. A code/registry/workflow change is never eligible for this content flow.
+Pankaj's GitHub Approve review authorizes only the current head and automatically merges after validation. New editorial commits need fresh approval. Passing checks after an earlier approval re-evaluate publication automatically. If Pankaj directly merges a validated content PR, that real merge can authorize publication and is recorded as a merge, not a review. A code/registry/workflow change is never eligible for this content flow.
 
 For a correction, keep the incident ID, increment the revision, set `supersedes` to the previous publication's `content_sha256`, and add a truthful `correction_note`. Reference updated evidence and submit another content PR. Existing publication files and dated editions remain unchanged; the canonical article shows the newest revision and its correction note. Do not edit an old publication or reuse its reviewer metadata.
 

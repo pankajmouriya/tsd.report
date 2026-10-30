@@ -110,10 +110,9 @@ def validate_publication(payload: dict) -> dict:
         raise ValueError("Cannot publish fixture content")
     if content_hash(candidate) != payload["content_sha256"]:
         raise ValueError("Published content hash mismatch")
-    if datetime.fromisoformat(payload["review"]["reviewed_at"]) > datetime.fromisoformat(
-        payload["published_at"]
-    ):
-        raise ValueError("Publication precedes review")
+    authorized_at = payload["review"].get("merged_at", payload["review"].get("reviewed_at"))
+    if datetime.fromisoformat(authorized_at) > datetime.fromisoformat(payload["published_at"]):
+        raise ValueError("Publication precedes editorial authorization")
     return payload
 
 

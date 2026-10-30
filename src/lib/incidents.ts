@@ -58,7 +58,8 @@ export function incidentStory(candidate: IncidentCandidate, publication?: Incide
     signal: { score: 70, label: 'recommended' as const, reasons: ['Selected for incident reporting'] },
     vulnerabilities: [], body: copy.sections.flatMap((section) => section.paragraphs), author: null,
   };
-  return publication ? { ...common, status: 'published', reviewed_by: publication.review.actor, reviewed_at: publication.review.reviewed_at }
+  return publication ? { ...common, status: 'published', reviewed_by: publication.review.actor,
+    reviewed_at: publication.review.approval_kind === 'merge' ? publication.review.merged_at : publication.review.reviewed_at }
     : { ...common, fixture: true };
 }
 

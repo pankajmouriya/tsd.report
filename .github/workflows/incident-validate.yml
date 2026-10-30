@@ -85,13 +85,26 @@ jobs:
           if-no-files-found: error
           retention-days: 90
       - name: Publish isolated noindex preview
+        id: preview
+        shell: bash
         if: vars.TSD_PREVIEW_ENABLED == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
           CANDIDATE_HEAD: ${{ steps.candidate.outputs.head }}
-        run: npx --no-install wrangler pages deploy dist --project-name "$CLOUDFLARE_PROJECT_NAME" --branch "incident-$PR_NUMBER-$CANDIDATE_HEAD"
+        run: |
+          npx --no-install wrangler pages deploy dist --project-name "$CLOUDFLARE_PROJECT_NAME" --branch "incident-$PR_NUMBER-$CANDIDATE_HEAD" | tee "$RUNNER_TEMP/incident-preview-deploy.log"
+          python - <<'PY'
+          import os, re
+          from pathlib import Path
+          log = (Path(os.environ['RUNNER_TEMP']) / 'incident-preview-deploy.log').read_text()
+          match = re.search(r'https://[a-z0-9]+\.' + re.escape(os.environ['CLOUDFLARE_PROJECT_NAME']) + r'\.pages\.dev', log)
+          if not match:
+              raise SystemExit('Wrangler did not report an immutable preview URL')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('url=' + match[0] + '/\n')
+          PY
       - name: Report head-bound preview check and re-evaluate approval
         if: always() && steps.candidate.outputs.head != ''
         env:
@@ -99,4 +112,5 @@ jobs:
           CONCLUSION: ${{ job.status == 'success' && 'success' || 'failure' }}
           PREVIEW_PROJECT: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
           TSD_PREVIEW_ENABLED: ${{ vars.TSD_PREVIEW_ENABLED }}
+          INCIDENT_PREVIEW_URL: ${{ steps.preview.outputs.url }}
         run: uv run --locked python -m pipeline.incidents.cli check --pr "$PR_NUMBER" --head "$CANDIDATE_HEAD" --conclusion "$CONCLUSION"

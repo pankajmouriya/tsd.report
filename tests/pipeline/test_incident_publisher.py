@@ -50,6 +50,23 @@ def reviews():
     ]
 
 
+def test_editor_merge_is_an_auditable_approval_without_a_fabricated_review():
+    pr = pull()
+    pr.update(
+        merged=True,
+        merged_at="2026-10-30T07:30:29Z",
+        merged_by={"login": "editor"},
+        merge_commit_sha="c" * 40,
+    )
+    approval = eligible_review(pr, [], "editor")
+    assert approval["id"] is None
+    assert approval["approval_kind"] == "merge"
+    assert approval["merge_sha"] == "c" * 40
+    pr["merged_by"]["login"] = "someone-else"
+    with pytest.raises(ValueError):
+        eligible_review(pr, [], "editor")
+
+
 def test_scope_accepts_only_one_expected_content_file():
     candidate = packet()
     files = [{"filename": "data/candidates/incidents/synthetic-release-alert.json", "status": "added"}]
@@ -124,6 +141,7 @@ class FakeGitHub:
         self.review["user"]["login"] = "pankajmouriya"
         self.records, self.commits, self.dispatches = {}, 0, []
         self.check_ok, self.race, self.revoke = True, False, False
+        self.no_reviews = False
         self.main = "c" * 40
         self.review_reads = 0
 
@@ -134,6 +152,8 @@ class FakeGitHub:
         if path.endswith("/files"):
             return [{"filename": candidate_path(self.candidate), "status": "added"}]
         self.review_reads += 1
+        if self.no_reviews:
+            return []
         review = copy.deepcopy(self.review)
         if self.revoke and self.review_reads > 1:
             review["state"] = "DISMISSED"
@@ -192,6 +212,45 @@ def test_publisher_preserves_reviewed_copy_and_retries_without_rewriting_it():
     assert publish(github, 7)["status"] == "deployment-queued"
     assert github.commits == 1
     assert len(github.dispatches) == 2
+
+
+def test_editor_merge_publishes_with_real_merge_metadata_and_is_idempotent():
+    github = FakeGitHub()
+    github.no_reviews = True
+    github.pr.update(
+        merged=True,
+        merged_at="2026-10-30T07:30:29Z",
+        merged_by={"login": "pankajmouriya"},
+        merge_commit_sha="e" * 40,
+        state="closed",
+    )
+    assert publish(github, 7)["status"] == "deployment-queued"
+    record = github.records[publication_path(github.candidate)]
+    assert record["review"] == {
+        "actor": "pankajmouriya",
+        "head_sha": SHA,
+        "pr_number": 7,
+        "pr_url": "https://github.com/example/newspaper/pull/7",
+        "approval_kind": "merge",
+        "merged_at": "2026-10-30T07:30:29Z",
+        "merge_sha": "e" * 40,
+    }
+    assert publish(github, 7)["status"] == "deployment-queued"
+    assert github.commits == 1
+
+
+def test_non_editor_merge_cannot_publish_without_review():
+    github = FakeGitHub()
+    github.no_reviews = True
+    github.pr.update(
+        merged=True,
+        merged_at="2026-10-30T07:30:29Z",
+        merged_by={"login": "another-user"},
+        merge_commit_sha="e" * 40,
+    )
+    with pytest.raises(ValueError, match="Waiting for the editor"):
+        publish(github, 7)
+    assert not github.records
 
 
 @pytest.mark.parametrize("failure", ["checks", "race", "revoke"])
