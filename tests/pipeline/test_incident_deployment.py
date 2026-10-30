@@ -1,9 +1,15 @@
+import json
+from pathlib import Path
+
 import httpx
 import pytest
 
 from pipeline.incidents.cloudflare import rollback_if_ours
+from pipeline.incidents.contracts import make_publication
 from pipeline.incidents.sources import fetch
-from pipeline.incidents.verify_live import verify_page
+from pipeline.incidents.verify_live import publication_destination, verify_page
+
+ROOT = Path(__file__).parents[2]
 
 
 def test_served_revision_and_homepage_presence_are_required():
@@ -14,6 +20,57 @@ def test_served_revision_and_homepage_presence_are_required():
         verify_page(good, "b" * 40)
     with pytest.raises(ValueError):
         verify_page(good, sha, "/article/missing")
+
+
+def test_external_brief_verifies_its_original_link_and_stable_provenance(tmp_path):
+    candidate = json.loads((ROOT / "tests/fixtures/incidents/candidate.json").read_text())
+    candidate["schema_version"] = 2
+    candidate["incident_id"] = "sample-brief"
+    candidate["destination_source_id"] = candidate["sources"][0]["id"]
+    candidate["editorial"].pop("sections")
+    candidate.pop("fixture")
+    candidate["sources"][0]["url"] = "https://nodejs.org/en/security"
+    review = {
+        "actor": "editor",
+        "head_sha": "a" * 40,
+        "pr_number": 1,
+        "pr_url": "https://github.com/example/newspaper/pull/1",
+        "reviewed_at": "2026-10-30T05:30:00Z",
+        "review_id": 1,
+    }
+    record = make_publication(candidate, review, "2026-10-30T06:00:00Z")
+    directory = tmp_path / "data/production/incidents/sample-brief"
+    directory.mkdir(parents=True)
+    (directory / "1.json").write_text(json.dumps(record))
+    destination = publication_destination("sample-brief", tmp_path)
+    assert destination == "https://nodejs.org/en/security"
+    sha = "b" * 40
+    home = f'<meta name="tsd-revision" content="{sha}"><a href="{destination}">Read</a>'.encode()
+    verify_page(home, sha, destination)
+    with pytest.raises(ValueError):
+        verify_page(home, sha, "/article/sample-brief")
+    with pytest.raises(ValueError):
+        publication_destination("missing", tmp_path)
+
+
+def test_published_legacy_incident_keeps_its_internal_destination(tmp_path):
+    candidate = json.loads((ROOT / "tests/fixtures/incidents/candidate.json").read_text())
+    candidate["incident_id"] = "sample-article"
+    candidate["sources"][0]["url"] = "https://nodejs.org/en/security"
+    candidate.pop("fixture")
+    review = {
+        "actor": "editor",
+        "head_sha": "a" * 40,
+        "pr_number": 1,
+        "pr_url": "https://github.com/example/newspaper/pull/1",
+        "reviewed_at": "2026-10-30T05:30:00Z",
+        "review_id": 1,
+    }
+    record = make_publication(candidate, review, "2026-10-30T06:00:00Z")
+    directory = tmp_path / "data/production/incidents/sample-article"
+    directory.mkdir(parents=True)
+    (directory / "1.json").write_text(json.dumps(record))
+    assert publication_destination("sample-article", tmp_path) == "/article/sample-article"
 
 
 def test_live_verification_can_follow_only_bounded_allowlisted_redirects():
