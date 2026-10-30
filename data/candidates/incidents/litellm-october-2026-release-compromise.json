@@ -109,7 +109,7 @@
         "heading": "Assess execution and credential exposure",
         "paragraphs": [
           "CERT-In describes credential theft and remote code execution capabilities in the reported compromise. Its advisory makes impact conditional on whether malicious artifacts were installed or executed, the privileges available to the process, and the security controls in place. Package presence and confirmed compromise are different findings.",
-          "For an investigation, the advisory recommends examining inventories, lockfiles, build logs, container digests and deployment records. These can help establish which environments need attention. An upstream takedown alone does not answer whether a cached artifact was installed or whether an affected process ran."
+          "CERT-In recommends examining inventories, lockfiles, build logs, container digests and deployment records to establish which environments need attention. An upstream takedown does not establish whether a cached artifact was installed or an affected process ran."
         ],
         "claim_ids": [
           "capabilities"
@@ -119,7 +119,7 @@
         "heading": "Respond from a trusted environment",
         "paragraphs": [
           "CERT-In recommends rebuilding or redeploying affected containers from verified clean images and rotating credentials from a trusted, clean environment. Its guidance also calls for preserving relevant evidence and examining potential persistence and credential misuse.",
-          "Use the linked advisories for the full response procedure and verify that their artifact and version scope matches your environment. This summary does not assign a fixed version or claim that rebuilding alone resolves every exposure. Unresolved scope should remain an investigation question rather than a declaration of safety."
+          "Use the linked advisories for the full response procedure and verify their scope against your environment. This summary does not assign a fixed version or claim that rebuilding alone resolves every exposure."
         ],
         "claim_ids": [
           "rebuild",
