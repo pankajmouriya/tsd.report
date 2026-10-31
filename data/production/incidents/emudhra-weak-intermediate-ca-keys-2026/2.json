@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "status": "published",
+  "candidate": {
+    "schema_version": 1,
+    "status": "candidate",
+    "incident_id": "emudhra-weak-intermediate-ca-keys-2026",
+    "revision": 2,
+    "classification": "certificate-trust",
+    "occurred_at": null,
+    "evidence_as_of": "2026-10-31T09:45:31.073398Z",
+    "supersedes": "8520ce40f0deb2fafa98f2db222ea8922eb380f7f66801e0ffece2f861b171ca",
+    "correction_note": "Cloudflare’s October 30 follow-up documents observed forged certificates and patching gaps. The first revision had said forged certificates were not observed.",
+    "sources": [
+      {
+        "id": "emudhra",
+        "name": "Emudhra",
+        "url": "https://emudhra.com/en/post/certificate-security-incident/",
+        "type": "vendor",
+        "published_at": null,
+        "retrieved_at": "2026-10-31T09:44:10.222926Z",
+        "data_date": "2026-10-30"
+      },
+      {
+        "id": "github-mozilla",
+        "name": "Github Mozilla",
+        "url": "https://github.com/advisories/GHSA-vr39-qqr3-x9v4",
+        "type": "community",
+        "published_at": null,
+        "retrieved_at": "2026-10-31T09:44:10.952113Z",
+        "data_date": "2026-10-21"
+      },
+      {
+        "id": "cloudflare",
+        "name": "Cloudflare",
+        "url": "https://blog.cloudflare.com/emudhra-certificate-compromise/",
+        "type": "research",
+        "published_at": null,
+        "retrieved_at": "2026-10-31T09:44:11.195462Z",
+        "data_date": "2026-10-20"
+      },
+      {
+        "id": "aikido",
+        "name": "Aikido",
+        "url": "https://www.aikido.dev/blog/emudhra-ca-compromise",
+        "type": "research",
+        "published_at": null,
+        "retrieved_at": "2026-10-31T09:44:11.686151Z",
+        "data_date": "2026-10-22"
+      },
+      {
+        "id": "cloudflare-followup",
+        "name": "Cloudflare Followup",
+        "url": "https://blog.cloudflare.com/emudhra-patching/",
+        "type": "research",
+        "published_at": null,
+        "retrieved_at": "2026-10-31T09:44:11.765003Z",
+        "data_date": "2026-10-30"
+      }
+    ],
+    "facts": [
+      {
+        "id": "recoverable",
+        "statement": "the private keys associated with eight of our emSign G3 intermediate TLS CAs were recoverable.",
+        "source_ids": [
+          "emudhra"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "weak",
+        "statement": "Eight intermediate (issuing) CAs in our Global TLS business were revoked because their published keys were weak.",
+        "source_ids": [
+          "emudhra"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "root",
+        "statement": "Intermediate keys were revoked, not root keys.",
+        "source_ids": [
+          "emudhra"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "no-issuance",
+        "statement": "the affected intermediates had not issued publicly trusted end-entity certificates",
+        "source_ids": [
+          "emudhra"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "g3",
+        "statement": "The roughly 30,800 certificates issued under the affected G3 hierarchies belong to a client ecosystem in the United States.",
+        "source_ids": [
+          "emudhra"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "mozilla",
+        "statement": "Mozilla blocked compromised intermediate eMudhra certificates via OneCRL on the 17th of October",
+        "source_ids": [
+          "github-mozilla"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "transition",
+        "statement": "moving our impacted G3 customers and our broader non-impacted TLS customers to alternate certificates at no cost.",
+        "source_ids": [
+          "emudhra"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "investigation",
+        "statement": "there has been no compromise of our infrastructure or customer data.",
+        "source_ids": [
+          "emudhra"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "handshakes",
+        "statement": "we’ve seen about 22,000 attempted handshakes with the weak eMudhra keys.",
+        "source_ids": [
+          "cloudflare-followup"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "forged",
+        "statement": "these keys appear to have been used to forge certificates within hours of the weakness becoming public",
+        "source_ids": [
+          "cloudflare-followup"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "no-interception",
+        "statement": "there is no evidence of the weak keys being used to intercept Cloudflare's connections so far",
+        "source_ids": [
+          "cloudflare-followup"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "webview",
+        "statement": "Also embedded browsers, like Android WebView, lag behind patching with 30–40% still accepting.",
+        "source_ids": [
+          "cloudflare-followup"
+        ],
+        "state": "reported"
+      }
+    ],
+    "editorial": {
+      "title": "Cloudflare observes forged eMudhra certificates while client trust updates lag",
+      "summary": "Cloudflare now reports certificates apparently forged with eMudhra’s weak intermediate keys and about 22,000 attempted handshakes in its telemetry. It has not seen interception of its own connections. Its challenge probes suggest some embedded browsers still accept affected chains, with a skewed traffic sample.",
+      "why_it_matters": "The new evidence changes the response from a theoretical forgery risk to observed forged certificates. It does not establish interception or compromise of every client; trust behavior varies across software and update state.",
+      "action": "Check certificate chains and trust-store updates on affected clients and services. Follow issuer and platform guidance, confirm replacement chains work, and preserve certificate and connection evidence if suspicious use appears.",
+      "tags": [
+        "certificate-trust",
+        "emudhra",
+        "tls"
+      ],
+      "affected_technologies": [
+        "TLS certificates",
+        "Certificate authorities",
+        "Firefox"
+      ],
+      "claim_ids": [
+        "recoverable",
+        "weak",
+        "root",
+        "mozilla",
+        "no-issuance",
+        "transition",
+        "g3",
+        "investigation",
+        "handshakes",
+        "forged",
+        "no-interception",
+        "webview"
+      ],
+      "sections": [
+        {
+          "heading": "What the new telemetry shows",
+          "paragraphs": [
+            "Cloudflare reports about 22,000 attempted handshakes involving the weak eMudhra keys in its outbound TLS telemetry. Many were test sites or origins presenting their own certificates, so the count is not a count of interceptions. Cloudflare says certificates apparently forged after disclosure were observed, but it has no evidence of interception of its own connections so far.",
+            "This is a material change from the first article, which reported the issuer’s statement that the weak intermediates had not issued publicly trusted end-entity certificates and did not assert observed forgery. A certificate made with a recoverable private key after disclosure is a different claim from legitimate issuance by the CA."
+          ],
+          "claim_ids": [
+            "handshakes",
+            "forged",
+            "no-interception",
+            "no-issuance",
+            "weak"
+          ]
+        },
+        {
+          "heading": "Where trust remains uneven",
+          "paragraphs": [
+            "Cloudflare’s challenge-page probes suggest that some embedded browsers, including Android WebView, still accept affected chains. The sample is influenced by bots and changing probe conditions, so it cannot establish the share of all clients that remain exposed.",
+            "The issuer says the eight weak intermediate authorities were revoked and its root key was not compromised. Certificate migration and client trust-store updates remain separate tasks. Operators should check the chains and clients they actually use rather than assuming all eMudhra certificates share the weak key."
+          ],
+          "claim_ids": [
+            "webview",
+            "weak",
+            "root",
+            "transition"
+          ]
+        },
+        {
+          "heading": "What remains unresolved",
+          "paragraphs": [
+            "Cloudflare’s observations do not prove targeted interception, and eMudhra’s investigation says it found no infrastructure or customer-data compromise. Neither statement rules out every misuse of a recoverable signing key.",
+            "Preserve certificate chains, trust-store versions and connection evidence if an unexpected certificate appears. Prioritize updates where affected chains remain accepted, and verify that replacement certificates work across clients."
+          ],
+          "claim_ids": [
+            "no-interception",
+            "investigation",
+            "forged"
+          ]
+        }
+      ]
+    }
+  },
+  "content_sha256": "ecae05293a6ccd31a50d57542fa1ee37e2655c787a36fb88e83dbfbfaf38243a",
+  "review": {
+    "actor": "pankajmouriya",
+    "head_sha": "9be8479359b62e4c88c6c7d7eb21fc93c789fb30",
+    "pr_number": 48,
+    "pr_url": "https://github.com/pankajmouriya/tsd.report/pull/48",
+    "approval_kind": "merge",
+    "merged_at": "2026-10-31T09:53:55Z",
+    "merge_sha": "677e8ab949702807e31ab20268ac9a7856a3af60"
+  },
+  "published_at": "2026-10-31T09:54:18.566888Z"
+}
