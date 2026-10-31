@@ -211,6 +211,10 @@ Identity matching uses the slug or edition date to find candidates, then require
 
 A newsletter failure does not roll back a healthy site deployment. It marks the workflow unsuccessful and requires an operator to reconcile Buttondown before retrying. A site deployment failure prevents email delivery. A code-only deployment after an edition was sent becomes an idempotent no-op.
 
+### Standing send authorization — 2026-10-31
+
+After the first approved edition was sent, the editor explicitly authorized leaving the repository send gate enabled for future editions. `TSD_NEWSLETTER_SEND_ENABLED=true` is the standing operational state; each new edition still requires its own reviewed `approved` newsletter metadata, successful same-SHA production deployment, and provider identity check. A code-only deployment or a rerun of an accepted edition remains a no-op. Pause the gate for an unresolved duplicate, ambiguous provider state, or other concrete delivery risk, then restore the standing state after reconciliation. The first key required a one-time Buttondown send confirmation; the routine sender must not attach the broad `X-Buttondown-Live-Dangerously` header to every request.
+
 The GitHub job summary records edition date, canonical URL, source SHA, content digest, Buttondown message ID, and final non-sensitive state. It never records addresses, API keys, authorization headers, or full provider responses.
 
 ## 10. Operational setup
