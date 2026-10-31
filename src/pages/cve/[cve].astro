@@ -22,7 +22,7 @@ const fixedVersions = storyVulnerability?.fixed_versions ?? [];
 const evidenceDate = watch?.entry.epss.score_date ?? storyVulnerability?.evidence_date ?? null;
 const fixture = getContentMode() === 'fixture';
 ---
-<ArticleLayout title={cve} description={`Dated vulnerability record for ${cve}`} canonical={cvePath(cve)} editionDate={watch?.snapshot.date ?? edition?.date}>
+<ArticleLayout title={cve} description={`Dated vulnerability record for ${cve}`} canonical={cvePath(cve)} editionDate={edition?.date}>
   <main id="main" class="reading-article reading-article--reference">
     <header class="article-opening">
       <p class="article-kicker">Vulnerability intelligence{fixture && ' · Historical fixture'}</p>
