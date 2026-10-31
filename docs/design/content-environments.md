@@ -45,6 +45,8 @@ The production site should not publish a fake edition simply to make the build p
 - Layouts, articles, vulnerability pages, and feeds derive fixture labels and indexing behavior from the selected mode.
 - `build:fixture`, `build:production`, `validate:fixture`, `validate:production`, and `test:content-environments` expose the boundary to developers and CI.
 
+For a PR that changes a reviewed production edition, the general Pages preview builds the proposed production corpus so the dated edition can be reviewed at its actual route. That preview is visibly marked “Edition preview · Not published,” carries `noindex, nofollow`, and disables newsletter signup. Other PRs retain the fixture preview. This preview setting does not relax production schema validation or publish the edition; the main-branch deployment remains the publication boundary. The preview check requests the proposed dated route as well as the root, so a fixture-only or missing edition cannot pass unnoticed.
+
 ## Required design changes
 
 ### 1. Select one content source

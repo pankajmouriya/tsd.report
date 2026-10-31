@@ -1,6 +1,8 @@
 # Buttondown newsletter operations
 
-Status: implemented and tested locally; provider setup and live rollout remain unverified. This runbook does not record account creation, sender verification, DNS changes, hosted workflow execution, confirmation, unsubscribe, delivery, or deployment. No production edition currently has newsletter approval.
+Status: implemented and tested locally; provider API access and live sending remain unverified. No production edition currently has newsletter approval.
+
+Setup progress, 2026-10-31: the editor reported that the Buttondown account and sender are verified, an owner-only provider test passed, and the active subscriber count is under 80. GitHub lists `BUTTONDOWN_API_KEY` in the `production` environment; the duplicate repository secret was removed. `TSD_NEWSLETTER_SEND_ENABLED` is a repository variable set to `false`, and the accidentally added environment variable of the same name was removed. The key's provider access and subscriber count have not been independently checked. The editor approved the exact six-story October 31 draft copy, audience, and send-after-deployment timing in conversation. The final production edition is in PR #53 and still requires GitHub approval of its current revision before merge or sending. Keep the send gate off through review.
 
 The [newsletter design](../superpowers/specs/2026-09-30-tsd-buttondown-newsletter-design.md) defines the boundary. Buttondown handles subscriber data and delivery. TSD keeps the canonical dated editions and `/article/[slug]` archive. Follow the [release process](release-process.md) for site deployment and the [authoring guide](../editorial/authoring-guide.md#newsletter-copy-and-approval) for editorial approval.
 
@@ -17,6 +19,8 @@ Use GitHub **Settings → Secrets and variables → Actions → Variables** for 
 | `TSD_PUBLICATION_CONTACT_URL` | GitHub repository variable; local environment for an enabled local signup preview | No | Operator-supplied monitored `mailto:` or HTTPS contact |
 
 These five values supplement the existing `TSD_PRODUCTION_ENABLED` site gate and Cloudflare settings. An enabled signup build rejects a missing/invalid username or contact URL. Disabled signup omits the form. Builds and pull-request jobs never receive the provider key; CI fixture previews use explicitly synthetic public test configuration.
+
+Keep `TSD_NEWSLETTER_SEND_ENABLED` at repository scope: the job-level `if` gate reads it before the `production` environment starts. An environment variable with this name does not enable that gate; [GitHub makes environment-level variables available only after job start](https://docs.github.com/en/actions/reference/workflows-and-actions/variables#configuration-variable-precedence). Leave the repository value `false` until the exact edition and subscriber send have been approved.
 
 ## Set up the provider before opening signup
 
@@ -46,6 +50,8 @@ npm run newsletter:preview -- --mode production --output /private/tmp/tsd-newsle
 ```
 
 The preview command selects the newest edition in the requested corpus and fails when it has no newsletter metadata. It does not change approval or send email. Inspect subject, preview, lead, unique story order, evidence/unknowns, canonical links, and mobile reading. Buttondown's `description` receives the preview text; the renderer also includes it in the digest body. Local HTML does not prove a particular email client's inbox preview or delivered layout. Use an owner-only provider test to inspect the actual template in desktop and mobile clients before live sending.
+
+For a PR that changes a production edition, the Pages preview at `https://pr-<number>.<project>.pages.dev` renders the proposed dated edition with an unpublished notice and `noindex, nofollow`; its workflow checks the dated route. It disables signup on that preview. The newsletter's exact Markdown still belongs in the PR description or review artifact, because the Pages route is the site edition and does not show Buttondown's delivered template.
 
 Enable acquisition before delivery. After provider tests and signup acceptance, arrange a separate reviewed content pull request with real newsletter approval. Enable `TSD_NEWSLETTER_SEND_ENABLED=true` only when the next approved merge is intended to send. The new approval and timestamp authorize subject, preview, selection, and timing; article/source review does not supply this authorization. Leave existing editions unapproved.
 

@@ -72,6 +72,15 @@ describe('newsletter digest', () => {
     for (const render of [renderNewsletterMarkdown, renderNewsletterPreviewHtml]) expect(render(digest)).not.toContain('Security signal:');
   });
 
+  it('omits the generic incident placement score from the email digest', () => {
+    const incident = story('lead', { type: 'incident', signal: { score: 70, label: 'recommended', reasons: ['Selected for incident reporting'] } });
+    const digest = buildNewsletterDigest(edition({ sections: {}, stories: [incident] }));
+    expect(digest.lead.signal).toBeUndefined();
+    for (const render of [renderNewsletterMarkdown, renderNewsletterPreviewHtml]) {
+      expect(render(digest)).not.toContain('Security signal:');
+    }
+  });
+
   it('omits Vulnerability Watch for an edition with no supplied entries', () => {
     const digest = buildNewsletterDigest(edition());
     expect(digest.vulnerabilities).toEqual([]);
@@ -197,8 +206,18 @@ describe('newsletter preview CLI', () => {
   });
 
   it('refuses a latest edition with no newsletter metadata without writing an artifact', () => {
-    const result = run(process.cwd(), ['--mode', 'production', '--output', join(tmpdir(), 'should-not-create-newsletter.html')]);
-    expect(result.status).not.toBe(0);
-    expect(result.stderr).toMatch(/newsletter metadata/i);
+    const root = mkdtempSync(join(tmpdir(), 'tsd-newsletter-missing-'));
+    try {
+      const directory = join(root, 'data/production/editions');
+      mkdirSync(directory, { recursive: true });
+      const input = JSON.parse(readFileSync('data/production/editions/2026-10-02.json', 'utf8'));
+      delete input.newsletter;
+      writeFileSync(join(directory, 'edition.json'), JSON.stringify(input));
+      const output = join(root, 'should-not-create-newsletter.html');
+      const result = run(root, ['--mode', 'production', '--output', output]);
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toMatch(/newsletter metadata/i);
+      expect(() => readFileSync(output)).toThrow();
+    } finally { rmSync(root, { recursive: true, force: true }); }
   });
 });

@@ -23,6 +23,8 @@ Production must implement the [content-environments design](../../design/content
 
 The user selected a free-first Buttondown newsletter with double opt-in, concise edition digests, and automatic API delivery only after a reviewed production edition deploys successfully. TSD retains the canonical article and edition archive. Buttondown owns subscriber confirmation, unsubscribe, bounce, complaint, and suppression state; TSD does not add accounts or a subscriber database. The [Buttondown newsletter design](2026-09-30-tsd-buttondown-newsletter-design.md) defines the separate editorial approval, duplicate-send protection, privacy boundary, rollout gates, and free-tier capacity decision.
 
+For a production-edition content PR, the Pages preview builds the proposed reviewed corpus, shows an unpublished preview notice, sets `noindex, nofollow`, disables signup, and checks the proposed dated route. The previous fixture-only general preview could pass while the proposed edition URL returned 404. Fixture previews remain the default for PRs without a production-edition change; preview deployment does not authorize newsletter delivery or production publication.
+
 ## 2. Design direction and alternatives
 
 | Approach | Benefit | Tradeoff |
