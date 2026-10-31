@@ -1,0 +1,36 @@
+name: Inspect newsletter provider
+
+on:
+  workflow_dispatch:
+    inputs:
+      edition_date:
+        description: Expected newest production edition date (YYYY-MM-DD)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: newsletter-production
+      cancel-in-progress: false
+    environment: production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Inspect Buttondown email inventory without creating an email
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          EXPECTED_EDITION_DATE: ${{ inputs.edition_date }}
+        run: node --import tsx scripts/newsletter/preflight.ts
