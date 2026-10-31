@@ -38,6 +38,8 @@ Group related reports using several evidence-backed signals, such as advisory ID
 
 Produce a bounded triage queue in GitHub, preferably one rolling issue with stable incident IDs and links to source evidence. Avoid one issue per raw malicious-package record and avoid re-notifying on unchanged inputs. Use deterministic relevance rules; do not manufacture popularity or severity scores. A source failure records reduced coverage and preserves previous leads and checkpoints.
 
+Structured advisory and malicious-package repository commits are change signals, even when their messages say `Publish Advisories` or `Ingest OSV - GHSA Malware`. Keep them in the discovery checkpoint but summarize each stream separately in the issue; do not spend the report-lead slots on raw commit messages. Inspect individual records and their original references to identify a distinct incident or significant vulnerability. Bound retained commit signals independently so a high-volume stream cannot displace all report leads.
+
 ## 2. On-demand drafting and candidate review
 
 The editor can ask Codex to draft an identified lead or supply allowlisted source URLs. Codex reads original reports, maintains an attributed evidence packet, and writes only constrained prose/metadata. Use Markdown rather than MDX or generated HTML. Existing authoritative facts and source identity cannot be overwritten by agent output.
