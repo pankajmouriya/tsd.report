@@ -5,13 +5,13 @@
   "revision": 2,
   "classification": "certificate-trust",
   "occurred_at": null,
-  "evidence_as_of": "2026-10-31T09:45:31.073398Z",
+  "evidence_as_of": "2026-10-31T09:54:13.459946Z",
   "supersedes": "8520ce40f0deb2fafa98f2db222ea8922eb380f7f66801e0ffece2f861b171ca",
-  "correction_note": "Cloudflare’s October 30 follow-up documents observed forged certificates and patching gaps. The first revision had said forged certificates were not observed.",
+  "correction_note": "Cloudflare’s October 30 follow-up documents apparent certificate forgery and patching gaps. The first revision did not report observed forgery.",
   "sources": [
     {
       "id": "emudhra",
-      "name": "Emudhra",
+      "name": "eMudhra incident statement",
       "url": "https://emudhra.com/en/post/certificate-security-incident/",
       "type": "vendor",
       "published_at": null,
@@ -20,7 +20,7 @@
     },
     {
       "id": "github-mozilla",
-      "name": "Github Mozilla",
+      "name": "GitHub advisory on Mozilla OneCRL response",
       "url": "https://github.com/advisories/GHSA-vr39-qqr3-x9v4",
       "type": "community",
       "published_at": null,
@@ -47,7 +47,7 @@
     },
     {
       "id": "cloudflare-followup",
-      "name": "Cloudflare Followup",
+      "name": "Cloudflare follow-up",
       "url": "https://blog.cloudflare.com/emudhra-patching/",
       "type": "research",
       "published_at": null,
