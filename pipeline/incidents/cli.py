@@ -45,7 +45,10 @@ def queue_text(state, manifest, overrides):
             "",
             "Unreviewed discovery leads; no article is approved by this queue.",
             "",
-            "## Reports to investigate",
+            "## Source articles to triage",
+            "",
+            "These links may include research, product news, explainers or older posts updated recently. "
+            "A source date is not a verified incident date.",
             "",
         ],
     )
@@ -64,7 +67,7 @@ def queue_text(state, manifest, overrides):
         if len(seen) >= 40:
             break
     if not seen:
-        lines.append("No report leads currently in the queue.")
+        lines.append("No source articles currently in the queue.")
     signals = {}
     for lead in state["leads"]:
         if lead.get("source_id") not in STRUCTURED_SIGNAL_SOURCES:
