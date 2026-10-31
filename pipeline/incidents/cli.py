@@ -10,7 +10,7 @@ import httpx
 
 from pipeline.cli import system_ssl_context
 from pipeline.incidents.contracts import content_hash, validate_candidate, validate_publication
-from pipeline.incidents.discovery import discover
+from pipeline.incidents.discovery import STRUCTURED_SIGNAL_SOURCES, discover
 from pipeline.incidents.evidence import capture, source_text, verify_fact_quotes
 from pipeline.incidents.github import GitHub, decode_packet
 from pipeline.incidents.publisher import (
@@ -40,9 +40,18 @@ def queue_text(state, manifest, overrides):
     dismissed = set(overrides.get("dismissed", []))
     seen, lines = (
         set(),
-        ["# Incident leads", "", "Unreviewed discovery leads; no article is approved by this queue.", ""],
+        [
+            "# Incident leads",
+            "",
+            "Unreviewed discovery leads; no article is approved by this queue.",
+            "",
+            "## Reports to investigate",
+            "",
+        ],
     )
     for lead in state["leads"]:
+        if lead.get("source_id") in STRUCTURED_SIGNAL_SOURCES:
+            continue
         group = groups.get(lead["url"], lead["lead_id"])
         if group in dismissed or group in seen:
             continue
@@ -54,6 +63,33 @@ def queue_text(state, manifest, overrides):
         )
         if len(seen) >= 40:
             break
+    if not seen:
+        lines.append("No report leads currently in the queue.")
+    signals = {}
+    for lead in state["leads"]:
+        if lead.get("source_id") not in STRUCTURED_SIGNAL_SOURCES:
+            continue
+        group = groups.get(lead["url"], lead["lead_id"])
+        if group in dismissed:
+            continue
+        source = signals.setdefault(lead["source_id"], {"latest": lead, "count": 0})
+        source["count"] += 1
+    if signals:
+        lines += [
+            "",
+            "## Structured advisory signals",
+            "",
+            "These repository commits are discovery signals, not confirmed incidents. "
+            "Inspect individual advisory records and original references before drafting.",
+            "",
+        ]
+        for source in signals.values():
+            latest, count = source["latest"], source["count"]
+            lines.append(
+                f"- [{markdown_text(latest['source_name'])}](<{latest['url']}>) — "
+                f"{count} retained commit signal{'s' if count != 1 else ''}; "
+                f"latest source date: {latest['published_at'] or 'Unknown'}"
+            )
     lines += ["", "## Coverage", ""]
     lines += [f"- {source['id']}: {source['status']}" for source in manifest["sources"]]
     lines += [

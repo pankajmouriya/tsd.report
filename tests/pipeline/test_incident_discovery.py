@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 import httpx
 
+from pipeline.incidents.cli import queue_text
 from pipeline.incidents.discovery import discover, parse_entries
 from pipeline.incidents.sources import SourceSpec
 
@@ -61,3 +62,89 @@ def test_invalid_feed_cannot_erase_previous_leads(tmp_path):
     )
     assert state == previous
     assert manifest["sources"][0]["status"] == "failed"
+
+
+def test_commit_streams_are_summarized_separately_from_article_leads():
+    state = {
+        "leads": [
+            {
+                "lead_id": "batch-1",
+                "source_id": "github-advisories",
+                "source_name": "GitHub Advisory Database changes",
+                "title": "Publish Advisories",
+                "url": "https://github.com/github/advisory-database/commit/one",
+                "published_at": "2026-10-31T06:00:00Z",
+            },
+            {
+                "lead_id": "batch-2",
+                "source_id": "github-advisories",
+                "source_name": "GitHub Advisory Database changes",
+                "title": "Publish Advisories",
+                "url": "https://github.com/github/advisory-database/commit/two",
+                "published_at": "2026-10-31T05:00:00Z",
+            },
+            {
+                "lead_id": "malware-commit",
+                "source_id": "openssf-malicious",
+                "source_name": "OpenSSF Malicious Packages changes",
+                "title": "Ingest OSV - GHSA Malware",
+                "url": "https://github.com/ossf/malicious-packages/commit/three",
+                "published_at": "2026-10-31T04:00:00Z",
+            },
+            {
+                "lead_id": "report",
+                "source_id": "microsoft-security",
+                "source_name": "Microsoft Security",
+                "title": "Malicious extension investigation",
+                "url": "https://www.microsoft.com/en-us/security/blog/report",
+                "published_at": "2026-10-31T03:00:00Z",
+            },
+        ]
+    }
+    queue = queue_text(state, {"sources": []}, {"groups": {}, "dismissed": []})
+    report_section, signal_section = queue.split("## Structured advisory signals")
+    assert "Malicious extension investigation" in report_section
+    assert "Publish Advisories" not in report_section
+    assert "Ingest OSV - GHSA Malware" not in report_section
+    assert "2 retained commit signals" in signal_section
+    assert "1 retained commit signal" in signal_section
+    assert "not confirmed incidents" in signal_section
+    assert queue.count("https://github.com/github/advisory-database/commit/") == 1
+
+
+def test_commit_signal_volume_cannot_evict_article_leads(tmp_path):
+    report = {"lead_id": "report", "source_id": "microsoft-security", "changed_at": "2026-10-29T00:00:00Z"}
+    commits = [
+        {
+            "lead_id": f"commit-{index}",
+            "source_id": "github-advisories",
+            "changed_at": "2026-10-31T00:00:00Z",
+        }
+        for index in range(500)
+    ]
+    previous = {"schema_version": 1, "sources": {}, "leads": [*commits, report]}
+    client = httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(304)))
+    state, _ = discover([SourceSpec.model_validate(SOURCE)], previous, tmp_path, client=client, now=NOW)
+    assert any(lead["lead_id"] == "report" for lead in state["leads"])
+    assert len(state["leads"]) <= 500
+    assert sum(lead["source_id"] == "github-advisories" for lead in state["leads"]) <= 100
+
+
+def test_high_volume_advisory_stream_preserves_other_structured_source(tmp_path):
+    advisory_commits = [
+        {
+            "lead_id": f"advisory-{index}",
+            "source_id": "github-advisories",
+            "changed_at": "2026-10-31T00:00:00Z",
+        }
+        for index in range(150)
+    ]
+    malware_commit = {
+        "lead_id": "malware",
+        "source_id": "openssf-malicious",
+        "changed_at": "2026-10-30T00:00:00Z",
+    }
+    previous = {"schema_version": 1, "sources": {}, "leads": [*advisory_commits, malware_commit]}
+    client = httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(304)))
+    state, _ = discover([SourceSpec.model_validate(SOURCE)], previous, tmp_path, client=client, now=NOW)
+    assert any(lead["lead_id"] == "malware" for lead in state["leads"])

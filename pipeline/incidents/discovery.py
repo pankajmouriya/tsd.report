@@ -15,6 +15,7 @@ TERMS = re.compile(
     r"compromis|malicious|supply.chain|backdoor|vulnerab|security.release|certificate|credential|malware|exploit|incident|\bRCE\b",
     re.I,
 )
+STRUCTURED_SIGNAL_SOURCES = frozenset({"github-advisories", "openssf-malicious"})
 
 
 def discover(
@@ -98,6 +99,21 @@ def discover(
                     else None,
                 }
             )
-    state["leads"] = sorted(leads.values(), key=lambda lead: lead.get("changed_at", ""), reverse=True)[:500]
+    ranked = sorted(leads.values(), key=lambda lead: lead.get("changed_at", ""), reverse=True)
+    signals, reports, signal_counts = [], [], {}
+    for lead in ranked:
+        source_id = lead.get("source_id")
+        if source_id in STRUCTURED_SIGNAL_SOURCES:
+            count = signal_counts.get(source_id, 0)
+            if count < 50:
+                signals.append(lead)
+                signal_counts[source_id] = count + 1
+        else:
+            reports.append(lead)
+    state["leads"] = sorted(
+        [*reports[: 500 - len(signals)], *signals],
+        key=lambda lead: lead.get("changed_at", ""),
+        reverse=True,
+    )
     write_json_atomic(run_dir / "manifest.json", manifest)
     return state, manifest
