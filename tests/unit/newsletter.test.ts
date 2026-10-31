@@ -206,8 +206,18 @@ describe('newsletter preview CLI', () => {
   });
 
   it('refuses a latest edition with no newsletter metadata without writing an artifact', () => {
-    const result = run(process.cwd(), ['--mode', 'production', '--output', join(tmpdir(), 'should-not-create-newsletter.html')]);
-    expect(result.status).not.toBe(0);
-    expect(result.stderr).toMatch(/newsletter metadata/i);
+    const root = mkdtempSync(join(tmpdir(), 'tsd-newsletter-missing-'));
+    try {
+      const directory = join(root, 'data/production/editions');
+      mkdirSync(directory, { recursive: true });
+      const input = JSON.parse(readFileSync('data/production/editions/2026-10-02.json', 'utf8'));
+      delete input.newsletter;
+      writeFileSync(join(directory, 'edition.json'), JSON.stringify(input));
+      const output = join(root, 'should-not-create-newsletter.html');
+      const result = run(root, ['--mode', 'production', '--output', output]);
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toMatch(/newsletter metadata/i);
+      expect(() => readFileSync(output)).toThrow();
+    } finally { rmSync(root, { recursive: true, force: true }); }
   });
 });

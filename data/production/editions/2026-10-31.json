@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "published",
+  "lead_story": "incident-litellm-october-2026-release-compromise",
+  "sections": {
+    "latest": [
+      "incident-php2shell-php-engine-rce-2026",
+      "incident-node2shell-brotli-decoder-rce-2026",
+      "incident-ghostaction-october-2026-workflow-injection",
+      "incident-memtensor-npm-pypi-package-compromise-2026",
+      "incident-emudhra-weak-intermediate-ca-keys-2026"
+    ]
+  },
+  "stories": [
+    {
+      "id": "incident-litellm-october-2026-release-compromise",
+      "slug": "litellm-october-2026-release-compromise",
+      "title": "LiteLLM investigation traces stolen CI access eleven days before poisoned release",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-10-30T10:18:53.428014Z",
+      "updated_at": "2026-10-30T10:18:53.428014Z",
+      "summary": "LiteLLM’s investigation connects an October 10 secret-stealing workflow to the October 21 publication of compromised litellm==1.107.0 artifacts. Socket independently found traces of the earlier workflow. The maintainer says token hashes link a stolen maintainer credential to approval of the later release.",
+      "why_it_matters": "The revised timeline shows why reviewing only the final package upload can miss the earlier breach of the release boundary. Repository credentials, workflow execution and publishing approvals all belong in the same investigation, while downstream exposure still depends on whether affected artifacts ran.",
+      "action": "Review October repository and CI activity as well as installations of the affected PyPI and container artifacts. Preserve logs, identify credentials available to the compromised workflows and affected processes, rotate exposed tokens from a trusted environment, and rebuild from verified clean artifacts.",
+      "affected_technologies": [
+        "LiteLLM",
+        "GitHub Actions",
+        "Python package environments",
+        "Container images"
+      ],
+      "tags": [
+        "litellm",
+        "supply-chain",
+        "pypi",
+        "ci-cd"
+      ],
+      "sources": [
+        {
+          "id": "litellm",
+          "name": "LiteLLM incident investigation",
+          "url": "https://docs.litellm.ai/blog/security-incident-oct-21-2026-attack-chain",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:15:57.672418Z"
+        },
+        {
+          "id": "socket-timeline",
+          "name": "Socket timeline investigation",
+          "url": "https://socket.dev/blog/litellm-attack-timeline",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:15:59.097525Z"
+        },
+        {
+          "id": "socket-artifacts",
+          "name": "Socket artifact analysis",
+          "url": "https://socket.dev/blog/litellm-compromise",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:16:01.156402Z"
+        },
+        {
+          "id": "microsoft",
+          "name": "Microsoft Security Research",
+          "url": "https://www.microsoft.com/en-us/security/blog/2026/10/23/inside-the-litellm-1-107-0-supply-chain-compromise-credential-theft-through-python-startup-hooks/",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:16:01.960337Z"
+        },
+        {
+          "id": "aikido",
+          "name": "Aikido",
+          "url": "https://www.aikido.dev/blog/litellm-compromised-infostealer-rat",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:16:02.457431Z"
+        },
+        {
+          "id": "cert-in",
+          "name": "CERT-In advisory CIAD-2026-0053",
+          "url": "https://www.cert-in.org.in/s2cMainServlet?VLCODE=CIAD-2026-0053&pageid=PUBVLNOTES02",
+          "type": "government",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:16:03.139875Z"
+        },
+        {
+          "id": "litellm-incident",
+          "name": "LiteLLM incident containment notice",
+          "url": "https://docs.litellm.ai/blog/security-incident-oct-21-2026",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:16:03.442056Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [
+        "LiteLLM reports that an attacker reached its experimental Agent Platform on October 10 and extracted a GitHub CLI OAuth token associated with an organization owner. With that authority, a throwaway workflow in the main repository posted CI secrets to an attacker-controlled endpoint. Socket separately recovered evidence that the secret-stealing workflow ran on October 10, eleven days before the poisoned release.",
+        "The maintainer says the audit-log hash of the stolen GH_TOKEN matches the token used for approval at the later production release gate. This is stronger linkage than the earlier public timeline alone could establish. The revised account attributes that link to LiteLLM’s investigation rather than treating all preceding activity as independently observed by Socket.",
+        "LiteLLM says the attacker changed the release workflow to take source from a fork. The same investigation reports that a compromised litellm==1.107.0 was published to PyPI and container registries on October 21. Microsoft’s artifact analysis describes files that Python can execute during normal interpreter initialization, so the execution boundary is wider than an explicit LiteLLM import.",
+        "The build and approval steps explain how expected distribution channels could carry attacker-controlled content. They do not prove that every downstream environment installed the artifact, executed the startup files or lost credentials. Each deployment needs its own artifact and execution check.",
+        "The previous edition covered the poisoned release and credential risk. This revision adds the earlier credential-theft sequence and the maintainer’s evidence connecting it to release approval. It does not describe a separate LiteLLM incident or alter the original publication record.",
+        "Investigate affected artifacts and CI authority together. Identify package versions and image digests in use, preserve workflow and host evidence, then rotate exposed credentials from a trusted environment. Current maintainer and government guidance should control the detailed response for each deployment."
+      ],
+      "author": null,
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-10-30T10:18:35Z"
+    },
+    {
+      "id": "incident-php2shell-php-engine-rce-2026",
+      "slug": "php2shell-php-engine-rce-2026",
+      "title": "PHP2Shell exposes a PHP engine boundary across web applications",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-10-30T09:14:59.845478Z",
+      "updated_at": null,
+      "summary": "The PHP project released security updates for two engine flaws tracked as CVE-2026-109618 and CVE-2026-109619. Under the conditions described by the PHP Foundation, an unauthenticated request can reach code execution. This is a major runtime vulnerability, not a compromise of PHP packages or its release process.",
+      "why_it_matters": "The vulnerable boundary is inside PHP, so updating a framework or plugin alone does not address the engine flaws. Applications and hosting stacks need to identify the PHP runtime actually serving requests, including long-lived workers and containers.",
+      "action": "Inventory PHP runtimes that handle untrusted requests, apply the PHP project’s security releases or a vendor backport for the affected branch, and restart or replace the relevant workers. Treat WAF rules as an interim layer and confirm their coverage against your configuration.",
+      "affected_technologies": [
+        "PHP runtime",
+        "PHP-FPM",
+        "Web servers"
+      ],
+      "tags": [
+        "php",
+        "dependency-vulnerability",
+        "remote-code-execution"
+      ],
+      "sources": [
+        {
+          "id": "php-foundation",
+          "name": "The PHP Foundation",
+          "url": "https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:43.712708Z"
+        },
+        {
+          "id": "wiz",
+          "name": "Wiz Research",
+          "url": "https://www.wiz.io/blog/php2shell-php-rce",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:44.180737Z"
+        },
+        {
+          "id": "cloudflare",
+          "name": "Cloudflare",
+          "url": "https://blog.cloudflare.com/php-vulnerabilities-waf-protection/",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:44.614474Z"
+        },
+        {
+          "id": "socket",
+          "name": "Socket",
+          "url": "https://socket.dev/blog/php-critical-rce-patches",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:45.655145Z"
+        },
+        {
+          "id": "aikido",
+          "name": "Aikido",
+          "url": "https://www.aikido.dev/blog/critical-vulnerabilities-in-php-php2shell",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:46.142918Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [
+        "The PHP Foundation describes two related memory-safety failures in the PHP engine. One concerns out-of-memory cleanup that can leave partially initialized internal state; the other concerns stale global state after a fatal error. The same application can expose different paths depending on how PHP is configured and how requests reach the worker.",
+        "The project lists CVE-2026-109618 for the out-of-memory path and CVE-2026-109619 for the stale-state path. Wiz Research separately documents demonstrated code execution in selected configurations. A demonstration establishes feasibility, but it does not prove that a particular installation was exploited.",
+        "The project released PHP 8.5.12, 8.4.27, 8.3.36 and 8.2.35 to address the two disclosed flaws. Operators should check the runtime version on each serving host, not just application lockfiles. Distribution packages may use backported fixes, so verify the vendor advisory and package changelog before deciding whether a version string is vulnerable.",
+        "Cloudflare reports deploying protection against known request patterns, while warning that some configurations are outside its rule coverage. A network rule cannot establish that the underlying engine has been repaired. The practical priority remains the PHP runtime update and replacement or restart of processes using the old binary.",
+        "Exposure depends on whether a susceptible PHP runtime handles attacker-controlled requests and whether the necessary request path is available. The project’s advisory and the linked research should guide configuration-specific checks. Public research and attack traffic are distinct from proof that any individual site was compromised.",
+        "Preserve relevant request and process logs if suspicious traffic appears, and investigate separately from patching. This report covers the two named engine CVEs; other PHP advisories require their own assessment."
+      ],
+      "author": null,
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-10-30T09:14:23Z"
+    },
+    {
+      "id": "incident-node2shell-brotli-decoder-rce-2026",
+      "slug": "node2shell-brotli-decoder-rce-2026",
+      "title": "Node2Shell: Brotli decoder bug reaches Node.js process memory",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-10-30T09:14:36.627372Z",
+      "updated_at": null,
+      "summary": "The Node.js project rates CVE-2026-111497 high severity. Malformed Brotli data can drive an out-of-bounds write when an application decompresses attacker-supplied input through node:zlib. The affected supported release lines are 22.x, 24.x and 26.x. This is a runtime vulnerability, not evidence that Node.js distribution was compromised.",
+      "why_it_matters": "The critical question for operators is whether untrusted compressed data can reach the bundled decoder in their service. A vulnerable runtime alone does not establish remote exploitability in every deployment, but a reachable decompression path can place process memory at risk.",
+      "action": "Inventory Node.js versions in services that process external compressed input. Follow the project’s security releases for each supported line, redeploy the patched runtime and verify the running process version. Review logging and incident indicators separately if suspicious compressed input was received.",
+      "affected_technologies": [
+        "Node.js",
+        "Brotli decoder",
+        "node:zlib"
+      ],
+      "tags": [
+        "nodejs",
+        "brotli",
+        "dependency-vulnerability",
+        "remote-code-execution"
+      ],
+      "sources": [
+        {
+          "id": "nodejs",
+          "name": "Node.js Security Releases",
+          "url": "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:43.755765Z"
+        },
+        {
+          "id": "aikido",
+          "name": "Aikido",
+          "url": "https://www.aikido.dev/blog/node2shell-nodejs-brotli-rce-cve-2026-111497",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:44.247538Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [
+        "The Node.js advisory describes an invalid Brotli block switch being treated as a temporary request for more input instead of a permanent format error. The streaming decoder could then keep appending bytes beyond an internal buffer. The project says a caller that decompresses attacker-controlled Brotli data through node:zlib can suffer memory corruption, a crash, disclosure or remote code execution.",
+        "The advisory labels CVE-2026-111497 as high severity. That rating is separate from a report of exploitation in the wild. Neither the advisory nor the supporting research establishes that every service with Node.js accepts attacker-controlled Brotli streams.",
+        "The project lists the 22.x, 24.x and 26.x release lines as affected. The relevant exposure is a decompression call fed by untrusted bytes, which may sit behind an API, a file-processing path or another application layer. Review those paths and their input controls before assigning deployment-specific risk.",
+        "The project links security releases v22.23.4, v24.22.1 and v26.12.1. Confirm the exact runtime used by running services and container images after updating. A lockfile or source-code dependency declaration is not proof that a production process has restarted on the corrected binary.",
+        "A published proof of concept demonstrates a possible path, but it does not establish active exploitation of a particular organization. If you find suspicious input or crashes, preserve logs and process evidence for a separate incident investigation.",
+        "This report focuses on the Node.js bundled decoder. Other products with their own Brotli copies need their own vendor advisories and should not inherit a Node.js fix claim automatically."
+      ],
+      "author": null,
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-10-30T09:14:17Z"
+    },
+    {
+      "id": "incident-ghostaction-october-2026-workflow-injection",
+      "slug": "ghostaction-october-2026-workflow-injection",
+      "title": "GhostAction workflow injection extends from CI secrets to repository history",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-10-30T09:27:54.506411Z",
+      "updated_at": null,
+      "summary": "Socket’s October investigation found malicious GitHub Actions workflows added through compromised maintainer accounts. Its initial case study covered 346 repositories; a later update identified a wider set of accounts and repositories. The workflow sought both CI secrets and credentials exposed in source or git history.",
+      "why_it_matters": "A workflow in a repository can inherit the project’s automation privileges. Its presence is a warning to inspect execution history; a completed malicious run changes the response from a repository cleanup to a credential-exposure investigation.",
+      "action": "Search repositories and workflow history for the injected security-audit.yml file, preserve run logs, remove the unauthorized workflow, rotate secrets available to any completed run, and review repository history for exposed credentials.",
+      "affected_technologies": [
+        "GitHub Actions",
+        "Source repositories"
+      ],
+      "tags": [
+        "github-actions",
+        "supply-chain",
+        "credential-theft"
+      ],
+      "sources": [
+        {
+          "id": "socket",
+          "name": "Socket Research",
+          "url": "https://socket.dev/blog/ghostaction-cloud-credentials",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:44.406578Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [
+        "Socket reports that two compromised maintainer accounts added a workflow called security-audit.yml to 346 repositories during an October burst. The file was presented as a security audit, but its behavior was credential collection. Its reach included automation secrets and a sweep of the working tree and git history for credentials.",
+        "Socket later expanded its observation to more than 500 accounts committing the workflow to tens of thousands of repositories since October 7. Those figures describe different observation windows. They are not independent counts of successful exfiltration, and the report should not be read as evidence that every affected repository ran the workflow.",
+        "A committed workflow is a trust-boundary breach because a repository file can run with privileges attached to Actions jobs. Socket identifies kitao/pyxel as the clearest case in which publishing credentials were targeted by a successful run. For each repository, examine whether the injected workflow was merely present or actually executed, then map the specific job permissions and secrets accessible at that time.",
+        "A repository may also have credentials committed elsewhere in its history. Removing the workflow file does not remove those credentials, nor does it undo a completed run. Review relevant branches, history and run artifacts before narrowing the exposure scope.",
+        "Socket advises treating a completed run as exfiltration of the named secrets. Rotate those credentials, invalidate sessions where possible, and inspect downstream publishing or cloud activity. For repositories without a completed run, retain evidence and check whether other workflow paths or tokens were abused.",
+        "The published research does not establish compromise of every downstream consumer of these repositories. Keep the investigation tied to observed workflow execution, available privileges and subsequent account activity."
+      ],
+      "author": null,
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-10-30T09:11:50Z"
+    },
+    {
+      "id": "incident-memtensor-npm-pypi-package-compromise-2026",
+      "slug": "memtensor-npm-pypi-package-compromise-2026",
+      "title": "MemTensor package releases carried a cross-platform credential collector",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-10-30T09:16:32.196041Z",
+      "updated_at": null,
+      "summary": "Socket’s package analysis identifies malicious releases in both the MemTensor npm plugin and the MemoryOS package on PyPI. The packages included a Go binary that searched developer environments for secrets. This is one distribution compromise spanning two registries, not two unrelated stories.",
+      "why_it_matters": "The payload was embedded in expected packages and could start during ordinary plugin or Python use. Teams need to trace installed artifacts and executions across both ecosystems, then assess credentials available to the affected processes.",
+      "action": "Check lockfiles, build logs and local installations for the named releases. Isolate hosts that executed affected artifacts, retain forensic evidence, remove the compromised packages, and rotate credentials accessible to the process from a clean environment. Check current maintainer and registry guidance before reinstalling.",
+      "affected_technologies": [
+        "MemTensor MemOS",
+        "OpenClaw plugin",
+        "Python environments"
+      ],
+      "tags": [
+        "supply-chain",
+        "npm",
+        "pypi",
+        "credential-theft"
+      ],
+      "sources": [
+        {
+          "id": "socket",
+          "name": "Socket Research",
+          "url": "https://socket.dev/blog/memtensor-compromise",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T08:52:44.593872Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [
+        "Socket reports malicious npm releases of @memtensor/memos-cloud-openclaw-plugin at 0.1.21, 0.1.23 and 0.1.25, plus MemoryOS 2.0.34 on PyPI. The package names serve different integration paths, but the research describes a shared credential-collection payload. An inventory limited to one language ecosystem can therefore miss related exposure.",
+        "The version list comes from Socket’s analysis at publication time. Registry availability and any subsequent clean release can change; operators should use current upstream and registry records for replacement decisions. A package name in a dependency file alone does not prove a malicious version was installed or executed.",
+        "The report describes a bundled Go binary named sckit for major desktop and server platforms. In the npm plugin, the binary starts with the OpenClaw gateway and during memory recall. In the Python package, it starts when the memos module is imported. Those trigger points matter when deciding which hosts and logs to examine.",
+        "Socket’s static analysis indicates the binary searches for npm, PyPI, GitHub, GitLab, AWS, Vault and SSH secrets. The report supports a credential-theft capability. It does not establish that every installation had those secrets, or that every attempted exfiltration succeeded.",
+        "Correlate exact installed versions with execution history, process context and available credentials. Preserve artifacts and network evidence where feasible, then remove affected installations and rotate at-risk credentials from a clean host. Review publishing tokens as well as application secrets because both package ecosystems appear in the reported target set.",
+        "Use the linked original analysis for indicators and current maintainer notices for package status. Do not substitute a guessed safe version for a verified registry or maintainer update."
+      ],
+      "author": null,
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-10-30T09:16:14Z"
+    },
+    {
+      "id": "incident-emudhra-weak-intermediate-ca-keys-2026",
+      "slug": "emudhra-weak-intermediate-ca-keys-2026",
+      "title": "eMudhra weak intermediate keys prompt browser distrust and certificate migration",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-10-30T10:17:24.697911Z",
+      "updated_at": null,
+      "summary": "eMudhra says eight intermediate certificate authorities had weak, recoverable keys and were revoked. A GitHub advisory records Mozilla’s OneCRL block for the affected certificates. The issuer says its root key was not compromised, while root-store distrust and certificate migration create a separate operational impact for customers.",
+      "why_it_matters": "Certificate trust depends on both the issuing hierarchy and client update behavior. A revocation can protect some clients promptly while stale trust stores and services that do not check revocation need separate review.",
+      "action": "Identify certificates and trust stores that chain to the affected eMudhra hierarchy; follow the issuer and platform vendors’ replacement guidance. Update client trust stores where applicable and verify service continuity after reissuing certificates. Preserve any evidence of suspicious certificate use for investigation.",
+      "affected_technologies": [
+        "TLS certificates",
+        "Certificate authorities",
+        "Firefox"
+      ],
+      "tags": [
+        "certificate-trust",
+        "emudhra",
+        "tls"
+      ],
+      "sources": [
+        {
+          "id": "emudhra",
+          "name": "eMudhra incident statement",
+          "url": "https://emudhra.com/en/post/certificate-security-incident/",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:13:29.413532Z"
+        },
+        {
+          "id": "github-mozilla",
+          "name": "GitHub advisory on Mozilla OneCRL response",
+          "url": "https://github.com/advisories/GHSA-vr39-qqr3-x9v4",
+          "type": "community",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:13:30.247973Z"
+        },
+        {
+          "id": "cloudflare",
+          "name": "Cloudflare",
+          "url": "https://blog.cloudflare.com/emudhra-certificate-compromise/",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:13:30.686348Z"
+        },
+        {
+          "id": "aikido",
+          "name": "Aikido",
+          "url": "https://www.aikido.dev/blog/emudhra-ca-compromise",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-10-30T09:13:31.319549Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [
+        "eMudhra says eight Global TLS intermediate authorities were created with weak published keys and then revoked. Its statement expressly distinguishes the intermediate keys from the root key: the root was distrusted as a precaution, not reported as cryptographically compromised. A GitHub advisory record says Mozilla blocked the affected intermediates through OneCRL.",
+        "The issuer also says the weak intermediates had not issued publicly trusted end-entity certificates, based on its investigation to date. That statement limits a direct claim about certificates signed by those intermediates. It does not eliminate the separate migration work caused by distrust of a higher-level hierarchy.",
+        "eMudhra reports roughly 30,800 certificates under affected G3 hierarchies in one United States client ecosystem. Those certificates are not the same as certificates issued by the eight weak intermediates. Operators should trace their actual chain and trust-store behavior instead of treating every eMudhra certificate as having a weak private key.",
+        "Browser blocking, certificate revocation and root-store changes can take effect at different times across clients. The practical check is whether each client and service accepts the intended replacement chain. Use the current issuer and browser-program notices to determine the right transition path.",
+        "The issuer says it found no infrastructure or customer-data compromise. That is its current investigation statement, not proof that no attempted misuse occurred anywhere. This report makes no claim that the root private key was stolen or that forged certificates were observed.",
+        "For incident response, preserve certificate chains, client errors and trust-store versions if unexpected behavior appears. For routine remediation, prioritize the services and clients actually using the affected hierarchy and confirm successful replacement."
+      ],
+      "author": null,
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-10-30T10:17:09Z"
+    }
+  ],
+  "newsletter": {
+    "status": "approved",
+    "subject": "The Security Diff — October 31, 2026",
+    "preview_text": "Six security reports: LiteLLM, PHP2Shell, Node2Shell, GhostAction, MemTensor, and eMudhra.",
+    "approved_by": "Pankaj Mouriya",
+    "approved_at": "2026-10-31T10:03:10Z"
+  },
+  "generated_at": "2026-10-31T10:03:10Z",
+  "reviewed_by": "Pankaj Mouriya",
+  "reviewed_at": "2026-10-31T10:03:10Z"
+}
