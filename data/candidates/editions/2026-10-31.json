@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "draft",
+  "delivery_audience": "all-confirmed-subscribers",
+  "delivery_timing": "after-editorial-approval-and-successful-production-deployment",
+  "incidents": [
+    { "incident_id": "litellm-october-2026-release-compromise", "revision": 3 },
+    { "incident_id": "php2shell-php-engine-rce-2026", "revision": 1 },
+    { "incident_id": "node2shell-brotli-decoder-rce-2026", "revision": 1 },
+    { "incident_id": "ghostaction-october-2026-workflow-injection", "revision": 1 },
+    { "incident_id": "memtensor-npm-pypi-package-compromise-2026", "revision": 1 },
+    { "incident_id": "emudhra-weak-intermediate-ca-keys-2026", "revision": 1 }
+  ],
+  "newsletter": {
+    "status": "draft",
+    "subject": "The Security Diff — October 31, 2026",
+    "preview_text": "Six security reports: LiteLLM, PHP2Shell, Node2Shell, GhostAction, MemTensor, and eMudhra."
+  }
+}

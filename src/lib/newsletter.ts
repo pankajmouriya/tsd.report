@@ -49,7 +49,7 @@ export function buildNewsletterDigest(edition: Edition, origin = 'https://tsd.re
   }
   const digestStory = (story: Story): NewsletterDigestStory => ({
     slug: story.slug, category: story.category, headline: story.title, summary: story.summary,
-    signal: story.signal ? structuredClone(story.signal) : undefined,
+    signal: story.type !== 'incident' && story.signal ? structuredClone(story.signal) : undefined,
     url: webUrl(storyDestination(story), origin),
   });
   return {

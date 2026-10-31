@@ -142,6 +142,8 @@ Digest order:
 
 The email is a digest, not a copy of complete articles. TSD-hosted story URLs use the canonical `/article/[slug]` route; a story with a reviewed `destination_url` links directly to that external original. The internal article route remains its stable identity and provenance record. The edition link uses the permanent dated route. Link construction reuses the shared destination and edition route helpers plus the configured site origin.
 
+Incident publication records currently supply a generic placement score rather than a measured per-story signal. The digest omits that score for incident stories so incident summaries do not repeat the same `70/100` claim. Other story types retain their supplied editorial signals.
+
 Buttondown receives Markdown with:
 
 - `slug: tsd-edition-YYYY-MM-DD`

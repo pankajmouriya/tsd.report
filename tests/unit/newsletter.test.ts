@@ -72,6 +72,15 @@ describe('newsletter digest', () => {
     for (const render of [renderNewsletterMarkdown, renderNewsletterPreviewHtml]) expect(render(digest)).not.toContain('Security signal:');
   });
 
+  it('omits the generic incident placement score from the email digest', () => {
+    const incident = story('lead', { type: 'incident', signal: { score: 70, label: 'recommended', reasons: ['Selected for incident reporting'] } });
+    const digest = buildNewsletterDigest(edition({ sections: {}, stories: [incident] }));
+    expect(digest.lead.signal).toBeUndefined();
+    for (const render of [renderNewsletterMarkdown, renderNewsletterPreviewHtml]) {
+      expect(render(digest)).not.toContain('Security signal:');
+    }
+  });
+
   it('omits Vulnerability Watch for an edition with no supplied entries', () => {
     const digest = buildNewsletterDigest(edition());
     expect(digest.vulnerabilities).toEqual([]);
