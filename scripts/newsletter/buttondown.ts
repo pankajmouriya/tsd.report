@@ -109,7 +109,7 @@ export class ButtondownClient {
 
   constructor(apiKey: string, fetchImpl: typeof fetch = fetch) {
     if (!apiKey.trim()) throw new Error('Buttondown API key is required');
-    this.#apiKey = apiKey;
+    this.#apiKey = apiKey.trim();
     this.#fetchImpl = fetchImpl;
   }
 
