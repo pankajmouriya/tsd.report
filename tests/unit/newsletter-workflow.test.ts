@@ -148,6 +148,14 @@ describe('newsletter workflow policy', () => {
     expect(mapping(job(name), 'env', 4)).toEqual(fixtureValues);
     for (const step of steps(job(name))) {
       const env = mapping(step, 'env', 8);
+      if (scalar(step, 'name', 8) === 'Build unpublished production edition preview') {
+        expect(env).toMatchObject({
+          TSD_EDITION_PREVIEW: 'true',
+          TSD_NEWSLETTER_SIGNUP_ENABLED: 'false',
+          TSD_PUBLICATION_CONTACT_URL: '${{ vars.TSD_PUBLICATION_CONTACT_URL }}',
+        });
+        continue;
+      }
       expect(Object.keys(env).filter((key) => key in fixtureValues || key.startsWith('BUTTONDOWN_'))).toEqual([]);
     }
   });

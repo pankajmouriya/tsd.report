@@ -51,6 +51,8 @@ npm run newsletter:preview -- --mode production --output /private/tmp/tsd-newsle
 
 The preview command selects the newest edition in the requested corpus and fails when it has no newsletter metadata. It does not change approval or send email. Inspect subject, preview, lead, unique story order, evidence/unknowns, canonical links, and mobile reading. Buttondown's `description` receives the preview text; the renderer also includes it in the digest body. Local HTML does not prove a particular email client's inbox preview or delivered layout. Use an owner-only provider test to inspect the actual template in desktop and mobile clients before live sending.
 
+For a PR that changes a production edition, the Pages preview at `https://pr-<number>.<project>.pages.dev` renders the proposed dated edition with an unpublished notice and `noindex, nofollow`; its workflow checks the dated route. It disables signup on that preview. The newsletter's exact Markdown still belongs in the PR description or review artifact, because the Pages route is the site edition and does not show Buttondown's delivered template.
+
 Enable acquisition before delivery. After provider tests and signup acceptance, arrange a separate reviewed content pull request with real newsletter approval. Enable `TSD_NEWSLETTER_SEND_ENABLED=true` only when the next approved merge is intended to send. The new approval and timestamp authorize subject, preview, selection, and timing; article/source review does not supply this authorization. Leave existing editions unapproved.
 
 ## Delivery, identity, and reruns

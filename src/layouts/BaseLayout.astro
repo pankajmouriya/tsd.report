@@ -6,6 +6,7 @@ const { title = 'The Security Diff', description = 'Security engineering, withou
 const canonicalUrl = new URL(canonical, Astro.site);
 const fixture = getContentMode() === 'fixture';
 const incidentPreview = isIncidentPreview();
+const editionPreview = process.env.TSD_EDITION_PREVIEW === 'true';
 const deploymentSha = process.env.TSD_DEPLOYMENT_SHA;
 ---
 <!doctype html>
@@ -16,7 +17,7 @@ const deploymentSha = process.env.TSD_DEPLOYMENT_SHA;
     <meta name="theme-color" content="#faf6ea" />
     <meta name="description" content={description} />
     {deploymentSha && /^[a-f0-9]{40}$/.test(deploymentSha) && <meta name="tsd-revision" content={deploymentSha} />}
-    <meta name="robots" content={fixture || incidentPreview ? 'noindex, nofollow' : 'index, follow'} />
+    <meta name="robots" content={fixture || incidentPreview || editionPreview ? 'noindex, nofollow' : 'index, follow'} />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="preload" href="/fonts/grenze-gotisch-masthead-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
     <link rel="preload" href="/fonts/newsreader-display-semibold.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
@@ -29,6 +30,7 @@ const deploymentSha = process.env.TSD_DEPLOYMENT_SHA;
     <div class="paper">
       {fixture && <div class="fixture-notice">Fixture preview</div>}
       {incidentPreview && <div class="fixture-notice">{isSyntheticIncidentPreview() ? 'Synthetic fixture · ' : ''}Incident draft preview · Unreviewed · Not published</div>}
+      {editionPreview && <div class="fixture-notice">Edition preview · Not published</div>}
       <slot />
     </div>
   </body>
