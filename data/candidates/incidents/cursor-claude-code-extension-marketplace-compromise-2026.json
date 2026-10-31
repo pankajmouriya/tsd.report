@@ -6,13 +6,13 @@
   "classification": "supply-chain-compromise",
   "destination_source_id": "microsoft",
   "occurred_at": null,
-  "evidence_as_of": "2026-10-31T09:45:31.072387Z",
+  "evidence_as_of": "2026-10-31T09:54:13.458746Z",
   "supersedes": null,
   "correction_note": null,
   "sources": [
     {
       "id": "microsoft",
-      "name": "Microsoft",
+      "name": "Microsoft Security Research",
       "url": "https://www.microsoft.com/en-us/security/blog/2026/10/30/inside-malicious-claude-code-branded-cursor-extension-persistent-ssh-backdoor/",
       "type": "research",
       "published_at": null,
@@ -21,7 +21,7 @@
     },
     {
       "id": "socket",
-      "name": "Socket",
+      "name": "Socket Research Team",
       "url": "https://socket.dev/blog/claude-code-extension-compromise",
       "type": "research",
       "published_at": null,
@@ -74,7 +74,7 @@
   "editorial": {
     "title": "Malicious Claude Code extension in Cursor marketplace attempted an SSH backdoor",
     "summary": "Cursor reported that tampered Claude Code extension builds were served from its marketplace on October 29. Microsoft found an injected loader that attempted SSH access and persistence. The evidence is specific to Cursor distribution; successful remote access depends on host conditions.",
-    "why_it_matters": "An editor extension can run code on a developer device before a project is opened. Removing the extension may leave keys or startup artifacts behind.",
+    "why_it_matters": "An editor extension can run injected code when its module loads. Removing the extension may leave keys or startup artifacts behind.",
     "action": "Inventory Cursor marketplace installs during the reported window. Preserve host and network evidence; inspect SSH keys, tunnel processes and startup entries, then follow Cursor’s remediation guidance for affected devices.",
     "tags": [
       "supply-chain",
