@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "status": "published",
+  "candidate": {
+    "schema_version": 2,
+    "status": "candidate",
+    "incident_id": "nikke-pc-launcher-cdn-compromise-2026",
+    "revision": 1,
+    "classification": "supply-chain-compromise",
+    "occurred_at": null,
+    "evidence_as_of": "2026-11-06T20:58:46.523420Z",
+    "supersedes": null,
+    "correction_note": null,
+    "destination_source_id": "mothersphere-report",
+    "sources": [
+      {
+        "id": "mothersphere-report",
+        "name": "MotherSphere: NIKKE PC launcher compromise investigation",
+        "type": "research",
+        "url": "https://gist.github.com/MotherSphere/d6c049a09ba8ac3085c51ee9df24a4e5",
+        "published_at": "2026-11-03T16:57:49Z",
+        "retrieved_at": "2026-11-06T20:51:53.320174Z",
+        "data_date": "Report text last updated 2026-11-05T14:39:00Z; later gist activity is not a new disclosure"
+      },
+      {
+        "id": "bleepingcomputer-report",
+        "name": "BleepingComputer: NIKKE launcher investigation and follow-up",
+        "type": "research",
+        "url": "https://www.bleepingcomputer.com/news/security/nikke-pc-game-launcher-hacked-to-spread-remote-access-data-stealing-malware/",
+        "published_at": null,
+        "retrieved_at": "2026-11-06T20:51:54.211176Z",
+        "data_date": "Published 2026-11-04; follow-up updates dated 2026-11-05 and 2026-11-06"
+      }
+    ],
+    "facts": [
+      {
+        "id": "cdn-files",
+        "statement": "four official JavaScript files on Level Infinite's CDN contained attacker code.",
+        "source_ids": [
+          "mothersphere-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "loader",
+        "statement": "The NIKKE PC launcher loads these files.",
+        "source_ids": [
+          "mothersphere-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "remote-control",
+        "statement": "the attacker could run any command on your machine, read any file and take screenshots.",
+        "source_ids": [
+          "mothersphere-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "cleanup-limit",
+        "statement": "None of this undoes anything on machines that were already infected.",
+        "source_ids": [
+          "mothersphere-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "evidence-loss",
+        "statement": "Both can delete files that show whether the agent ran.",
+        "source_ids": [
+          "mothersphere-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "research-boundary",
+        "statement": "This report comes from one infected machine, plus findings from other victims posted in the comments.",
+        "source_ids": [
+          "mothersphere-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "preserve-first",
+        "statement": "before reopening it, players should back up Launcher\\intl_service\\debug.log and tbs_cache",
+        "source_ids": [
+          "bleepingcomputer-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "credential-response",
+        "statement": "change passwords and other sensitive credentials from a clean device.",
+        "source_ids": [
+          "bleepingcomputer-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "credential-theft",
+        "statement": "collect NIKKE account credentials, and steal information stored in web browsers.",
+        "source_ids": [
+          "bleepingcomputer-report"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "publisher-guidance",
+        "statement": "Nikke has released an update with instructions on how to check computers for compromise.",
+        "source_ids": [
+          "bleepingcomputer-report"
+        ],
+        "state": "reported"
+      }
+    ],
+    "editorial": {
+      "title": "NIKKE PC launcher compromise exposes a trusted CDN delivery path",
+      "summary": "MotherSphere’s NIKKE investigation describes tampered scripts on Level Infinite’s CDN loading a remote-control agent. Follow-up reporting describes credential-stealing capabilities and warns that updated launcher cleanup can erase evidence of an earlier infection.",
+      "why_it_matters": "Cleaning the delivery scripts does not undo an earlier infection. The research draws on an infected machine and attributed user reports; it does not establish how many players were affected.",
+      "action": "Preserve launcher logs and caches before reopening the PC launcher. Then follow the publisher’s security-check guidance and reset exposed passwords and credentials from a clean device.",
+      "tags": [
+        "supply-chain",
+        "launcher",
+        "credential-theft"
+      ],
+      "affected_technologies": [
+        "NIKKE PC launcher",
+        "Level Infinite CDN"
+      ],
+      "claim_ids": [
+        "cdn-files",
+        "loader",
+        "remote-control",
+        "cleanup-limit",
+        "evidence-loss",
+        "research-boundary",
+        "preserve-first",
+        "credential-response",
+        "credential-theft",
+        "publisher-guidance"
+      ]
+    }
+  },
+  "content_sha256": "050a32e045a18f8ca3b338c74af3dabcb9da8f659ea767d3811afaf11d2157eb",
+  "review": {
+    "actor": "pankajmouriya",
+    "head_sha": "cc9bef306bbcbe068c1d423c04c283c24d83f7d8",
+    "pr_number": 68,
+    "pr_url": "https://github.com/pankajmouriya/tsd.report/pull/68",
+    "approval_kind": "merge",
+    "merged_at": "2026-11-06T21:09:20Z",
+    "merge_sha": "aef24907bb8cac939c64649bbf66bc5c36ffa694"
+  },
+  "published_at": "2026-11-06T21:09:36.191317Z"
+}
