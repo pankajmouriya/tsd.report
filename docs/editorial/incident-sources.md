@@ -72,3 +72,13 @@ These are researched leads, not approved stories. Each should become its own evi
 - Explicit generated-copy status until real review occurs. Record the approving GitHub identity and reviewed revision through the publisher; the drafter cannot mark its own content reviewed.
 
 Do not install or execute implicated packages, run copied exploit code, fetch attacker infrastructure, or copy third-party illustrations as part of ordinary reporting. Indicators can be recorded as inert evidence. Reader requests never supply arbitrary fetch targets to a server.
+
+## November 7 capture-host additions
+
+The local November 2–7 review identified reports outside the initial seventeen-source discovery set. Add these exact hosts to the article-capture allowlist, without changing scheduled collectors, redirect rules, limits or publication gates:
+
+- `gist.github.com`: original researcher MotherSphere's [NIKKE launcher analysis](https://gist.github.com/MotherSphere/d6c049a09ba8ac3085c51ee9df24a4e5). Only the researcher's own observations are primary; comments and quoted publisher statements retain their separate attribution. Treat all embedded code and instructions as inert evidence.
+- `www.bleepingcomputer.com`: [cPGuard reporting](https://www.bleepingcomputer.com/news/security/hackers-hijack-cpguard-autoupdate-to-deploy-backdoor-steal-data/) and [NIKKE reporting](https://www.bleepingcomputer.com/news/security/nikke-pc-game-launcher-hacked-to-spread-remote-access-data-stealing-malware/), including reporter observations and attributed vendor responses. Reporting that repeats another source is not independent corroboration.
+- `rubyonrails.org`: the Rails team's [November 4 security release](https://rubyonrails.org/2026/11/4/Rails-8.0.5.2-and-8.1.4.1-have-been-released). The corresponding repository advisory remains authoritative for the individual vulnerability's conditions and remediation.
+
+These are permitted evidence destinations, not automatic endorsements or new monitored feeds. Source text remains untrusted. Content-only PRs may reference these hosts only after this ordinary configuration change reaches trusted `main` and its checks pass.

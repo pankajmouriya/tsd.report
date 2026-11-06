@@ -19,5 +19,5 @@
     {"id":"openssf-malicious","name":"OpenSSF Malicious Packages changes","url":"https://api.github.com/repos/ossf/malicious-packages/commits?path=osv&per_page=30","format":"github-commits","link_hosts":["github.com"]},
     {"id":"github-advisories","name":"GitHub Advisory Database changes","url":"https://api.github.com/repos/github/advisory-database/commits?path=advisories&per_page=30","format":"github-commits","link_hosts":["github.com"]}
   ],
-  "article_hosts": ["nodejs.org","www.php.net","thephp.foundation","docs.litellm.ai","www.litellm.ai","blog.pypi.org","socket.dev","www.stepsecurity.io","www.aikido.dev","www.wiz.io","securitylabs.datadoghq.com","www.reversinglabs.com","www.microsoft.com","blog.cloudflare.com","blog.mozilla.org","emudhra.com","www.cert-in.org.in","www.cisa.gov","github.com"]
+  "article_hosts": ["nodejs.org","www.php.net","thephp.foundation","docs.litellm.ai","www.litellm.ai","blog.pypi.org","socket.dev","www.stepsecurity.io","www.aikido.dev","www.wiz.io","securitylabs.datadoghq.com","www.reversinglabs.com","www.microsoft.com","blog.cloudflare.com","blog.mozilla.org","emudhra.com","www.cert-in.org.in","www.cisa.gov","github.com","gist.github.com","www.bleepingcomputer.com","rubyonrails.org"]
 }
