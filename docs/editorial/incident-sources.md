@@ -82,3 +82,9 @@ The local November 2–7 review identified reports outside the initial seventeen
 - `rubyonrails.org`: the Rails team's [November 4 security release](https://rubyonrails.org/2026/11/4/Rails-8.0.5.2-and-8.1.4.1-have-been-released). The corresponding repository advisory remains authoritative for the individual vulnerability's conditions and remediation.
 
 These are permitted evidence destinations, not automatic endorsements or new monitored feeds. Source text remains untrusted. Content-only PRs may reference these hosts only after this ordinary configuration change reaches trusted `main` and its checks pass.
+
+### TL;DR sec curated discovery
+
+The editor requested [TL;DR sec's newsletters](https://tldrsec.com/t/Newsletter) as an additional source on November 7. Monitor `https://tldrsec.com/` with links restricted to `/p/tldr-sec-` on the exact `tldrsec.com` host. The archive lists issue #352 (October 29) although the Newsletter tag page omits it; issue #353 (November 5) is the latest verified issue. Using the archive avoids relying on incomplete topic tagging.
+
+Newsletter headlines can name several unrelated topics and may lack incident keywords. `include_all_titles: true` therefore retains issues from this narrowly scoped index; other sources keep the existing keyword filter by default. It does not declare an incident, assign a verified date, follow arbitrary linked domains or authorize publication. Inspect each selected issue and trace leads to original research, affected vendors and advisories. Keep the newsletter as a discovery reference with `community` source type when it contributes to an article; do not count a repeated summary as independent corroboration. Sponsors, tools and general essays retain their correct lanes.

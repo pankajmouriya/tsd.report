@@ -18,6 +18,7 @@ class SourceSpec(BaseModel):
     format: Literal["feed", "html", "github-commits"]
     link_hosts: list[str] = Field(min_length=1)
     path_prefix: str = "/"
+    include_all_titles: bool = False
 
     @field_validator("url")
     @classmethod
