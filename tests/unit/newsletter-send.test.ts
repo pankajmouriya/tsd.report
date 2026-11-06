@@ -195,7 +195,7 @@ describe('safe delivery summaries', () => {
 describe('production-only newsletter CLI', () => {
   const script = fileURLToPath(new URL('../../scripts/newsletter/send.ts', import.meta.url));
   const tsx = resolve('node_modules/tsx/dist/loader.mjs');
-  function run(records: unknown[], ambientMode: string, fixtures = false) {
+  function run(records: unknown[], ambientMode: string, fixtures = false, expectedDate: string | undefined = production.date) {
     const root = temporary();
     const directory = join(root, 'data', fixtures ? 'fixtures' : 'production', 'editions');
     mkdirSync(directory, { recursive: true });
@@ -203,7 +203,7 @@ describe('production-only newsletter CLI', () => {
     const guard = join(root, 'no-network.mjs');
     const marker = join(root, 'network-attempts');
     writeFileSync(guard, `import { appendFileSync } from 'node:fs'; globalThis.fetch = async () => { appendFileSync(${JSON.stringify(marker)}, 'attempt'); throw new Error('Forbidden network'); };`);
-    const result = spawnSync(process.execPath, ['--import', guard, '--import', tsx, script], { cwd: root, encoding: 'utf8', env: { PATH: process.env.PATH, CONTENT_MODE: ambientMode, GITHUB_STEP_SUMMARY: join(root, 'summary.md') } });
+    const result = spawnSync(process.execPath, ['--import', guard, '--import', tsx, script], { cwd: root, encoding: 'utf8', env: { PATH: process.env.PATH, CONTENT_MODE: ambientMode, EXPECTED_EDITION_DATE: expectedDate, GITHUB_STEP_SUMMARY: join(root, 'summary.md') } });
     expect(() => readFileSync(marker)).toThrow();
     return result;
   }
@@ -216,7 +216,7 @@ describe('production-only newsletter CLI', () => {
 
   it('selects the newest production edition and skips its draft even if an older edition is approved', () => {
     const newest = { ...production, date: '2026-09-30', newsletter: { status: 'draft', subject: 'Draft', preview_text: 'Preview' }, lead_story: 'new-story', sections: {}, stories: production.stories.map((story: Record<string, unknown>) => ({ ...story, id: 'new-story', slug: 'new-story' })) };
-    const result = run([edition(), newest], 'fixture');
+    const result = run([edition(), newest], 'fixture', false, newest.date);
     expect(result.status, result.stderr).toBe(0);
     expect(result.stdout).toContain('draft');
   });
@@ -225,6 +225,14 @@ describe('production-only newsletter CLI', () => {
     const result = run([edition()], 'fixture');
     expect(result.status).toBe(1);
     expect(result.stderr).toMatch(/API key/i);
+  });
+
+  it('refuses a missing or mismatched selected edition without touching the provider', () => {
+    for (const expectedDate of ['', '1900-01-01']) {
+      const result = run([edition()], 'production', false, expectedDate);
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain('Expected edition');
+    }
   });
 
   it('refuses empty production without falling back to available fixtures', () => {

@@ -263,13 +263,28 @@ export const vulnerabilityWatchCandidateSchema = z.object({
   status: z.literal('candidate'),
 }).strict().superRefine(validateVulnerabilityWatch);
 
-export const vulnerabilityWatchPublishedSchema = z.object({
+const vulnerabilityWatchReviewedSchema = z.object({
   ...vulnerabilityWatchBaseFields,
   status: z.literal('published'),
   reviewed_by: z.string().trim().min(1),
   reviewed_at: z.iso.datetime(),
   review_pr: httpsUrlSchema,
 }).strict().superRefine(validateVulnerabilityWatch);
+
+const vulnerabilityWatchAutomatedSchema = z.object({
+  ...vulnerabilityWatchBaseFields,
+  schema_version: z.literal(2),
+  status: z.literal('published'),
+  publication: z.object({
+    method: z.literal('automated'),
+    workflow_run: z.string().regex(/^https:\/\/github\.com\/pankajmouriya\/tsd\.report\/actions\/runs\/[1-9][0-9]*$/),
+    published_at: z.iso.datetime(),
+  }).strict(),
+}).strict().superRefine(validateVulnerabilityWatch);
+
+export const vulnerabilityWatchPublishedSchema = z.union([
+  vulnerabilityWatchReviewedSchema, vulnerabilityWatchAutomatedSchema,
+]);
 
 export const vulnerabilityWatchFixtureSchema = z.object({
   ...vulnerabilityWatchBaseFields,

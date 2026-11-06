@@ -90,3 +90,33 @@ def test_replay_retains_unchanged_kev_evidence_and_preserves_output_on_failure(
         assert not (run_dir / "enriched" / "candidate.json").exists()
     assert json.loads((run_dir / "raw" / "cisa-kev.json").read_text()) == catalog
     assert json.loads((run_dir / "raw" / "epss.json").read_text()) == [epss]
+
+
+def test_empty_required_catalog_cannot_replace_previous_output(tmp_path: Path) -> None:
+    recordings = tmp_path / "recordings"
+    recordings.mkdir()
+    for name in ("cisa-kev.json", "epss.json", "nvd.json"):
+        (recordings / name).write_bytes((RECORDINGS / name).read_bytes())
+    catalog = json.loads((recordings / "cisa-kev.json").read_text())
+    catalog.update(count=0, vulnerabilities=[])
+    (recordings / "cisa-kev.json").write_text(json.dumps(catalog))
+    output = tmp_path / "candidate.json"
+    output.write_text('{"previous": "good"}')
+    with pytest.raises(ValueError, match="empty"):
+        main(
+            [
+                "replay",
+                "--date",
+                "2026-10-02",
+                "--generated-at",
+                "2026-10-02T06:20:00Z",
+                "--recordings",
+                str(recordings),
+                "--output",
+                str(output),
+                "--run-dir",
+                str(tmp_path / "run"),
+            ]
+        )
+    assert output.read_text() == '{"previous": "good"}'
+    assert (tmp_path / "run/raw/cisa-kev.json").exists()

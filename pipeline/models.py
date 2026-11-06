@@ -173,3 +173,17 @@ class PublishedSnapshot(SnapshotBase):
     review_pr: str
 
     _validate_review_pr = field_validator("review_pr")(_https_url)
+
+
+class AutomaticPublication(StrictModel):
+    method: Literal["automated"] = "automated"
+    workflow_run: str = Field(
+        pattern=r"^https://github\.com/pankajmouriya/tsd\.report/actions/runs/[1-9][0-9]*$"
+    )
+    published_at: datetime
+
+
+class AutomatedSnapshot(SnapshotBase):
+    schema_version: Literal[2] = 2
+    status: Literal["published"] = "published"
+    publication: AutomaticPublication

@@ -140,6 +140,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     const { loadEditions } = await import('../../src/lib/content');
     const edition = loadEditions('production')[0];
     if (!edition) throw new NewsletterDeliveryError('No production edition is available');
+    if (!process.env.EXPECTED_EDITION_DATE || edition.date !== process.env.EXPECTED_EDITION_DATE) {
+      throw new NewsletterDeliveryError('Expected edition is not the newest production edition');
+    }
     const result = await deliverLatestNewsletter({
       edition,
       apiKey: process.env.BUTTONDOWN_API_KEY,
