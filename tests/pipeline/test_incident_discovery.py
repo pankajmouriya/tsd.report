@@ -148,3 +148,32 @@ def test_high_volume_advisory_stream_preserves_other_structured_source(tmp_path)
     client = httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(304)))
     state, _ = discover([SourceSpec.model_validate(SOURCE)], previous, tmp_path, client=client, now=NOW)
     assert any(lead["lead_id"] == "malware" for lead in state["leads"])
+
+
+def test_curated_newsletter_index_keeps_issue_titles_without_incident_keywords(tmp_path):
+    settings = {
+        "id": "tldrsec",
+        "name": "TL;DR sec newsletter",
+        "url": "https://tldrsec.com/",
+        "format": "html",
+        "link_hosts": ["tldrsec.com"],
+        "path_prefix": "/p/tldr-sec-",
+        "include_all_titles": True,
+    }
+    page = b"""<a href="/p/tldr-sec-353">[tl;dr sec] #353 - A Thousand Fewer Paths to Root</a>
+    <a href="/p/tldr-sec-352">[tl;dr sec] #352 - Malicious LLM API Routers</a>
+    <a href="/p/security-guide">Security guide</a>
+    <a href="https://attacker.example/p/tldr-sec-354">Fake security issue</a>"""
+    client = httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(200, content=page)))
+    state, manifest = discover([SourceSpec.model_validate(settings)], {}, tmp_path, client=client, now=NOW)
+    assert {lead["url"] for lead in state["leads"]} == {
+        "https://tldrsec.com/p/tldr-sec-353",
+        "https://tldrsec.com/p/tldr-sec-352",
+    }
+    assert all(lead["published_at"] is None for lead in state["leads"])
+    assert manifest["sources"][0]["status"] == "ok"
+    unchanged, _ = discover([SourceSpec.model_validate(settings)], state, tmp_path, client=client, now=NOW)
+    assert unchanged == state
+    settings.pop("include_all_titles")
+    filtered, _ = discover([SourceSpec.model_validate(settings)], {}, tmp_path, client=client, now=NOW)
+    assert [lead["url"] for lead in filtered["leads"]] == ["https://tldrsec.com/p/tldr-sec-352"]

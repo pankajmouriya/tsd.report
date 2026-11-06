@@ -62,7 +62,11 @@ def discover(
             ):
                 if count >= 40:
                     break
-                if source.format != "github-commits" and not TERMS.search(entry["title"]):
+                if (
+                    source.format != "github-commits"
+                    and not source.include_all_titles
+                    and not TERMS.search(entry["title"])
+                ):
                     continue
                 observed = entry["updated_at"] or entry["published_at"]
                 if observed and datetime.fromisoformat(observed) < now - timedelta(days=30):
