@@ -1,0 +1,45 @@
+name: Send newsletter
+on:
+  workflow_dispatch:
+    inputs:
+      edition_date:
+        description: Newest approved, deployed production edition (YYYY-MM-DD)
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  send:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      vars.TSD_PRODUCTION_ENABLED == 'true' &&
+      vars.TSD_NEWSLETTER_SIGNUP_ENABLED == 'true' &&
+      vars.TSD_NEWSLETTER_SEND_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    concurrency:
+      group: newsletter-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run validate:production
+      - name: Verify approved edition and deployed revision without provider access
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_EDITION_DATE: ${{ inputs.edition_date }}
+        run: node --import tsx scripts/newsletter/authorize.ts
+      - name: Queue the explicitly requested newsletter
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          EXPECTED_EDITION_DATE: ${{ inputs.edition_date }}
+        run: npm run newsletter:send

@@ -7,6 +7,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      operation:
+        description: Setup hosting or validate and deploy current main
+        type: choice
+        default: setup-cloudflare
+        options: [setup-cloudflare, deploy-production]
 
 permissions:
   contents: read
@@ -20,7 +26,7 @@ env:
 
 jobs:
   quality:
-    if: github.event_name != 'workflow_dispatch'
+    if: github.event_name != 'workflow_dispatch' || (github.ref == 'refs/heads/main' && inputs.operation == 'deploy-production')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -81,7 +87,7 @@ jobs:
           if-no-files-found: error
 
   secret-scan:
-    if: github.event_name != 'workflow_dispatch'
+    if: github.event_name != 'workflow_dispatch' || (github.ref == 'refs/heads/main' && inputs.operation == 'deploy-production')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -169,7 +175,7 @@ jobs:
           fi
 
   deploy-production:
-    if: github.event_name == 'push' && vars.TSD_PRODUCTION_ENABLED == 'true'
+    if: github.ref == 'refs/heads/main' && vars.TSD_PRODUCTION_ENABLED == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.operation == 'deploy-production'))
     needs: [quality, secret-scan]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -190,6 +196,7 @@ jobs:
       - run: npm run validate:production
       - run: npm run build:production
         env:
+          TSD_DEPLOYMENT_SHA: ${{ github.sha }}
           TSD_NEWSLETTER_SIGNUP_ENABLED: ${{ vars.TSD_NEWSLETTER_SIGNUP_ENABLED }}
           BUTTONDOWN_USERNAME: ${{ vars.BUTTONDOWN_USERNAME }}
           TSD_PUBLICATION_CONTACT_URL: ${{ vars.TSD_PUBLICATION_CONTACT_URL }}
@@ -202,48 +209,16 @@ jobs:
         run: |
           current="$(git ls-remote origin refs/heads/main | cut -f1)"
           test "$current" = "$GITHUB_SHA" || { echo 'A newer main revision superseded this build.' >&2; exit 1; }
-          npx --no-install wrangler pages deploy dist --project-name "$CLOUDFLARE_PROJECT_NAME" --branch main
+          npx --no-install wrangler pages deploy dist --project-name "$CLOUDFLARE_PROJECT_NAME" --branch main --commit-hash "$GITHUB_SHA"
       - name: Check production project
         env:
           PRODUCTION_URL: https://${{ vars.CLOUDFLARE_PROJECT_NAME }}.pages.dev
-        run: curl --fail --silent --show-error --retry 24 --retry-delay 5 --retry-max-time 120 --retry-all-errors "$PRODUCTION_URL/"
-
-  send-newsletter:
-    needs: deploy-production
-    if: >-
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      vars.TSD_PRODUCTION_ENABLED == 'true' &&
-      vars.TSD_NEWSLETTER_SIGNUP_ENABLED == 'true' &&
-      vars.TSD_NEWSLETTER_SEND_ENABLED == 'true' &&
-      needs.deploy-production.result == 'success'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    environment: production
-    permissions:
-      contents: read
-    concurrency:
-      group: newsletter-production
-      cancel-in-progress: false
-    steps:
-      - name: Check out source
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      - name: Use pinned Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version-file: .node-version
-          cache: npm
-      - run: npm ci
-      - name: Queue approved newsletter
-        env:
-          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
-          GITHUB_SHA: ${{ github.sha }}
-        run: npm run newsletter:send
+        run: |
+          curl --fail --silent --show-error --retry 24 --retry-delay 5 --retry-max-time 120 --retry-all-errors "$PRODUCTION_URL/" > "$RUNNER_TEMP/production.html"
+          grep -Fq "name=\"tsd-revision\" content=\"$GITHUB_SHA\"" "$RUNNER_TEMP/production.html"
 
   setup-cloudflare:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'setup-cloudflare'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: production

@@ -8,6 +8,8 @@ from pipeline.collectors.cisa_kev import CISA_KEV_PAGE
 from pipeline.collectors.epss import EPSS_URL
 from pipeline.collectors.nvd import NVD_URL
 from pipeline.models import (
+    AutomatedSnapshot,
+    AutomaticPublication,
     CandidateSnapshot,
     EpssDataset,
     EvidenceReference,
@@ -79,6 +81,8 @@ def validate_source_freshness(
     catalog: KevCatalog,
     epss: EpssDataset,
 ) -> None:
+    if not catalog.records:
+        raise ValueError("CISA KEV catalog is empty; preserve the previous publication")
     # KEV is updated when entries change, not daily. Check retrieval freshness
     # separately and retain dateReleased as the catalog's actual evidence date.
     retrieved_date = catalog.source.retrieved_at.astimezone(UTC).date()
@@ -184,6 +188,44 @@ def promote_candidate(
     )
     if output.exists():
         existing = PublishedSnapshot.model_validate_json(output.read_text(encoding="utf-8"))
+        if existing == published:
+            return existing
+        raise ValueError(f"Published snapshot is immutable: {output}")
+    write_json_atomic(output, published.model_dump(mode="json"))
+    return published
+
+
+def publish_automatic(
+    candidate: CandidateSnapshot, *, workflow_run: str, published_at: datetime, output: Path
+) -> AutomatedSnapshot:
+    if candidate.generated_at.tzinfo is None or published_at.tzinfo is None:
+        raise ValueError("Automatic publication requires timezone-aware timestamps")
+    if candidate.generated_at > published_at or published_at.astimezone(UTC).date() != candidate.date:
+        raise ValueError("Automatic publication requires a current-day candidate")
+    for source in candidate.sources:
+        if source.id == "nvd":
+            continue  # Optional enrichment can remain explicitly degraded.
+        if source.status != "ok" or source.retrieved_at.tzinfo is None:
+            raise ValueError("Automatic publication requires healthy CISA and FIRST sources")
+        if not 0 <= (published_at - source.retrieved_at).total_seconds() <= 86400:
+            raise ValueError("Required source retrieval is stale or in the future")
+        if source.id == "cisa-kev" and (source.data_date is None or source.data_date > candidate.date):
+            raise ValueError("CISA catalog date is missing or in the future")
+        if source.id == "first-epss":
+            if source.data_date is None and candidate.entries:
+                raise ValueError("FIRST EPSS date is missing")
+            if source.data_date is not None and not 0 <= (candidate.date - source.data_date).days <= 1:
+                raise ValueError("FIRST EPSS dataset is not current")
+    published = AutomatedSnapshot(
+        **candidate.model_dump(exclude={"status", "schema_version"}),
+        publication=AutomaticPublication(workflow_run=workflow_run, published_at=published_at),
+    )
+    validate_interchange(
+        published.model_dump(mode="json"),
+        Path(__file__).parents[1] / "schemas/vulnerability-watch.schema.json",
+    )
+    if output.exists():
+        existing = AutomatedSnapshot.model_validate_json(output.read_text(encoding="utf-8"))
         if existing == published:
             return existing
         raise ValueError(f"Published snapshot is immutable: {output}")

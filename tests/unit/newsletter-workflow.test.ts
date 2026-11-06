@@ -13,9 +13,12 @@ function blocks(source: string, header: RegExp): Map<string, string> {
   ]));
 }
 
+const sendWorkflow = readFileSync(new URL('../../.github/workflows/send-newsletter.yml', import.meta.url), 'utf8');
+const sendJobs = blocks(sendWorkflow.split(/^jobs:\s*$/m)[1] ?? '', /^  ([\w-]+):\s*$/gm);
 const jobs = blocks(workflow.split(/^jobs:\s*$/m)[1] ?? '', /^  ([\w-]+):\s*$/gm);
 
 function job(name: string): string {
+  if (name === 'send-newsletter') return sendJobs.get('send')!;
   expect(jobs.has(name), `Workflow must define the ${name} job`).toBe(true);
   return jobs.get(name)!;
 }
@@ -69,32 +72,36 @@ const fixtureValues = {
 };
 
 describe('newsletter workflow policy', () => {
-  it('waits for the production deployment job, including its smoke check', () => {
-    expect(scalar(job('send-newsletter'), 'needs', 4)).toBe('deploy-production');
+  it('verifies the deployed release before the manual delivery step', () => {
+    const sendSteps = steps(job('send-newsletter'));
+    const authorization = sendSteps.findIndex((step) => scalar(step, 'run', 8)?.includes('authorize.ts'));
+    const delivery = sendSteps.findIndex((step) => scalar(step, 'run', 8) === 'npm run newsletter:send');
+    expect(authorization).toBeGreaterThanOrEqual(0);
+    expect(delivery).toBeGreaterThan(authorization);
     const productionSteps = steps(job('deploy-production'));
     const deploy = productionSteps.findIndex((step) => scalar(step, 'name', 8) === 'Deploy production');
     const smoke = productionSteps.findIndex((step) => scalar(step, 'name', 8) === 'Check production project');
     expect(deploy).toBeGreaterThanOrEqual(0);
     expect(smoke).toBeGreaterThan(deploy);
-    expect(scalar(productionSteps[smoke], 'run', 8)).toContain('curl --fail');
+    expect(property(productionSteps[smoke], 'run', 8)).toContain('curl --fail');
   });
 
-  it('requires a main push, all three exact true gates, and a successful deployment', () => {
+  it('requires manual dispatch on main and all three exact true gates', () => {
     const condition = property(job('send-newsletter'), 'if', 4)?.replace(/^>-\s*/, '');
     expect(condition?.split('&&').map((clause) => clause.trim())).toEqual([
-      "github.event_name == 'push'",
       "github.ref == 'refs/heads/main'",
       "vars.TSD_PRODUCTION_ENABLED == 'true'",
       "vars.TSD_NEWSLETTER_SIGNUP_ENABLED == 'true'",
       "vars.TSD_NEWSLETTER_SEND_ENABLED == 'true'",
-      "needs.deploy-production.result == 'success'",
     ]);
   });
 
   it('uses the production environment with read-only contents permission', () => {
     const send = job('send-newsletter');
     expect(scalar(send, 'environment', 4)).toBe('production');
-    expect(mapping(send, 'permissions', 4)).toEqual({ contents: 'read' });
+    expect(mapping(sendWorkflow, 'permissions', 0)).toEqual({ contents: 'read', actions: 'read' });
+    expect(property(sendWorkflow, 'on', 0)).toContain('workflow_dispatch:');
+    expect(property(sendWorkflow, 'on', 0)).not.toMatch(/push:|schedule:|workflow_run:/);
   });
 
   it('serializes delivery without cancelling another send job', () => {
@@ -114,19 +121,20 @@ describe('newsletter workflow policy', () => {
   it('exposes the provider key only to the queue step of the send job', () => {
     const send = job('send-newsletter');
     const queue = runStep(send, 'npm run newsletter:send');
-    expect(scalar(queue, 'name', 8)).toBe('Queue approved newsletter');
+    expect(scalar(queue, 'name', 8)).toBe('Queue the explicitly requested newsletter');
     expect(mapping(queue, 'env', 8)).toEqual({
       BUTTONDOWN_API_KEY: '${{ secrets.BUTTONDOWN_API_KEY }}',
-      GITHUB_SHA: '${{ github.sha }}',
+      EXPECTED_EDITION_DATE: '${{ inputs.edition_date }}',
     });
-    expect(workflow.replace(send, '')).not.toContain('BUTTONDOWN_API_KEY');
+    expect(workflow).not.toContain('BUTTONDOWN_API_KEY');
     expect(steps(send).filter((step) => step.includes('BUTTONDOWN_API_KEY'))).toEqual([queue]);
     expect(send.replace(property(send, 'steps', 4)!, '')).not.toContain('BUTTONDOWN_API_KEY');
   });
 
   it('keeps newsletter sends out of every pull-request or setup job', () => {
     expect([...jobs].filter(([, source]) => source.includes('newsletter:send')).map(([name]) => name))
-      .toEqual(['send-newsletter']);
+      .toEqual([]);
+    expect([...sendJobs].filter(([, source]) => source.includes('newsletter:send')).map(([name]) => name)).toEqual(['send']);
     for (const name of ['quality', 'secret-scan', 'preview', 'deploy-production', 'setup-cloudflare']) {
       expect(job(name)).not.toContain('newsletter:send');
     }
@@ -138,10 +146,10 @@ describe('newsletter workflow policy', () => {
       'actions/checkout@11d5960a326750d5838078e36cf38b85af677262',
       'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020',
     ]);
-    expect(mapping(sendSteps[0], 'with', 8)).toEqual({ 'persist-credentials': 'false' });
+    expect(mapping(sendSteps[0], 'with', 8)).toEqual({ ref: '${{ github.sha }}', 'persist-credentials': 'false' });
     expect(mapping(sendSteps[1], 'with', 8)).toEqual({ 'node-version-file': '.node-version', cache: 'npm' });
     expect(sendSteps.map((step) => scalar(step, 'run', 8)).filter(Boolean))
-      .toEqual(['npm ci', 'npm run newsletter:send']);
+      .toEqual(['npm ci', 'npm run validate:production', 'node --import tsx scripts/newsletter/authorize.ts', 'npm run newsletter:send']);
   });
 
   it.each(['quality', 'preview'])('gives %s exactly the three public fixture signup values', (name) => {
@@ -193,6 +201,7 @@ describe('newsletter workflow policy', () => {
     const build = runStep(production, 'npm run build:production');
     expect(mapping(production, 'env', 4)).toEqual({});
     expect(mapping(build, 'env', 8)).toEqual({
+      TSD_DEPLOYMENT_SHA: '${{ github.sha }}',
       TSD_NEWSLETTER_SIGNUP_ENABLED: '${{ vars.TSD_NEWSLETTER_SIGNUP_ENABLED }}',
       BUTTONDOWN_USERNAME: '${{ vars.BUTTONDOWN_USERNAME }}',
       TSD_PUBLICATION_CONTACT_URL: '${{ vars.TSD_PUBLICATION_CONTACT_URL }}',

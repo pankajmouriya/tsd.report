@@ -21,24 +21,39 @@ def action_uses_are_pinned(document: dict) -> None:
                 assert len(action.rsplit("@", 1)[1].split()[0]) == 40
 
 
-def test_candidate_workflow_is_scheduled_review_only_and_least_privilege() -> None:
+def test_watch_publishes_daily_with_explicit_deployment_and_no_email() -> None:
     document, text = workflow("vulnerability-watch.yml")
     assert document["on"]["schedule"] == [{"cron": "17 6 * * *"}]
     assert "workflow_dispatch" in document["on"]
-    assert document["permissions"] == {"contents": "write", "pull-requests": "write"}
-    assert "concurrency" in document
-    assert "uv sync --locked" in text
+    assert document["permissions"] == {"contents": "write", "actions": "write"}
+    assert "github.ref == 'refs/heads/main'" in document["jobs"]["publish"]["if"]
     assert "pipeline.cli collect" in text
-    assert "automation/vulnerability-watch-" in text
-    assert "gh pr create" in text
-    assert "--draft" in text  # A candidate-only PR cannot be merged before label promotion.
-    assert "data/candidates/vulnerability-watch" in text
-    assert "data/production/vulnerability-watch" not in text
-    assert "git push --force" not in text
-    preserve_candidate = text.index('cp "$candidate" "$temporary_candidate"')
-    clear_worktree_candidate = text.index('rm -- "$candidate"')
-    switch_existing_branch = text.index('git switch --create "$branch" --track "origin/$branch"')
-    assert preserve_candidate < clear_worktree_candidate < switch_existing_branch
+    assert "pipeline.cli publish-automatic" in text
+    assert "data/production/vulnerability-watch" in text
+    assert "npm run validate:production" in text
+    assert "npm run build:production" in text
+    assert "gh workflow run validate.yml" in text
+    assert "operation=deploy-production" in text
+    assert "newsletter:send" not in text
+    assert "gh pr create" not in text
+    assert "--force" not in text
+    action_uses_are_pinned(document)
+
+
+def test_newsletter_has_only_an_explicit_manual_send_trigger() -> None:
+    document, _ = workflow("send-newsletter.yml")
+    assert set(document["on"]) == {"workflow_dispatch"}
+    assert document["on"]["workflow_dispatch"]["inputs"]["edition_date"]["required"] == "true"
+    assert "github.ref == 'refs/heads/main'" in document["jobs"]["send"]["if"]
+    assert document["jobs"]["send"]["concurrency"]["group"] == "newsletter-production"
+    steps = document["jobs"]["send"]["steps"]
+    authorization = next(i for i, step in enumerate(steps) if "authorize.ts" in step.get("run", ""))
+    delivery = next(i for i, step in enumerate(steps) if step.get("run") == "npm run newsletter:send")
+    assert authorization < delivery
+    assert "BUTTONDOWN_API_KEY" not in steps[authorization].get("env", {})
+    assert "BUTTONDOWN_API_KEY" in steps[delivery]["env"]
+    _, validate = workflow("validate.yml")
+    assert "newsletter:send" not in validate
     action_uses_are_pinned(document)
 
 

@@ -15,6 +15,7 @@ from pipeline.collectors.nvd import NVD_URL, NvdCollector
 from pipeline.compose import (
     compose_candidate,
     promote_candidate,
+    publish_automatic,
     validate_interchange,
     validate_source_freshness,
 )
@@ -164,11 +165,25 @@ def _parser() -> argparse.ArgumentParser:
     promote.add_argument("--reviewed-by", required=True)
     promote.add_argument("--reviewed-at", required=True)
     promote.add_argument("--review-pr", required=True)
+    automatic = commands.add_parser("publish-automatic")
+    automatic.add_argument("--input", type=Path, required=True)
+    automatic.add_argument("--output", type=Path, required=True)
+    automatic.add_argument("--workflow-run", required=True)
+    automatic.add_argument("--published-at")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    if args.command == "publish-automatic":
+        candidate = CandidateSnapshot.model_validate_json(args.input.read_text(encoding="utf-8"))
+        publish_automatic(
+            candidate,
+            workflow_run=args.workflow_run,
+            published_at=_parse_datetime(args.published_at) if args.published_at else datetime.now(UTC),
+            output=args.output,
+        )
+        return 0
     if args.command == "promote":
         candidate = CandidateSnapshot.model_validate_json(args.input.read_text(encoding="utf-8"))
         published = promote_candidate(

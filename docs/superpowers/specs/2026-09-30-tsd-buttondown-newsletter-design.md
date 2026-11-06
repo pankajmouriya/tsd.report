@@ -1,5 +1,7 @@
 # The Security Diff — Buttondown newsletter design
 
+November 7, 2026 policy revision: the editor explicitly authorized automatic daily Watch publication under the existing eligibility rules and manual-only newsletter delivery. This supersedes the original review-only Watch and push-triggered email decisions below. Current operation is documented in [Watch operations](../../operations/vulnerability-watch.md) and [newsletter operations](../../operations/newsletter.md). Automatic Watch schema version 2 records workflow provenance without human-review fields; legacy version 1 reviews and immutable snapshots remain intact. Daily Watch publication explicitly dispatches validation/deployment, while `Send newsletter` accepts only manual dispatch with an approved newest edition date and verified deployed revision. Weekly issue #22 curation does not itself publish or email content.
+
 Date: 2026-09-30
 
 Status: Approved for implementation planning
