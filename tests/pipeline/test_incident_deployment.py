@@ -111,3 +111,20 @@ def test_failed_publication_can_restore_only_its_own_previous_deployment():
     with pytest.raises(ValueError):
         rollback_if_ours(other, snapshot, "a" * 40)
     assert other.restored is None
+
+
+def test_source_fetch_identifies_collector_and_preserves_conditional_headers():
+    def publisher(request):
+        assert request.headers["user-agent"] == "TheSecurityDiff/1.0 (+https://tsd.report)"
+        assert request.headers["if-none-match"] == "previous-snapshot"
+        return httpx.Response(200, content=b"captured vendor disclosure")
+
+    with httpx.Client(transport=httpx.MockTransport(publisher)) as client:
+        body, _, status = fetch(
+            client,
+            "https://example.com/disclosure",
+            hosts={"example.com"},
+            headers={"If-None-Match": "previous-snapshot"},
+        )
+    assert status == 200
+    assert body == b"captured vendor disclosure"

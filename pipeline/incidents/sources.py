@@ -60,7 +60,11 @@ def fetch(
 ):
     validate_url(url, hosts)
     with client.stream(
-        "GET", url, headers=headers, follow_redirects=False, timeout=httpx.Timeout(20, connect=10)
+        "GET",
+        url,
+        headers={"User-Agent": "TheSecurityDiff/1.0 (+https://tsd.report)", **(headers or {})},
+        follow_redirects=False,
+        timeout=httpx.Timeout(20, connect=10),
     ) as response:
         if response.status_code == 304:
             return b"", dict(response.headers), 304
