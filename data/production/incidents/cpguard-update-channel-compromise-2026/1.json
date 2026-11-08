@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "status": "published",
+  "candidate": {
+    "schema_version": 2,
+    "status": "candidate",
+    "incident_id": "cpguard-update-channel-compromise-2026",
+    "revision": 1,
+    "classification": "supply-chain-compromise",
+    "occurred_at": null,
+    "evidence_as_of": "2026-11-08T11:44:26.757451Z",
+    "supersedes": null,
+    "correction_note": null,
+    "destination_source_id": "vendor-disclosure",
+    "sources": [
+      {
+        "id": "vendor-disclosure",
+        "name": "OPSSHIELD: current incident disclosure",
+        "type": "vendor",
+        "url": "https://opsshield.com/notice/security-incident-disclosure-servermanage.html",
+        "published_at": null,
+        "retrieved_at": "2026-11-08T11:40:05.721004Z",
+        "data_date": "Published 2026-11-03; supersedes the earlier advisory"
+      },
+      {
+        "id": "earlier-advisory",
+        "name": "OPSSHIELD: earlier cPGuard advisory",
+        "type": "vendor",
+        "url": "https://opsshield.com/notice/cpguard-update-channel-compromise.html",
+        "published_at": null,
+        "retrieved_at": "2026-11-08T11:40:06.021856Z",
+        "data_date": "Published 2026-11-03; earlier findings retained as historical context"
+      },
+      {
+        "id": "reporting",
+        "name": "BleepingComputer: cPGuard update-channel reporting",
+        "type": "research",
+        "url": "https://www.bleepingcomputer.com/news/security/hackers-hijack-cpguard-autoupdate-to-deploy-backdoor-steal-data/",
+        "published_at": null,
+        "retrieved_at": "2026-11-08T11:40:07.567568Z",
+        "data_date": "Original reporting and attributed vendor response; exact publication time unknown"
+      }
+    ],
+    "facts": [
+      {
+        "id": "distribution",
+        "statement": "used our cPGuard update channel to push a malicious update",
+        "source_ids": [
+          "vendor-disclosure"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "secret-exposure",
+        "statement": "root-level secrets are known to the attacker",
+        "source_ids": [
+          "vendor-disclosure"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "window",
+        "statement": "about 70 minutes on 2 November",
+        "source_ids": [
+          "vendor-disclosure"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "cleanup-limit",
+        "statement": "A successful update removes the known files, but credentials copied before cleanup may still be usable.",
+        "source_ids": [
+          "earlier-advisory"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "rotate",
+        "statement": "Rotate affected database passwords",
+        "source_ids": [
+          "earlier-advisory"
+        ],
+        "state": "reported"
+      },
+      {
+        "id": "ssh",
+        "statement": "Replace SSH private keys",
+        "source_ids": [
+          "earlier-advisory"
+        ],
+        "state": "reported"
+      }
+    ],
+    "editorial": {
+      "title": "cPGuard update-channel breach exposes root-level server secrets",
+      "summary": "OPSSHIELD says attackers used its cPGuard update channel to send a malicious update on November 2. Its later disclosure describes roughly 70 minutes of malicious distribution and exposure of root-level secrets, superseding the vendor’s earlier account.",
+      "why_it_matters": "A clean update cannot invalidate credentials copied before cleanup. The vendor’s earlier and later accounts describe different investigation stages; their scope estimates should not be combined.",
+      "action": "Follow the vendor’s current update guidance, rotate exposed local, database and cloud credentials, replace root SSH keys, and investigate remaining signs of compromise.",
+      "tags": [
+        "supply-chain",
+        "cpguard",
+        "credential-theft"
+      ],
+      "affected_technologies": [
+        "cPGuard",
+        "Linux hosting servers"
+      ],
+      "claim_ids": [
+        "distribution",
+        "secret-exposure",
+        "window",
+        "cleanup-limit",
+        "rotate",
+        "ssh"
+      ]
+    }
+  },
+  "content_sha256": "63174d3fecaeee71408e334ab107f2316bfba48e90c0fd60193b6219b574273a",
+  "review": {
+    "actor": "pankajmouriya",
+    "head_sha": "6d31c8b7e6d14b46e4f3427d9ce5650529cf6b4e",
+    "pr_number": 70,
+    "pr_url": "https://github.com/pankajmouriya/tsd.report/pull/70",
+    "approval_kind": "merge",
+    "merged_at": "2026-11-08T11:52:53Z",
+    "merge_sha": "0d8932cef8ecd9e1fdd5a582fcae1fcc6f8bae39"
+  },
+  "published_at": "2026-11-08T11:53:13.327428Z"
+}
