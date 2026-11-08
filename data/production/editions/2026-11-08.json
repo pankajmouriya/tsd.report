@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-11-08",
-  "status": "draft",
+  "status": "published",
   "lead_story": "incident-cpguard-update-channel-compromise-2026",
   "sections": {
     "latest": [
@@ -22,9 +22,9 @@
       "category": "supply-chain",
       "published_at": "2026-11-08T11:53:13.327428Z",
       "updated_at": null,
-      "summary": "OPSSHIELD says attackers used its cPGuard update channel to send a malicious update on November 2. Its later disclosure describes roughly 70 minutes of malicious distribution and exposure of root-level secrets, superseding the vendor’s earlier account.",
-      "why_it_matters": "A clean update cannot invalidate credentials copied before cleanup. The vendor’s earlier and later accounts describe different investigation stages; their scope estimates should not be combined.",
-      "action": "Follow the vendor’s current update guidance, rotate exposed local, database and cloud credentials, replace root SSH keys, and investigate remaining signs of compromise.",
+      "summary": "OPSSHIELD says attackers used its cPGuard update channel to send a malicious update on November 2. Its later disclosure describes roughly 70 minutes of malicious distribution and exposure of root-level secrets, superseding the vendor\u2019s earlier account.",
+      "why_it_matters": "A clean update cannot invalidate credentials copied before cleanup. The vendor\u2019s earlier and later accounts describe different investigation stages; their scope estimates should not be combined.",
+      "action": "Follow the vendor\u2019s current update guidance, rotate exposed local, database and cloud credentials, replace root SSH keys, and investigate remaining signs of compromise.",
       "affected_technologies": [
         "cPGuard",
         "Linux hosting servers"
@@ -78,12 +78,12 @@
     {
       "id": "incident-kaniko-azure-registry-token-leak-2026",
       "slug": "kaniko-azure-registry-token-leak-2026",
-      "title": "kaniko lookalike registry hosts can receive a build’s Azure access token",
+      "title": "kaniko lookalike registry hosts can receive a build\u2019s Azure access token",
       "type": "incident",
       "category": "vulnerabilities",
       "published_at": "2026-11-08T11:54:54.311534Z",
       "updated_at": null,
-      "summary": "The Chainguard kaniko fork’s advisory describes Azure access-token exposure when untrusted Dockerfiles or build arguments reference lookalike registry hosts and an Azure identity is available. Its bundled credential helper can send a token to an attacker-controlled registry.",
+      "summary": "The Chainguard kaniko fork\u2019s advisory describes Azure access-token exposure when untrusted Dockerfiles or build arguments reference lookalike registry hosts and an Azure identity is available. Its bundled credential helper can send a token to an attacker-controlled registry.",
       "why_it_matters": "Build inputs can cross the Azure identity trust boundary. Inventory both the executor and warmer, rather than assuming a separate credential-helper deployment is required.",
       "action": "Rebuild the executor, warmer and standalone ACR helper from kaniko v1.25.20 or later. Keep Azure identities away from untrusted builds and review Azure activity for exposed identities.",
       "affected_technologies": [
@@ -152,9 +152,9 @@
       "category": "supply-chain",
       "published_at": "2026-11-06T21:09:36.191317Z",
       "updated_at": null,
-      "summary": "MotherSphere’s NIKKE investigation describes tampered scripts on Level Infinite’s CDN loading a remote-control agent. Follow-up reporting describes credential-stealing capabilities and warns that updated launcher cleanup can erase evidence of an earlier infection.",
+      "summary": "MotherSphere\u2019s NIKKE investigation describes tampered scripts on Level Infinite\u2019s CDN loading a remote-control agent. Follow-up reporting describes credential-stealing capabilities and warns that updated launcher cleanup can erase evidence of an earlier infection.",
       "why_it_matters": "Cleaning the delivery scripts does not undo an earlier infection. The research draws on an infected machine and attributed user reports; it does not establish how many players were affected.",
-      "action": "Preserve launcher logs and caches before reopening the PC launcher. Then follow the publisher’s security-check guidance and reset exposed passwords and credentials from a clean device.",
+      "action": "Preserve launcher logs and caches before reopening the PC launcher. Then follow the publisher\u2019s security-check guidance and reset exposed passwords and credentials from a clean device.",
       "affected_technologies": [
         "NIKKE PC launcher",
         "Level Infinite CDN"
@@ -205,7 +205,7 @@
       "category": "vulnerabilities",
       "published_at": "2026-11-06T21:05:10.929832Z",
       "updated_at": null,
-      "summary": "Rails’ November 4 advisory describes arbitrary file writes during attachment analysis when Active Storage uses ImageMagick, accepts untrusted uploads, and lacks a restrictive coder policy. Disk-backed storage can also expose files readable by the app.",
+      "summary": "Rails\u2019 November 4 advisory describes arbitrary file writes during attachment analysis when Active Storage uses ImageMagick, accepts untrusted uploads, and lacks a restrictive coder policy. Disk-backed storage can also expose files readable by the app.",
       "why_it_matters": "Attachment analysis runs when a file is attached; a separate preview or variant request is not required. Check the image processor, upload trust boundary and ImageMagick policy together.",
       "action": "Upgrade Active Storage to 8.1.4.1 or 8.0.5.2 and use MiniMagick 5.1 or later for :mini_magick. For Disk storage, rotate app-readable secrets as the upstream advisory directs.",
       "affected_technologies": [
@@ -267,9 +267,9 @@
       "category": "supply-chain",
       "published_at": "2026-11-06T21:04:51.813001Z",
       "updated_at": null,
-      "summary": "Socket’s November 6 analysis links strutil-core 1.0.1, published November 1, to an install-time credential stealer and AI tool persistence. It was a standalone malicious gem; victims and successful downstream infections remain unconfirmed.",
+      "summary": "Socket\u2019s November 6 analysis links strutil-core 1.0.1, published November 1, to an install-time credential stealer and AI tool persistence. It was a standalone malicious gem; victims and successful downstream infections remain unconfirmed.",
       "why_it_matters": "The payload can persist beyond the gem. Socket reports a conditional wiper triggered when a stolen GitHub token stops working, making response order important.",
-      "action": "If strutil-core 1.0.1 was installed, isolate the host first. Follow Socket’s guidance to stop and remove net-health-checker and pkg-runtime before revoking the monitored GitHub token.",
+      "action": "If strutil-core 1.0.1 was installed, isolate the host first. Follow Socket\u2019s guidance to stop and remove net-health-checker and pkg-runtime before revoking the monitored GitHub token.",
       "affected_technologies": [
         "strutil-core 1.0.1",
         "RubyGems",
@@ -323,7 +323,7 @@
       "updated_at": null,
       "summary": "CVE-2026-98432 affects Linux IPv4 TCP connection handling. Aikido reports a demonstrated remote-root exploit against an MPTCP listener; that condition should guide urgent exposure checks without being treated as the full boundary of the flaw.",
       "why_it_matters": "The Linux CNA describes a memory-lifetime bug with potential control-flow corruption. Check reachable IPv4 services and MPTCP listeners when prioritizing hosts.",
-      "action": "Install your distribution’s patched kernel, reboot, and verify the running kernel against its advisory. Use vendor backport guidance rather than comparing only upstream version numbers.",
+      "action": "Install your distribution\u2019s patched kernel, reboot, and verify the running kernel against its advisory. Use vendor backport guidance rather than comparing only upstream version numbers.",
       "affected_technologies": [
         "Linux kernel",
         "IPv4 TCP",
@@ -375,7 +375,7 @@
       "category": "vulnerabilities",
       "published_at": "2026-11-08T11:56:00.973112Z",
       "updated_at": null,
-      "summary": "GeoNode’s maintainer reports command execution through crafted vector-upload layer names. Its advisory lists versions through 5.0.1 as affected. GitHub’s reviewed database lists 5.1.0 as fixed, while the maintainer’s patched-version field remains unset.",
+      "summary": "GeoNode\u2019s maintainer reports command execution through crafted vector-upload layer names. Its advisory lists versions through 5.0.1 as affected. GitHub\u2019s reviewed database lists 5.1.0 as fixed, while the maintainer\u2019s patched-version field remains unset.",
       "why_it_matters": "The uploaded layer name reaches an operating-system command boundary. The source metadata disagrees on release coverage, so a database fixed-version entry alone should not establish a safe deployment.",
       "action": "Restrict untrusted vector uploads while checking the upstream fix and release coverage. Confirm the patch is present in the deployed GeoNode build before restoring that upload path.",
       "affected_technologies": [
@@ -430,9 +430,13 @@
     }
   ],
   "newsletter": {
-    "status": "draft",
-    "subject": "The Security Diff — November 8, 2026",
-    "preview_text": "Seven reports from November 2–8: cPGuard, kaniko, NIKKE, Rails, a malicious Ruby gem, Linux TCP, and GeoNode."
+    "status": "approved",
+    "subject": "The Security Diff \u2014 November 8, 2026",
+    "preview_text": "Seven reports from November 2\u20138: cPGuard, kaniko, NIKKE, Rails, a malicious Ruby gem, Linux TCP, and GeoNode.",
+    "approved_by": "Pankaj Mouriya",
+    "approved_at": "2026-11-08T12:11:45Z"
   },
-  "generated_at": "2026-11-08T12:04:14.457Z"
+  "generated_at": "2026-11-08T12:04:14.457Z",
+  "reviewed_by": "Pankaj Mouriya",
+  "reviewed_at": "2026-11-08T12:11:45Z"
 }
