@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-08",
+  "status": "draft",
+  "lead_story": "incident-cpguard-update-channel-compromise-2026",
+  "sections": {
+    "latest": [
+      "incident-kaniko-azure-registry-token-leak-2026",
+      "incident-nikke-pc-launcher-cdn-compromise-2026",
+      "incident-rails-active-storage-imagemagick-file-access-2026",
+      "incident-strutil-core-rubygems-malware",
+      "incident-linux-ipv4-tcp-use-after-free",
+      "incident-geonode-vector-layer-command-injection-2026"
+    ]
+  },
+  "stories": [
+    {
+      "id": "incident-cpguard-update-channel-compromise-2026",
+      "slug": "cpguard-update-channel-compromise-2026",
+      "title": "cPGuard update-channel breach exposes root-level server secrets",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-11-08T11:53:13.327428Z",
+      "updated_at": null,
+      "summary": "OPSSHIELD says attackers used its cPGuard update channel to send a malicious update on November 2. Its later disclosure describes roughly 70 minutes of malicious distribution and exposure of root-level secrets, superseding the vendor’s earlier account.",
+      "why_it_matters": "A clean update cannot invalidate credentials copied before cleanup. The vendor’s earlier and later accounts describe different investigation stages; their scope estimates should not be combined.",
+      "action": "Follow the vendor’s current update guidance, rotate exposed local, database and cloud credentials, replace root SSH keys, and investigate remaining signs of compromise.",
+      "affected_technologies": [
+        "cPGuard",
+        "Linux hosting servers"
+      ],
+      "tags": [
+        "supply-chain",
+        "cpguard",
+        "credential-theft"
+      ],
+      "sources": [
+        {
+          "id": "vendor-disclosure",
+          "name": "OPSSHIELD: current incident disclosure",
+          "url": "https://opsshield.com/notice/security-incident-disclosure-servermanage.html",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-08T11:40:05.721004Z"
+        },
+        {
+          "id": "earlier-advisory",
+          "name": "OPSSHIELD: earlier cPGuard advisory",
+          "url": "https://opsshield.com/notice/cpguard-update-channel-compromise.html",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-08T11:40:06.021856Z"
+        },
+        {
+          "id": "reporting",
+          "name": "BleepingComputer: cPGuard update-channel reporting",
+          "url": "https://www.bleepingcomputer.com/news/security/hackers-hijack-cpguard-autoupdate-to-deploy-backdoor-steal-data/",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-11-08T11:40:07.567568Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://opsshield.com/notice/security-incident-disclosure-servermanage.html",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-08T11:52:53Z"
+    },
+    {
+      "id": "incident-kaniko-azure-registry-token-leak-2026",
+      "slug": "kaniko-azure-registry-token-leak-2026",
+      "title": "kaniko lookalike registry hosts can receive a build’s Azure access token",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-11-08T11:54:54.311534Z",
+      "updated_at": null,
+      "summary": "The Chainguard kaniko fork’s advisory describes Azure access-token exposure when untrusted Dockerfiles or build arguments reference lookalike registry hosts and an Azure identity is available. Its bundled credential helper can send a token to an attacker-controlled registry.",
+      "why_it_matters": "Build inputs can cross the Azure identity trust boundary. Inventory both the executor and warmer, rather than assuming a separate credential-helper deployment is required.",
+      "action": "Rebuild the executor, warmer and standalone ACR helper from kaniko v1.25.20 or later. Keep Azure identities away from untrusted builds and review Azure activity for exposed identities.",
+      "affected_technologies": [
+        "Chainguard kaniko fork",
+        "Azure Container Registry credential helper"
+      ],
+      "tags": [
+        "kaniko",
+        "azure",
+        "vulnerability"
+      ],
+      "sources": [
+        {
+          "id": "maintainer-advisory",
+          "name": "kaniko maintainer security advisory",
+          "url": "https://github.com/chainguard-forks/kaniko/security/advisories/GHSA-5q7h-w9jf-cx97",
+          "type": "vendor",
+          "published_at": "2026-11-02T16:32:58Z",
+          "retrieved_at": "2026-11-08T11:42:31.324334Z"
+        },
+        {
+          "id": "fixed-release",
+          "name": "kaniko v1.25.20 release",
+          "url": "https://github.com/chainguard-forks/kaniko/releases/tag/v1.25.20",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-08T11:42:32.060799Z"
+        },
+        {
+          "id": "upstream-report",
+          "name": "Original ACR credential-helper report",
+          "url": "https://github.com/chrismellard/docker-credential-acr-env/issues/21",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-11-08T11:42:32.681262Z"
+        },
+        {
+          "id": "database-advisory",
+          "name": "GitHub reviewed kaniko advisory",
+          "url": "https://github.com/advisories/GHSA-5q7h-w9jf-cx97",
+          "type": "research",
+          "published_at": "2026-11-05T17:48:54Z",
+          "retrieved_at": "2026-11-08T11:42:33.307156Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://github.com/chainguard-forks/kaniko/security/advisories/GHSA-5q7h-w9jf-cx97",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-08T11:54:38Z"
+    },
+    {
+      "id": "incident-nikke-pc-launcher-cdn-compromise-2026",
+      "slug": "nikke-pc-launcher-cdn-compromise-2026",
+      "title": "NIKKE PC launcher compromise exposes a trusted CDN delivery path",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-11-06T21:09:36.191317Z",
+      "updated_at": null,
+      "summary": "MotherSphere’s NIKKE investigation describes tampered scripts on Level Infinite’s CDN loading a remote-control agent. Follow-up reporting describes credential-stealing capabilities and warns that updated launcher cleanup can erase evidence of an earlier infection.",
+      "why_it_matters": "Cleaning the delivery scripts does not undo an earlier infection. The research draws on an infected machine and attributed user reports; it does not establish how many players were affected.",
+      "action": "Preserve launcher logs and caches before reopening the PC launcher. Then follow the publisher’s security-check guidance and reset exposed passwords and credentials from a clean device.",
+      "affected_technologies": [
+        "NIKKE PC launcher",
+        "Level Infinite CDN"
+      ],
+      "tags": [
+        "supply-chain",
+        "launcher",
+        "credential-theft"
+      ],
+      "sources": [
+        {
+          "id": "mothersphere-report",
+          "name": "MotherSphere: NIKKE PC launcher compromise investigation",
+          "url": "https://gist.github.com/MotherSphere/d6c049a09ba8ac3085c51ee9df24a4e5",
+          "type": "research",
+          "published_at": "2026-11-03T16:57:49Z",
+          "retrieved_at": "2026-11-06T20:51:53.320174Z"
+        },
+        {
+          "id": "bleepingcomputer-report",
+          "name": "BleepingComputer: NIKKE launcher investigation and follow-up",
+          "url": "https://www.bleepingcomputer.com/news/security/nikke-pc-game-launcher-hacked-to-spread-remote-access-data-stealing-malware/",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-11-06T20:51:54.211176Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://gist.github.com/MotherSphere/d6c049a09ba8ac3085c51ee9df24a4e5",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-06T21:09:20Z"
+    },
+    {
+      "id": "incident-rails-active-storage-imagemagick-file-access-2026",
+      "slug": "rails-active-storage-imagemagick-file-access-2026",
+      "title": "Rails Active Storage uploads can expose server files through ImageMagick",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-11-06T21:05:10.929832Z",
+      "updated_at": null,
+      "summary": "Rails’ November 4 advisory describes arbitrary file writes during attachment analysis when Active Storage uses ImageMagick, accepts untrusted uploads, and lacks a restrictive coder policy. Disk-backed storage can also expose files readable by the app.",
+      "why_it_matters": "Attachment analysis runs when a file is attached; a separate preview or variant request is not required. Check the image processor, upload trust boundary and ImageMagick policy together.",
+      "action": "Upgrade Active Storage to 8.1.4.1 or 8.0.5.2 and use MiniMagick 5.1 or later for :mini_magick. For Disk storage, rotate app-readable secrets as the upstream advisory directs.",
+      "affected_technologies": [
+        "Rails Active Storage",
+        "ImageMagick",
+        "MiniMagick"
+      ],
+      "tags": [
+        "ruby-on-rails",
+        "active-storage",
+        "vulnerability"
+      ],
+      "sources": [
+        {
+          "id": "rails-advisory",
+          "name": "Rails: Active Storage image-analysis security advisory",
+          "url": "https://github.com/rails/rails/security/advisories/GHSA-f3w6-w445-fwh9",
+          "type": "vendor",
+          "published_at": "2026-11-04T03:09:06Z",
+          "retrieved_at": "2026-11-06T20:50:59.365149Z"
+        },
+        {
+          "id": "socket-report",
+          "name": "Socket: Rails vulnerability conditions and remediation",
+          "url": "https://socket.dev/blog/rails-active-storage-patch",
+          "type": "research",
+          "published_at": "2026-11-06T20:40:46.426Z",
+          "retrieved_at": "2026-11-06T20:51:00.363774Z"
+        },
+        {
+          "id": "rails-release",
+          "name": "Rails: November 4 security releases",
+          "url": "https://rubyonrails.org/2026/11/4/Rails-8.0.5.2-and-8.1.4.1-have-been-released",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-06T20:51:00.918837Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://github.com/rails/rails/security/advisories/GHSA-f3w6-w445-fwh9",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-06T21:04:48Z"
+    },
+    {
+      "id": "incident-strutil-core-rubygems-malware",
+      "slug": "strutil-core-rubygems-malware",
+      "title": "Malicious strutil-core gem steals secrets and plants AI tool hooks",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-11-06T21:04:51.813001Z",
+      "updated_at": null,
+      "summary": "Socket’s November 6 analysis links strutil-core 1.0.1, published November 1, to an install-time credential stealer and AI tool persistence. It was a standalone malicious gem; victims and successful downstream infections remain unconfirmed.",
+      "why_it_matters": "The payload can persist beyond the gem. Socket reports a conditional wiper triggered when a stolen GitHub token stops working, making response order important.",
+      "action": "If strutil-core 1.0.1 was installed, isolate the host first. Follow Socket’s guidance to stop and remove net-health-checker and pkg-runtime before revoking the monitored GitHub token.",
+      "affected_technologies": [
+        "strutil-core 1.0.1",
+        "RubyGems",
+        "AI coding tools"
+      ],
+      "tags": [
+        "supply-chain",
+        "rubygems",
+        "malware"
+      ],
+      "sources": [
+        {
+          "id": "socket-analysis",
+          "name": "Socket: strutil-core install-time worm analysis",
+          "url": "https://socket.dev/blog/shai-hulud-descendant-malicious-ruby-gem",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-11-06T20:21:07.860876Z"
+        },
+        {
+          "id": "original-report",
+          "name": "Original strutil-core malware report: OpenSSF PR 1701",
+          "url": "https://github.com/ossf/malicious-packages/pull/1701",
+          "type": "research",
+          "published_at": "2026-11-01T19:16:47Z",
+          "retrieved_at": "2026-11-06T20:21:06.885617Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://socket.dev/blog/shai-hulud-descendant-malicious-ruby-gem",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-06T21:04:33Z"
+    },
+    {
+      "id": "incident-linux-ipv4-tcp-use-after-free",
+      "slug": "linux-ipv4-tcp-use-after-free",
+      "title": "Linux TCP flaw puts exposed hosts on the kernel patch list",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-11-06T21:03:56.768943Z",
+      "updated_at": null,
+      "summary": "CVE-2026-98432 affects Linux IPv4 TCP connection handling. Aikido reports a demonstrated remote-root exploit against an MPTCP listener; that condition should guide urgent exposure checks without being treated as the full boundary of the flaw.",
+      "why_it_matters": "The Linux CNA describes a memory-lifetime bug with potential control-flow corruption. Check reachable IPv4 services and MPTCP listeners when prioritizing hosts.",
+      "action": "Install your distribution’s patched kernel, reboot, and verify the running kernel against its advisory. Use vendor backport guidance rather than comparing only upstream version numbers.",
+      "affected_technologies": [
+        "Linux kernel",
+        "IPv4 TCP",
+        "MPTCP"
+      ],
+      "tags": [
+        "linux",
+        "vulnerability",
+        "kernel"
+      ],
+      "sources": [
+        {
+          "id": "linux-cna",
+          "name": "Linux CNA: CVE-2026-98432 record",
+          "url": "https://github.com/CVEProject/cvelistV5/blob/main/cves/2026/98xxx/CVE-2026-98432.json",
+          "type": "vendor",
+          "published_at": "2026-10-15T12:08:22.205Z",
+          "retrieved_at": "2026-11-06T20:21:04.792225Z"
+        },
+        {
+          "id": "aikido-response",
+          "name": "Aikido: Linux TCP exposure and patch guidance",
+          "url": "https://www.aikido.dev/blog/linux-kernel-tcp-rce-vulnerability-cve-2026-98432",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-11-06T20:21:05.064991Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://github.com/CVEProject/cvelistV5/blob/main/cves/2026/98xxx/CVE-2026-98432.json",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-06T21:03:37Z"
+    },
+    {
+      "id": "incident-geonode-vector-layer-command-injection-2026",
+      "slug": "geonode-vector-layer-command-injection-2026",
+      "title": "GeoNode vector-upload layer names can trigger server-side command injection",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-11-08T11:56:00.973112Z",
+      "updated_at": null,
+      "summary": "GeoNode’s maintainer reports command execution through crafted vector-upload layer names. Its advisory lists versions through 5.0.1 as affected. GitHub’s reviewed database lists 5.1.0 as fixed, while the maintainer’s patched-version field remains unset.",
+      "why_it_matters": "The uploaded layer name reaches an operating-system command boundary. The source metadata disagrees on release coverage, so a database fixed-version entry alone should not establish a safe deployment.",
+      "action": "Restrict untrusted vector uploads while checking the upstream fix and release coverage. Confirm the patch is present in the deployed GeoNode build before restoring that upload path.",
+      "affected_technologies": [
+        "GeoNode",
+        "Vector file uploads"
+      ],
+      "tags": [
+        "geonode",
+        "command-injection",
+        "vulnerability"
+      ],
+      "sources": [
+        {
+          "id": "maintainer-advisory",
+          "name": "GeoNode maintainer security advisory",
+          "url": "https://github.com/GeoNode/geonode/security/advisories/GHSA-9fpx-fr6j-2vh6",
+          "type": "vendor",
+          "published_at": "2026-11-05T18:08:30Z",
+          "retrieved_at": "2026-11-08T11:42:34.426220Z"
+        },
+        {
+          "id": "database-advisory",
+          "name": "GitHub reviewed GeoNode advisory",
+          "url": "https://github.com/advisories/GHSA-9fpx-fr6j-2vh6",
+          "type": "research",
+          "published_at": "2026-11-06T19:39:38Z",
+          "retrieved_at": "2026-11-08T11:42:34.948609Z"
+        },
+        {
+          "id": "upstream-patch",
+          "name": "GeoNode upstream fix commit",
+          "url": "https://github.com/GeoNode/geonode/commit/1408290c0bb54872924a9b334a516db9758a2180",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-08T11:42:35.577032Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://github.com/GeoNode/geonode/security/advisories/GHSA-9fpx-fr6j-2vh6",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-08T11:55:45Z"
+    }
+  ],
+  "newsletter": {
+    "status": "draft",
+    "subject": "The Security Diff — November 8, 2026",
+    "preview_text": "Seven reports from November 2–8: cPGuard, kaniko, NIKKE, Rails, a malicious Ruby gem, Linux TCP, and GeoNode."
+  },
+  "generated_at": "2026-11-08T12:04:14.457Z"
+}
