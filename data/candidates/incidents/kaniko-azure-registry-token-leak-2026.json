@@ -83,7 +83,7 @@
   ],
   "editorial": {
     "title": "kaniko lookalike registry hosts can receive a build’s Azure access token",
-    "summary": "kaniko’s maintainer reports Azure access-token exposure when untrusted Dockerfiles or build arguments reference lookalike registry hosts and an Azure identity is available. The bundled credential helper can send a token to an attacker-controlled registry.",
+    "summary": "The Chainguard kaniko fork’s advisory describes Azure access-token exposure when untrusted Dockerfiles or build arguments reference lookalike registry hosts and an Azure identity is available. Its bundled credential helper can send a token to an attacker-controlled registry.",
     "why_it_matters": "Build inputs can cross the Azure identity trust boundary. Inventory both the executor and warmer, rather than assuming a separate credential-helper deployment is required.",
     "action": "Rebuild the executor, warmer and standalone ACR helper from kaniko v1.25.20 or later. Keep Azure identities away from untrusted builds and review Azure activity for exposed identities.",
     "tags": [
@@ -92,7 +92,7 @@
       "vulnerability"
     ],
     "affected_technologies": [
-      "kaniko",
+      "Chainguard kaniko fork",
       "Azure Container Registry credential helper"
     ],
     "claim_ids": [
