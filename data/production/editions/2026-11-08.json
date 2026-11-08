@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-11-08",
-  "status": "draft",
+  "status": "published",
   "lead_story": "incident-cpguard-update-channel-compromise-2026",
   "sections": {
     "latest": [
@@ -430,9 +430,13 @@
     }
   ],
   "newsletter": {
-    "status": "draft",
+    "status": "approved",
     "subject": "The Security Diff — November 8, 2026",
-    "preview_text": "Seven reports from November 2–8: cPGuard, kaniko, NIKKE, Rails, a malicious Ruby gem, Linux TCP, and GeoNode."
+    "preview_text": "Seven reports from November 2–8: cPGuard, kaniko, NIKKE, Rails, a malicious Ruby gem, Linux TCP, and GeoNode.",
+    "approved_by": "Pankaj Mouriya",
+    "approved_at": "2026-11-08T12:11:45Z"
   },
-  "generated_at": "2026-11-08T12:04:14.457Z"
+  "generated_at": "2026-11-08T12:04:14.457Z",
+  "reviewed_by": "Pankaj Mouriya",
+  "reviewed_at": "2026-11-08T12:11:45Z"
 }
