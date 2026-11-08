@@ -1,0 +1,96 @@
+{
+  "schema_version": 2,
+  "status": "candidate",
+  "incident_id": "geonode-vector-layer-command-injection-2026",
+  "revision": 1,
+  "classification": "dependency-vulnerability",
+  "occurred_at": null,
+  "evidence_as_of": "2026-11-08T11:44:27.444474Z",
+  "supersedes": null,
+  "correction_note": null,
+  "destination_source_id": "maintainer-advisory",
+  "sources": [
+    {
+      "id": "maintainer-advisory",
+      "name": "GeoNode maintainer security advisory",
+      "type": "vendor",
+      "url": "https://github.com/GeoNode/geonode/security/advisories/GHSA-9fpx-fr6j-2vh6",
+      "published_at": "2026-11-05T18:08:30Z",
+      "retrieved_at": "2026-11-08T11:42:34.426220Z",
+      "data_date": "Affected <=5.0.1; maintainer patched-version field is None"
+    },
+    {
+      "id": "database-advisory",
+      "name": "GitHub reviewed GeoNode advisory",
+      "type": "research",
+      "url": "https://github.com/advisories/GHSA-9fpx-fr6j-2vh6",
+      "published_at": "2026-11-06T19:39:38Z",
+      "retrieved_at": "2026-11-08T11:42:34.948609Z",
+      "data_date": "Database lists <5.1.0 affected and 5.1.0 fixed; differs from maintainer metadata"
+    },
+    {
+      "id": "upstream-patch",
+      "name": "GeoNode upstream fix commit",
+      "type": "vendor",
+      "url": "https://github.com/GeoNode/geonode/commit/1408290c0bb54872924a9b334a516db9758a2180",
+      "published_at": null,
+      "retrieved_at": "2026-11-08T11:42:35.577032Z",
+      "data_date": "Commit 1408290c0bb54872924a9b334a516db9758a2180, referenced by the reviewed advisory"
+    }
+  ],
+  "facts": [
+    {
+      "id": "command-injection",
+      "statement": "Arbitrary OS commands can be executed on the GeoNode by uploading a vector file with a crafted layer name.",
+      "source_ids": [
+        "maintainer-advisory"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "affected",
+      "statement": "Affected versions <= 5.0.1",
+      "source_ids": [
+        "maintainer-advisory"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "upstream-unknown",
+      "statement": "Patched versions None",
+      "source_ids": [
+        "maintainer-advisory"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "database-fix",
+      "statement": "Affected versions < 5.1.0 Patched versions 5.1.0",
+      "source_ids": [
+        "database-advisory"
+      ],
+      "state": "reported"
+    }
+  ],
+  "editorial": {
+    "title": "GeoNode vector-upload layer names can trigger server-side command injection",
+    "summary": "GeoNode’s maintainer reports command execution through crafted vector-upload layer names. Its advisory lists versions through 5.0.1 as affected. GitHub’s reviewed database lists 5.1.0 as fixed, while the maintainer’s patched-version field remains unset.",
+    "why_it_matters": "The uploaded layer name reaches an operating-system command boundary. The source metadata disagrees on release coverage, so a database fixed-version entry alone should not establish a safe deployment.",
+    "action": "Restrict untrusted vector uploads while checking the upstream fix and release coverage. Confirm the patch is present in the deployed GeoNode build before restoring that upload path.",
+    "tags": [
+      "geonode",
+      "command-injection",
+      "vulnerability"
+    ],
+    "affected_technologies": [
+      "GeoNode",
+      "Vector file uploads"
+    ],
+    "claim_ids": [
+      "command-injection",
+      "affected",
+      "upstream-unknown",
+      "database-fix"
+    ]
+  }
+}
