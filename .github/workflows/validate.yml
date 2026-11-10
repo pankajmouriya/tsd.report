@@ -26,6 +26,8 @@ env:
 
 jobs:
   quality:
+    outputs:
+      pending_candidate: ${{ steps.publication.outputs.pending_candidate }}
     if: github.event_name != 'workflow_dispatch' || (github.ref == 'refs/heads/main' && inputs.operation == 'deploy-production')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -37,6 +39,7 @@ jobs:
       - name: Check out source
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: Use pinned Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -53,6 +56,12 @@ jobs:
           version: '0.12.21'
           enable-cache: true
       - run: npm ci
+      - name: Select the production deployment owner
+        id: publication
+        if: github.event_name == 'push'
+        env:
+          PUBLICATION_BASE_SHA: ${{ github.event.before }}
+        run: node --import tsx scripts/publication-change.ts
       - run: uv sync --locked
       - run: npm run lint:pipeline
       - run: npm run test:pipeline
@@ -175,7 +184,7 @@ jobs:
           fi
 
   deploy-production:
-    if: github.ref == 'refs/heads/main' && vars.TSD_PRODUCTION_ENABLED == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.operation == 'deploy-production'))
+    if: github.ref == 'refs/heads/main' && vars.TSD_PRODUCTION_ENABLED == 'true' && needs.quality.outputs.pending_candidate != 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.operation == 'deploy-production'))
     needs: [quality, secret-scan]
     runs-on: ubuntu-24.04
     timeout-minutes: 15

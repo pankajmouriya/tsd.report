@@ -33,7 +33,12 @@ function webUrl(value: string, base?: string): string {
   return url.href;
 }
 
-export function buildNewsletterDigest(edition: Edition, origin = 'https://tsd.report'): NewsletterDigest {
+export type NewsletterEditionInput = Pick<Edition, 'date' | 'lead_story' | 'sections' | 'newsletter'> & {
+  stories: Story[];
+  fixture?: boolean;
+};
+
+export function buildNewsletterDigest(edition: NewsletterEditionInput, origin = 'https://tsd.report'): NewsletterDigest {
   if (!edition.newsletter) throw new Error(`Edition ${edition.date} requires newsletter metadata`);
   const byId = new Map(edition.stories.map((story) => [story.id, story]));
   const lead = byId.get(edition.lead_story);

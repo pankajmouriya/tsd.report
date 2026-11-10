@@ -1,8 +1,9 @@
+import { weeklyReviewRecordSchema } from '../src/lib/weekly-newsletter';
 import { writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
-import { editionSchema, vulnerabilityWatchCandidateSchema, vulnerabilityWatchPublishedSchema } from '../src/lib/schema';
+import { editionSchema, vulnerabilityWatchCandidateSchema, vulnerabilityWatchPublishedSchema, weeklyNewsletterCandidateSchema } from '../src/lib/schema';
 import { incidentCandidateBaseSchema, incidentPublicationBaseSchema } from '../src/lib/incident-schema';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -19,3 +20,8 @@ writeFileSync(resolve(projectRoot, 'schemas/incident.schema.json'), `${JSON.stri
   publication: z.toJSONSchema(incidentPublicationBaseSchema, { target: 'draft-2020-12' }),
 }, null, 2)}\n`);
 console.log('Generated schemas/incident.schema.json');
+
+writeFileSync(resolve(projectRoot, 'schemas/weekly-newsletter.schema.json'), `${JSON.stringify(z.toJSONSchema(weeklyNewsletterCandidateSchema, { target: 'draft-2020-12' }), null, 2)}\n`);
+console.log('Generated schemas/weekly-newsletter.schema.json');
+
+writeFileSync(resolve(projectRoot, 'schemas/weekly-newsletter-review.schema.json'), `${JSON.stringify(z.toJSONSchema(weeklyReviewRecordSchema, { target: 'draft-2020-12' }), null, 2)}\n`);

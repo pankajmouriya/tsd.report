@@ -214,7 +214,12 @@ def test_publisher_preserves_reviewed_copy_and_retries_without_rewriting_it():
     assert record["review"]["head_sha"] == SHA
     assert publish(github, 7)["status"] == "deployment-queued"
     assert github.commits == 1
-    assert len(github.dispatches) == 2
+    assert [workflow for workflow, _ in github.dispatches] == [
+        "incident-deploy.yml",
+        "weekly-newsletter.yml",
+        "incident-deploy.yml",
+        "weekly-newsletter.yml",
+    ]
 
 
 def test_new_legacy_article_packet_cannot_publish_as_an_external_brief():
@@ -307,3 +312,12 @@ def test_failed_checks_races_and_revoked_approval_cannot_publish(failure):
     assert not github.pr["merged"]
     assert not github.records
     assert not github.dispatches
+
+
+def test_incident_publication_explicitly_reconciles_weekly_newsletter_drafts():
+    github = FakeGitHub()
+    publish(github, 7)
+    assert github.dispatches == [
+        ("incident-deploy.yml", {"publication_sha": github.main, "pr_number": "7"}),
+        ("weekly-newsletter.yml", {"operation": "refresh"}),
+    ]
