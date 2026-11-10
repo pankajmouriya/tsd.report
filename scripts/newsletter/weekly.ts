@@ -183,7 +183,7 @@ export function publishWeeklyDraft(gh: WeeklyGitHub, catalog: WeeklyCatalog, num
   const ancestry = z.object({ status: z.string() }).parse(gh.api(`compare/${pr.merge_commit_sha}...${catalog.sha}`));
   if (!['ahead', 'identical'].includes(ancestry.status))
     throw new Error('Weekly merge is not an ancestor of main');
-  const expected = finalizeWeeklyDraft(candidate, { actor: pr.merged_by.login, merged_at: pr.merged_at, head_sha: pr.head.sha, merge_sha: pr.merge_commit_sha, pr_number: number });
+  const expected = finalizeWeeklyDraft(candidate, { actor: pr.merged_by.login, merged_at: pr.merged_at, head_sha: pr.head.sha, merge_sha: pr.merge_commit_sha, pr_number: number, pr_url: `https://github.com/${gh.repository}/pull/${number}` });
   const editionPath = `data/production/editions/${candidate.date}.json`, recordPath = `data/production/newsletter-reviews/${candidate.date}.json`;
   const existing = gh.jsonFile(editionPath, catalog.sha), record = gh.jsonFile(recordPath, catalog.sha);
   let commit = catalog.sha;

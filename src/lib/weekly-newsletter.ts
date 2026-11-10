@@ -12,6 +12,7 @@ export const weeklyMergeSchema = z.object({
   head_sha: z.string().regex(/^[a-f0-9]{40}$/),
   merge_sha: z.string().regex(/^[a-f0-9]{40}$/),
   pr_number: z.number().int().positive(),
+  pr_url: z.string().regex(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/[1-9]\d*$/),
 }).strict();
 export const weeklyReviewRecordSchema = z.object({ schema_version: z.literal(1), date: z.iso.date(), candidate_sha256: z.string().regex(/^[a-f0-9]{64}$/), review: weeklyMergeSchema }).strict();
 export function weeklyHash(candidate: WeeklyNewsletterCandidate): string {

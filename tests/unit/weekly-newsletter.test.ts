@@ -56,7 +56,7 @@ describe('weekly newsletter selection and immutable approval', () => {
   });
   it('finalizes only with real merge provenance and preserves the frozen copy', () => {
     const d = buildWeeklyDraft([story('a')], [], now)!;
-    const review = { actor: 'pankajmouriya', merged_at: '2026-11-15T12:00:00Z', head_sha: 'a'.repeat(40), merge_sha: 'b'.repeat(40), pr_number: 99 };
+    const review = { actor: 'pankajmouriya', merged_at: '2026-11-15T12:00:00Z', head_sha: 'a'.repeat(40), merge_sha: 'b'.repeat(40), pr_number: 99, pr_url: 'https://github.com/example/newspaper/pull/99' };
     const result = finalizeWeeklyDraft(d, review);
     expect(productionEditionSchema.parse(result.edition).newsletter?.status).toBe('approved');
     expect(renderNewsletterMarkdown(buildNewsletterDigest(result.edition))).toBe(renderNewsletterMarkdown(buildNewsletterDigest(d)));

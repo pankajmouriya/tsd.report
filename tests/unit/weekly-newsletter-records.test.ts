@@ -6,7 +6,7 @@ import{story}from'../helpers/weekly-newsletter';
 it('validates immutable weekly merge records during production content loading',async()=>{
  const root=mkdtempSync(join(tmpdir(),'tsd-weekly-records-'));const dir=join(root,'data/production/newsletter-reviews');mkdirSync(dir,{recursive:true});
  const draft=buildWeeklyDraft([story('test')],[],new Date('2026-11-09T00:00:00Z'))!;
- const result=finalizeWeeklyDraft(draft,{actor:'pankajmouriya',merged_at:'2026-11-15T00:00:00Z',head_sha:'a'.repeat(40),merge_sha:'b'.repeat(40),pr_number:1});
+ const result=finalizeWeeklyDraft(draft,{actor:'pankajmouriya',merged_at:'2026-11-15T00:00:00Z',head_sha:'a'.repeat(40),merge_sha:'b'.repeat(40),pr_number:1,pr_url:'https://github.com/example/newspaper/pull/1'});
  const file=join(dir,'2026-11-15.json');writeFileSync(file,JSON.stringify(result.record));
  try{
   expect(validateWeeklyReviewRecords(root,[result.edition])).toBe(1);
