@@ -1,3 +1,4 @@
+import { validateWeeklyReviewRecords } from './weekly-newsletter';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { composeHomepage, incidentStory, loadIncidentPreview, loadIncidentPublications } from './incidents';
@@ -76,6 +77,7 @@ export function loadEditions(mode: ContentMode, projectRoot = process.cwd()): Ed
     .map((value) => selectedSchema.parse(value) as Edition)
     .sort((left, right) => right.date.localeCompare(left.date));
   validateContentMode(mode, loaded);
+  if (mode === 'production') validateWeeklyReviewRecords(projectRoot, loaded);
   return loaded;
 }
 

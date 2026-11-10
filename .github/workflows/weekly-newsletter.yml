@@ -1,0 +1,135 @@
+name: Maintain weekly newsletter
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Reconcile draft, validate a PR, or recover an editor-merged edition
+        type: choice
+        options: [refresh, validate, publish]
+        default: refresh
+      pr_number:
+        description: Weekly PR number for validation or publication recovery
+        type: string
+        required: false
+  schedule:
+    - cron: '52 * * * *'
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, closed]
+permissions:
+  contents: read
+jobs:
+  refresh:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      vars.TSD_WEEKLY_NEWSLETTER_ENABLED == 'true' &&
+      (github.event_name == 'schedule' ||
+       (github.event_name == 'workflow_dispatch' && inputs.operation == 'refresh'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: weekly-newsletter-state
+      queue: max
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Create or reconcile the unpublished weekly draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node --import tsx scripts/newsletter/weekly.ts refresh
+  validate:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      vars.TSD_WEEKLY_NEWSLETTER_ENABLED == 'true' &&
+      ((github.event_name == 'workflow_dispatch' && inputs.operation == 'validate') ||
+       (github.event_name == 'pull_request_target' && github.event.action != 'closed' &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.event.pull_request.user.login == 'github-actions[bot]' &&
+        startsWith(github.event.pull_request.head.ref, 'automation/newsletter-')))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: weekly-newsletter-validation-${{ inputs.pr_number || github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+      actions: write
+    env:
+      PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Validate canonical snapshots and render the actual candidate email
+        id: candidate
+        run: node --import tsx scripts/newsletter/weekly.ts validate --pr "$PR_NUMBER" --run-dir "$RUNNER_TEMP/weekly-newsletter"
+      - run: npm run check
+      - run: npm test
+      - run: npm run validate:production
+      - name: Retain the head-bound email.md, email.html and source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weekly-newsletter-${{ env.PR_NUMBER }}-${{ steps.candidate.outputs.head }}
+          path: ${{ runner.temp }}/weekly-newsletter/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Report the candidate check for the exact head and content hash
+        if: always() && steps.candidate.outputs.head != ''
+        env:
+          CANDIDATE_HEAD: ${{ steps.candidate.outputs.head }}
+          CONCLUSION: ${{ job.status == 'success' && 'success' || 'failure' }}
+        run: node --import tsx scripts/newsletter/weekly.ts check --pr "$PR_NUMBER" --head "$CANDIDATE_HEAD" --conclusion "$CONCLUSION"
+  publish:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      vars.TSD_WEEKLY_NEWSLETTER_ENABLED == 'true' &&
+      ((github.event_name == 'workflow_dispatch' && inputs.operation == 'publish') ||
+       (github.event_name == 'pull_request_target' && github.event.action == 'closed' &&
+        github.event.pull_request.merged == true &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.event.pull_request.user.login == 'github-actions[bot]' &&
+        startsWith(github.event.pull_request.head.ref, 'automation/newsletter-')))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: weekly-newsletter-state
+      queue: max
+    permissions:
+      contents: write
+      pull-requests: read
+      checks: read
+      actions: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Publish only the validated editor-merged snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
+        run: node --import tsx scripts/newsletter/weekly.ts publish --pr "$PR_NUMBER"

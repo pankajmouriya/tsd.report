@@ -183,4 +183,5 @@ def publish(github: GitHub, number: int):
         record = make_publication(candidate, review, datetime.now(UTC).isoformat().replace("+00:00", "Z"))
         commit = github.publication_commit(main, candidate_path(candidate), path, record)
     github.dispatch("incident-deploy.yml", {"publication_sha": commit, "pr_number": str(number)})
+    github.dispatch("weekly-newsletter.yml", {"operation": "refresh"})
     return {"status": "deployment-queued", "sha": commit, "article": f"/article/{candidate['incident_id']}"}

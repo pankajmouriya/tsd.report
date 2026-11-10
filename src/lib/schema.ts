@@ -151,6 +151,16 @@ export const productionEditionSchema = z.object({
   stories: z.array(productionStorySchema).min(1),
 }).strict().superRefine(validateEdition);
 
+export const weeklyNewsletterCandidateSchema = z.object({
+  ...editionFields,
+  generated_at: z.iso.datetime(),
+  status: z.literal('draft'),
+  newsletter: draftSchema,
+  stories: z.array(productionStorySchema).min(1).max(100),
+}).strict().superRefine(validateEdition);
+
+export type WeeklyNewsletterCandidate = z.infer<typeof weeklyNewsletterCandidateSchema>;
+
 const vulnerabilityWatchSelectionSchema = z.object({
   lookback_days: z.literal(30),
   epss_probability_min: z.literal(0.5),

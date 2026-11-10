@@ -261,3 +261,11 @@ Approval does not bypass production deployment, signup/send flags, the provider 
 | Extra JSON field has no effect | It is not part of the runtime contract; do not rely on unknown-key stripping as agent validation |
 
 For the next automation step, follow [the agent workflow](agent-workflow.md). It keeps the same authoring model and identifies the missing enforcement explicitly.
+
+### Automatically maintained weekly editions
+
+The editor selected Sunday editions in Asia/Kolkata and **manual-only sending** for rolling newsletters. Published incidents automatically collect into a same-repository bot draft PR, changing only its weekly candidate JSON. The bot preserves canonical source/review metadata and never generates new security facts. The exact rendered email and head/hash-bound artifact are provided for review. Marking the PR ready freezes the draft; returning it to draft permits refreshes.
+
+Merging that validated weekly PR as the configured editor explicitly approves its edition selection, subject, preview, audience and copy for publication. The publisher derives approval metadata from the real GitHub merge and records its provenance; this is a merge authorization, not a fabricated GitHub Approve review. It then deploys the edition and starts a new draft only when unused incidents remain. It does not send the letter. Every incident already included in a finalized approved newsletter is reserved across future weeks, even if the earlier letter has not yet been sent. Corrections to the same canonical identity do not automatically repeat it.
+
+See the [rolling draft operator instructions](../operations/newsletter.md#rolling-weekly-draft-prs). Manual assembly remains possible, but must preserve the same genuine review, immutable snapshot and separate send boundaries.
