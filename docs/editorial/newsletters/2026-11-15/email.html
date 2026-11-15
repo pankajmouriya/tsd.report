@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="CI credentials, trusted releases and forgotten cloud access: three incidents, three patch briefings and one agent-security research note.">
+<title>The Security Diff — November 15, 2026</title>
+</head>
+<body>
+<header><h1>The Security Diff</h1><p>Edition <time datetime="2026-11-15">2026-11-15</time></p></header>
+<p><strong>Unapproved editorial draft — not published or sent.</strong></p>
+<main>
+<p>CI credentials, trusted releases and forgotten cloud access: three incidents, three patch briefings and one agent-security research note.</p>
+<section aria-labelledby="lead-heading"><h2 id="lead-heading">Lead story</h2><article>
+<p>Supply Chain</p>
+<h3><a href="https://www.aikido.dev/blog/compromised-github-accounts-push-ci-secret-stealer-to-tens-of-thousands-of-repositories">wfx-loot turns stolen GitHub access into CI credential theft</a></h3>
+<p>Aikido reports stolen GitHub credentials were used to inject secret-stealing workflows and install hooks into repositories from November 10. Probe pull requests do not prove every repository executed the payload; deleted run logs can hide execution. Action: Audit suspicious branches, workflow history and OIDC changes. If the payload ran, treat workflow-accessible credentials as exposed and investigate persistence before restoring trust.</p>
+
+</article></section>
+<section aria-labelledby="stories-heading"><h2 id="stories-heading">More from this edition</h2><article>
+<p>Supply Chain</p>
+<h3><a href="https://socket.dev/blog/bee-js-compromise">Malicious bee-js and Swarm Desktop releases abuse a trusted release path</a></h3>
+<p>Socket and SafeDep report malicious @ethersphere/bee-js 13.3.0 and Swarm Desktop 0.56.2 releases delivering remote-code loaders. The npm package carried valid provenance; affected systems need compromise assessment, not just a package downgrade. Action: Check install and launcher history. Isolate affected systems, rotate exposed credentials from a clean machine, and follow the researchers’ wallet-key and persistence-removal guidance.</p>
+
+</article>
+<article>
+<p>Supply Chain</p>
+<h3><a href="https://www.wiz.io/blog/qubole-cross-account-access-abused-in-the-wild">Qubole-linked credentials expose forgotten AWS integration roles</a></h3>
+<p>Wiz and Sentra’s November 9 disclosures describe attackers using Qubole-associated AWS credentials to assume customer integration roles, collect secrets and access S3 data. Wiz dates the observed activity to October 14–26; this is a new disclosure of older activity. Action: Inventory and remove unused vendor trusts. Review unusual role assumptions and S3 object reads, limit integration-role permissions, and investigate exposed secrets.</p>
+
+</article>
+<article>
+<p>Vulnerabilities</p>
+<h3><a href="https://httpd.apache.org/security/vulnerabilities_24.html">Apache HTTP/2 flaw makes exposure checks and patching urgent</a></h3>
+<p>Apache identifies CVE-2026-119618 in mod_http2, affecting HTTP Server 2.4.55 through 2.4.70. The fix shipped in 2.4.71 on November 11. This is a disclosed RCE vulnerability; Aikido reported no known in-the-wild exploitation as of November 13. Action: Apply Apache 2.4.71 or a vendor-confirmed backport. If patching must wait, review disabling HTTP/2 and verify that the backend no longer accepts it.</p>
+
+</article>
+<article>
+<p>Vulnerabilities</p>
+<h3><a href="https://www.mongodb.com/community/forums/t/important-mongodb-security-update-available-action-required-november-10-2026/344843">MongoDB catch-up flaw reaches replica sets before authentication</a></h3>
+<p>MongoDB disclosed CVE-2026-118383 on November 10. The replication use-after-free affects replica set members, including shard and config-server members; standalone instances are outside its scope. Datadog reproduced a crash, while the advisory also describes possible code execution. Action: Upgrade every affected replica set member to its branch’s fixed release. Datadog lists 8.0.37 for the 8.0 branch; restrict network access while completing the rollout.</p>
+
+</article>
+<article>
+<p>Vulnerabilities</p>
+<h3><a href="https://nodejs.org/en/blog/vulnerability/november-2026-security-releases">Node.js security updates address HTTP/2 crashes and memory disclosure</a></h3>
+<p>The Node.js November 11 security release fixes HTTP/2 denial-of-service and memory-disclosure issues, an HTTPS parser re-entrancy flaw, and other bugs. The project provides 22.23.5, 24.22.3 and 26.13.1; affected release lines and trigger conditions vary by issue. Action: Move to the security release for your supported Node.js line, rebuild deployed images and check running versions. Consult the upstream per-issue scope before claiming a deployment is unaffected.</p>
+
+</article>
+<article>
+<p>Research</p>
+<h3><a href="https://www.microsoft.com/en-us/security/blog/2026/11/12/trained-to-betray-how-post-training-supply-chain-attacks-hijack-coding-agents/">Research: coding-agent backdoors can survive ordinary evaluation</a></h3>
+<p>Microsoft’s November 12 research demonstrates poisoned fine-tuning data and backdoored checkpoints causing coding agents to misuse tools. These are controlled studies, not a disclosed customer breach. Dataset governance, checkpoint provenance and tool permissions remain separate controls. Action: Pin and review training inputs, evaluate the exact deployed agent configuration, and restrict tool permissions and credentials outside the model.</p>
+
+</article></section>
+
+</main>
+<footer><p>Read the linked original reports for evidence and dates. This is a proposed editorial selection.</p><nav aria-label="Publication links">Proposed dated edition after approval: https://tsd.report/2026/11/15 (not published). · <a href="https://tsd.report/editorial-policy">Editorial policy</a> · <a href="https://tsd.report/privacy">Privacy</a> · <a href="https://tsd.report/rss.xml">RSS feed</a></nav></footer>
+</body>
+</html>
