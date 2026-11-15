@@ -1,0 +1,404 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-15",
+  "generated_at": "2026-11-15T13:39:28.640734Z",
+  "lead_story": "incident-wfx-loot-github-ci-secret-theft-2026",
+  "sections": {
+    "latest": [
+      "incident-ethersphere-bee-js-swarm-desktop-compromise-2026",
+      "incident-qubole-aws-cross-account-trust-abuse-2026",
+      "incident-apache-http2-assign-headers-rce-2026",
+      "incident-mongodb-replica-primary-catchup-use-after-free-2026",
+      "incident-nodejs-november-2026-security-release"
+    ],
+    "research": [
+      "research-post-training-coding-agent-backdoors-2026"
+    ]
+  },
+  "newsletter": {
+    "status": "approved",
+    "subject": "The Security Diff — November 15, 2026",
+    "preview_text": "CI credentials, trusted releases and forgotten cloud access: three incidents, three patch briefings and one agent-security research note.",
+    "approved_by": "pankajmouriya",
+    "approved_at": "2026-11-15T13:56:18Z"
+  },
+  "status": "published",
+  "reviewed_by": "pankajmouriya",
+  "reviewed_at": "2026-11-15T13:56:18Z",
+  "stories": [
+    {
+      "id": "incident-wfx-loot-github-ci-secret-theft-2026",
+      "slug": "wfx-loot-github-ci-secret-theft-2026",
+      "title": "wfx-loot turns stolen GitHub access into CI credential theft",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-11-15T14:17:19.659795Z",
+      "updated_at": null,
+      "summary": "Aikido reports stolen GitHub credentials were used to inject secret-stealing workflows and install hooks into repositories from November 10. Probe pull requests do not prove every repository executed the payload; deleted run logs can hide execution.",
+      "why_it_matters": "A CI compromise can expose workflow secrets, cloud identities and publishing access. A clean current branch does not establish that earlier runs were clean.",
+      "action": "Audit suspicious branches, workflow history and OIDC changes. If the payload ran, treat workflow-accessible credentials as exposed and investigate persistence before restoring trust.",
+      "affected_technologies": [
+        "GitHub Actions",
+        "CI runners"
+      ],
+      "tags": [
+        "github-actions",
+        "credentials",
+        "supply-chain"
+      ],
+      "sources": [
+        {
+          "id": "wfx-aikido",
+          "name": "Aikido — Oliver Smith",
+          "url": "https://www.aikido.dev/blog/compromised-github-accounts-push-ci-secret-stealer-to-tens-of-thousands-of-repositories",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-11-15T13:31:26.940148Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://www.aikido.dev/blog/compromised-github-accounts-push-ci-secret-stealer-to-tens-of-thousands-of-repositories",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-15T14:16:54Z"
+    },
+    {
+      "id": "incident-ethersphere-bee-js-swarm-desktop-compromise-2026",
+      "slug": "ethersphere-bee-js-swarm-desktop-compromise-2026",
+      "title": "Malicious bee-js and Swarm Desktop releases abuse a trusted release path",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-11-15T14:10:24.642571Z",
+      "updated_at": null,
+      "summary": "Socket and SafeDep report malicious @ethersphere/bee-js 13.3.0 and Swarm Desktop 0.56.2 releases delivering remote-code loaders. The npm package carried valid provenance; affected systems need compromise assessment, not just a package downgrade.",
+      "why_it_matters": "Release provenance can faithfully attest to malicious code built through a compromised workflow. Swarm node wallet keys and persistent backdoors are part of the reported impact.",
+      "action": "Check install and launcher history. Isolate affected systems, rotate exposed credentials from a clean machine, and follow the researchers’ wallet-key and persistence-removal guidance.",
+      "affected_technologies": [
+        "@ethersphere/bee-js",
+        "Swarm Desktop"
+      ],
+      "tags": [
+        "npm",
+        "release-security",
+        "supply-chain"
+      ],
+      "sources": [
+        {
+          "id": "bee-socket",
+          "name": "Socket Threat Research",
+          "url": "https://socket.dev/blog/bee-js-compromise",
+          "type": "research",
+          "published_at": "2026-11-09T14:52:15.147000Z",
+          "retrieved_at": "2026-11-15T13:31:27.801641Z"
+        },
+        {
+          "id": "bee-safedep",
+          "name": "SafeDep — Kunal Singh",
+          "url": "https://safedep.io/blog/ethersphere-bee-js-npm-compromise",
+          "type": "research",
+          "published_at": "2026-11-09T00:00:00Z",
+          "retrieved_at": "2026-11-15T13:31:27.096555Z"
+        },
+        {
+          "id": "bee-ghsa",
+          "name": "GitHub Advisory Database",
+          "url": "https://github.com/advisories/GHSA-hh7j-5m3j-23pf",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-15T13:32:40.616702Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://socket.dev/blog/bee-js-compromise",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-15T14:10:05Z"
+    },
+    {
+      "id": "incident-qubole-aws-cross-account-trust-abuse-2026",
+      "slug": "qubole-aws-cross-account-trust-abuse-2026",
+      "title": "Qubole-linked credentials expose forgotten AWS integration roles",
+      "type": "incident",
+      "category": "supply-chain",
+      "published_at": "2026-11-15T14:17:03.054570Z",
+      "updated_at": null,
+      "summary": "Wiz and Sentra’s November 9 disclosures describe attackers using Qubole-associated AWS credentials to assume customer integration roles, collect secrets and access S3 data. Wiz dates the observed activity to October 14–26; this is a new disclosure of older activity.",
+      "why_it_matters": "Dormant vendor trust can remain usable after an integration stops being used. An External ID did not prevent the observed role assumptions.",
+      "action": "Inventory and remove unused vendor trusts. Review unusual role assumptions and S3 object reads, limit integration-role permissions, and investigate exposed secrets.",
+      "affected_technologies": [
+        "AWS IAM",
+        "Amazon S3",
+        "Qubole integrations"
+      ],
+      "tags": [
+        "aws",
+        "iam",
+        "third-party-risk"
+      ],
+      "sources": [
+        {
+          "id": "qubole-wiz",
+          "name": "Wiz CIRT",
+          "url": "https://www.wiz.io/blog/qubole-cross-account-access-abused-in-the-wild",
+          "type": "research",
+          "published_at": "2026-11-09T14:56:32Z",
+          "retrieved_at": "2026-11-15T13:31:27.822832Z"
+        },
+        {
+          "id": "qubole-sentra",
+          "name": "Sentra research",
+          "url": "https://sentra.io/blog/breaches/inside-the-qubole-supply-chain-attack",
+          "type": "research",
+          "published_at": "2026-11-09T12:00:00Z",
+          "retrieved_at": "2026-11-15T13:32:40.631104Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://www.wiz.io/blog/qubole-cross-account-access-abused-in-the-wild",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-15T14:16:40Z"
+    },
+    {
+      "id": "incident-apache-http2-assign-headers-rce-2026",
+      "slug": "apache-http2-assign-headers-rce-2026",
+      "title": "Apache HTTP/2 flaw makes exposure checks and patching urgent",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-11-15T14:08:34.736875Z",
+      "updated_at": null,
+      "summary": "Apache identifies CVE-2026-119618 in mod_http2, affecting HTTP Server 2.4.55 through 2.4.70. The fix shipped in 2.4.71 on November 11. This is a disclosed RCE vulnerability; Aikido reported no known in-the-wild exploitation as of November 13.",
+      "why_it_matters": "HTTP/2 configuration and the protocol reaching the backend determine exposure. A version match or a vendor’s cloud prevalence percentage does not establish an exploitable deployment.",
+      "action": "Apply Apache 2.4.71 or a vendor-confirmed backport. If patching must wait, review disabling HTTP/2 and verify that the backend no longer accepts it.",
+      "affected_technologies": [
+        "Apache HTTP Server",
+        "mod_http2"
+      ],
+      "tags": [
+        "apache",
+        "http2",
+        "patching"
+      ],
+      "sources": [
+        {
+          "id": "apache-upstream",
+          "name": "Apache HTTP Server Project",
+          "url": "https://httpd.apache.org/security/vulnerabilities_24.html",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-15T13:31:27.526998Z"
+        },
+        {
+          "id": "apache-aikido",
+          "name": "Aikido — Sooraj Shah",
+          "url": "https://www.aikido.dev/blog/cve-2026-119618-apache-http-server-rce",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-11-15T13:31:26.882299Z"
+        },
+        {
+          "id": "apache-wiz",
+          "name": "Wiz — Merav Bar",
+          "url": "https://www.wiz.io/blog/cve-2026-119618-rce-apache-http-server-vulnerability",
+          "type": "research",
+          "published_at": "2026-11-11T19:49:10Z",
+          "retrieved_at": "2026-11-15T13:31:26.985808Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://httpd.apache.org/security/vulnerabilities_24.html",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-15T14:08:12Z"
+    },
+    {
+      "id": "incident-mongodb-replica-primary-catchup-use-after-free-2026",
+      "slug": "mongodb-replica-primary-catchup-use-after-free-2026",
+      "title": "MongoDB catch-up flaw reaches replica sets before authentication",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-11-15T14:12:12.444149Z",
+      "updated_at": null,
+      "summary": "MongoDB disclosed CVE-2026-118383 on November 10. The replication use-after-free affects replica set members, including shard and config-server members; standalone instances are outside its scope. Datadog reproduced a crash, while the advisory also describes possible code execution.",
+      "why_it_matters": "Authentication alone does not stop the triggering requests. The catch-up condition matters; a reproduced crash does not prove reliable RCE or attacks in the wild.",
+      "action": "Upgrade every affected replica set member to its branch’s fixed release. Datadog lists 8.0.37 for the 8.0 branch; restrict network access while completing the rollout.",
+      "affected_technologies": [
+        "MongoDB Server replica sets"
+      ],
+      "tags": [
+        "mongodb",
+        "replication",
+        "patching"
+      ],
+      "sources": [
+        {
+          "id": "mongo-vendor",
+          "name": "MongoDB — Mark Hoskins",
+          "url": "https://www.mongodb.com/community/forums/t/important-mongodb-security-update-available-action-required-november-10-2026/344843",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-15T13:32:41.658497Z"
+        },
+        {
+          "id": "mongo-advisory",
+          "name": "GitHub Advisory Database / MongoDB CNA",
+          "url": "https://github.com/advisories/GHSA-fjxh-6vgh-cx2c",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-15T13:31:28.101841Z"
+        },
+        {
+          "id": "mongo-datadog",
+          "name": "Datadog Security Labs",
+          "url": "https://securitylabs.datadoghq.com/articles/cve-2026-118383-mongodb-server-use-after-free/",
+          "type": "research",
+          "published_at": null,
+          "retrieved_at": "2026-11-15T13:31:27.570523Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://www.mongodb.com/community/forums/t/important-mongodb-security-update-available-action-required-november-10-2026/344843",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-15T14:11:57Z"
+    },
+    {
+      "id": "incident-nodejs-november-2026-security-release",
+      "slug": "nodejs-november-2026-security-release",
+      "title": "Node.js security updates address HTTP/2 crashes and memory disclosure",
+      "type": "incident",
+      "category": "vulnerabilities",
+      "published_at": "2026-11-15T14:14:04.465561Z",
+      "updated_at": null,
+      "summary": "The Node.js November 11 security release fixes HTTP/2 denial-of-service and memory-disclosure issues, an HTTPS parser re-entrancy flaw, and other bugs. The project provides 22.23.5, 24.22.3 and 26.13.1; affected release lines and trigger conditions vary by issue.",
+      "why_it_matters": "Applications serving HTTP/2 or handling the affected HTTPS patterns need runtime updates. Updating application dependencies alone does not replace the Node.js runtime.",
+      "action": "Move to the security release for your supported Node.js line, rebuild deployed images and check running versions. Consult the upstream per-issue scope before claiming a deployment is unaffected.",
+      "affected_technologies": [
+        "Node.js 22.x",
+        "Node.js 24.x",
+        "Node.js 26.x"
+      ],
+      "tags": [
+        "nodejs",
+        "http2",
+        "patching"
+      ],
+      "sources": [
+        {
+          "id": "node-upstream",
+          "name": "Node.js Project",
+          "url": "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+          "type": "vendor",
+          "published_at": null,
+          "retrieved_at": "2026-11-15T13:31:27.406497Z"
+        }
+      ],
+      "signal": {
+        "score": 70,
+        "label": "recommended",
+        "reasons": [
+          "Selected for incident reporting"
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [],
+      "author": null,
+      "destination_url": "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-15T14:13:50Z"
+    },
+    {
+      "id": "research-post-training-coding-agent-backdoors-2026",
+      "slug": "post-training-coding-agent-backdoors-2026",
+      "title": "Research: coding-agent backdoors can survive ordinary evaluation",
+      "type": "research",
+      "category": "research",
+      "published_at": "2026-11-15T14:21:39.438Z",
+      "summary": "Microsoft’s November 12 research demonstrates poisoned fine-tuning data and backdoored checkpoints causing coding agents to misuse tools. These are controlled studies, not a disclosed customer breach. Dataset governance, checkpoint provenance and tool permissions remain separate controls.",
+      "why_it_matters": "Training-data integrity, checkpoint provenance and runtime tool permissions address different trust boundaries in these controlled studies.",
+      "action": "Pin and review training inputs, evaluate the exact deployed agent configuration, and restrict tool permissions and credentials outside the model.",
+      "affected_technologies": [
+        "Coding agents",
+        "Fine-tuning datasets",
+        "Open-weight model checkpoints"
+      ],
+      "tags": [
+        "ai-security",
+        "agents",
+        "supply-chain"
+      ],
+      "sources": [
+        {
+          "id": "agent-microsoft",
+          "name": "Microsoft Security Research and AI Red Team",
+          "url": "https://www.microsoft.com/en-us/security/blog/2026/11/12/trained-to-betray-how-post-training-supply-chain-attacks-hijack-coding-agents/",
+          "type": "research",
+          "published_at": "2026-11-12T17:00:00Z",
+          "retrieved_at": "2026-11-15T13:31:28.853964Z"
+        }
+      ],
+      "signal": {
+        "score": 90,
+        "label": "recommended",
+        "reasons": [
+          "Reviewed editorial selection: 9/10; this is not a vulnerability score."
+        ]
+      },
+      "vulnerabilities": [],
+      "body": [
+        "Supported action: Pin and review training inputs, evaluate the exact deployed agent configuration, and restrict tool permissions and credentials outside the model."
+      ],
+      "author": null,
+      "destination_url": "https://www.microsoft.com/en-us/security/blog/2026/11/12/trained-to-betray-how-post-training-supply-chain-attacks-hijack-coding-agents/",
+      "status": "published",
+      "reviewed_by": "pankajmouriya",
+      "reviewed_at": "2026-11-15T13:56:18Z"
+    }
+  ]
+}
