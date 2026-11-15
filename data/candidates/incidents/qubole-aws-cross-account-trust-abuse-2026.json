@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "status": "candidate",
+  "incident_id": "qubole-aws-cross-account-trust-abuse-2026",
+  "revision": 1,
+  "classification": "supply-chain-compromise",
+  "occurred_at": null,
+  "evidence_as_of": "2026-11-15T13:39:28.640734Z",
+  "supersedes": null,
+  "correction_note": null,
+  "destination_source_id": "qubole-wiz",
+  "sources": [
+    {
+      "id": "qubole-wiz",
+      "name": "Wiz CIRT",
+      "url": "https://www.wiz.io/blog/qubole-cross-account-access-abused-in-the-wild",
+      "type": "research",
+      "published_at": "2026-11-09T14:56:32Z",
+      "retrieved_at": "2026-11-15T13:31:27.822832Z",
+      "data_date": "2026-11-09"
+    },
+    {
+      "id": "qubole-sentra",
+      "name": "Sentra research",
+      "url": "https://sentra.io/blog/breaches/inside-the-qubole-supply-chain-attack",
+      "type": "research",
+      "published_at": "2026-11-09T12:00:00Z",
+      "retrieved_at": "2026-11-15T13:32:40.631104Z",
+      "data_date": "2026-11-09"
+    }
+  ],
+  "facts": [
+    {
+      "id": "qubole-wiz-1",
+      "statement": "using IAM credentials from an AWS account associated with Qubole between October 14 and October 26, 2026.",
+      "source_ids": [
+        "qubole-wiz"
+      ],
+      "state": "reported"
+    },
+    {
+      "id": "qubole-sentra-2",
+      "statement": "Qubole roles were still in place long after companies had stopped using Qubole",
+      "source_ids": [
+        "qubole-sentra"
+      ],
+      "state": "reported"
+    }
+  ],
+  "editorial": {
+    "title": "Qubole-linked credentials expose forgotten AWS integration roles",
+    "summary": "Wiz and Sentra’s November 9 disclosures describe attackers using Qubole-associated AWS credentials to assume customer integration roles, collect secrets and access S3 data. Wiz dates the observed activity to October 14–26; this is a new disclosure of older activity.",
+    "why_it_matters": "Dormant vendor trust can remain usable after an integration stops being used. An External ID did not prevent the observed role assumptions.",
+    "action": "Inventory and remove unused vendor trusts. Review unusual role assumptions and S3 object reads, limit integration-role permissions, and investigate exposed secrets.",
+    "tags": [
+      "aws",
+      "iam",
+      "third-party-risk"
+    ],
+    "affected_technologies": [
+      "AWS IAM",
+      "Amazon S3",
+      "Qubole integrations"
+    ],
+    "claim_ids": [
+      "qubole-wiz-1",
+      "qubole-sentra-2"
+    ]
+  }
+}
