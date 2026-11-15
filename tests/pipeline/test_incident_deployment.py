@@ -4,12 +4,75 @@ from pathlib import Path
 import httpx
 import pytest
 
+from pipeline.incidents import verify_live
 from pipeline.incidents.cloudflare import rollback_if_ours
 from pipeline.incidents.contracts import make_publication
 from pipeline.incidents.sources import fetch
 from pipeline.incidents.verify_live import publication_destination, verify_page
 
 ROOT = Path(__file__).parents[2]
+
+
+def test_homepage_destination_uses_the_latest_frozen_edition(tmp_path):
+    directory = tmp_path / "data/production/editions"
+    directory.mkdir(parents=True)
+    older = {
+        "date": "2026-11-08",
+        "stories": [{"id": "incident-older-story", "slug": "older-story"}],
+    }
+    latest = {
+        "date": "2026-11-15",
+        "stories": [
+            {"id": "incident-current-brief", "slug": "current-brief", "destination_url": "https://example.com/original"},
+            {"id": "incident-current-article", "slug": "current-article"},
+        ],
+    }
+    (directory / "older.json").write_text(json.dumps(older))
+    (directory / "latest.json").write_text(json.dumps(latest))
+    assert verify_live.homepage_destination("current-brief", tmp_path) == "https://example.com/original"
+    assert verify_live.homepage_destination("current-article", tmp_path) == "/article/current-article"
+    assert verify_live.homepage_destination("older-story", tmp_path) is None
+    assert verify_live.homepage_destination("unlettered-incident", tmp_path) is None
+
+
+def test_homepage_selection_fails_closed_without_a_reviewed_edition(tmp_path):
+    with pytest.raises(ValueError, match="edition"):
+        verify_live.homepage_destination("unlettered-incident", tmp_path)
+
+
+@pytest.mark.parametrize(
+    "selected,fault",
+    [(False, None), (True, None), (True, "homepage"), (True, "article"), (False, "revision")],
+)
+def test_live_verification_checks_homepage_selection_and_canonical_destination(monkeypatch, selected, fault):
+    sha = "a" * 40
+    canonical = "https://example.com/corrected-source"
+    frozen = "https://example.com/original-source"
+    checked = []
+    monkeypatch.setattr("sys.argv", ["verify_live", "--incident", "sample-brief", "--sha", sha])
+    monkeypatch.setattr(verify_live, "publication_destination", lambda _: canonical)
+    monkeypatch.setattr(verify_live, "homepage_destination", lambda _: frozen if selected else None)
+    monkeypatch.setattr(verify_live.time, "sleep", lambda _: None)
+
+    def served(_client, url, **_kwargs):
+        path = httpx.URL(url).path
+        checked.append(path)
+        link = canonical if path != "/" else frozen if selected else None
+        served_sha = "b" * 40 if fault == "revision" else sha
+        body = f'<meta name="tsd-revision" content="{served_sha}">'
+        if (fault == "homepage" and path == "/") or (fault == "article" and path != "/"):
+            link = None
+        if link:
+            body += f'<a href="{link}">Read</a>'
+        return body.encode(), {}, 200
+
+    monkeypatch.setattr(verify_live, "fetch", served)
+    if fault:
+        with pytest.raises(ValueError, match="revision" if fault == "revision" else "destination"):
+            verify_live.main()
+    else:
+        verify_live.main()
+        assert checked == ["/", "/article/sample-brief"]
 
 
 def test_served_revision_and_homepage_presence_are_required():

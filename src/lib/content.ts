@@ -96,7 +96,10 @@ for (const incident of incidentStories) {
   }
 }
 
-export function getHomepageEdition() { return composeHomepage(getLatestEdition(), incidentStories); }
+export function getHomepageEdition() {
+  return incidentPreview ? composeHomepage(getLatestEdition(), incidentStories) : getLatestEdition();
+}
+export function getFeedEdition() { return composeHomepage(getLatestEdition(), incidentStories); }
 export function isIncidentPreview(): boolean { return incidentPreview !== undefined; }
 export function isSyntheticIncidentPreview(): boolean { return incidentPreview?.fixture === true; }
 export function getIncidentForStory(id: string) {

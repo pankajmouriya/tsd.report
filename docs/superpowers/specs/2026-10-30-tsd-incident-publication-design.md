@@ -22,7 +22,7 @@ Recommend the first approach. Implement it as three verifiable parts: discovery,
 
 ## Proposed reader and archival behavior
 
-Approved incidents appear on the homepage and at `/article/[slug]` as soon as the approved deployment succeeds, without waiting for the next daily edition. Use the existing newspaper lead/grid, responsive article presentation, source notes and themes. No separate dashboard or superficial security decorations are needed.
+Approved incidents appear at `/article/[slug]`, in indexes and in rolling feeds as soon as the approved deployment succeeds. Updated by the editor's November 15 decision: the public homepage shows only the latest reviewed edition, so new incidents wait for editorial edition selection before appearing there. Explicit candidate previews retain their candidate-first homepage. Use the existing newspaper lead/grid, responsive article presentation, source notes and themes. No separate dashboard or superficial security decorations are needed.
 
 Add a canonical published-story store and a separate latest-news composition. Daily edition routes continue to read immutable historical snapshots. This lets a second article publish on the same date without silently changing the first archived edition. A story has one canonical identity; editions can retain a particular version of that story. Existing edition files need not be rewritten to migrate their reader behavior.
 
@@ -76,7 +76,7 @@ GitHub's native auto-merge was disabled when inspected; classic branch protectio
 
 Do not rely on `GITHUB_TOKEN` merges to trigger a `push` deployment. [GitHub documents event suppression and explicit dispatch exceptions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow). The first-version design uses explicit trusted workflow dispatch/reusable validation and deployment orchestration rather than adding an external model service or assuming a new GitHub App credential exists. Ensure bot-created PR validation also starts without a separate manual workflow-approval click. A successful merge explicitly queues deployment of the resulting approved merge revision; never dispatch an unchecked arbitrary ref.
 
-Reuse the existing production build, deployment serialization, Cloudflare upload and smoke checks. Verify the new article URL, homepage presence and exact deployed revision, and report success/failure on the PR. Approval queues publication immediately after checks; build and deployment time remain visible and are not a claim of zero-second publication. Failure preserves the last good deployment and supports retry without duplicate publication.
+Reuse the existing production build, deployment serialization, Cloudflare upload and smoke checks. Verify the new article URL, its canonical destination and the exact deployed revision on the article and homepage. Require a homepage destination only when the incident belongs to the latest reviewed edition, using that frozen edition's destination. Report success/failure on the PR. Approval queues publication immediately after checks; build and deployment time remain visible and are not a claim of zero-second publication. Failure preserves the last good deployment and supports retry without duplicate publication.
 
 Website approval does not grant newsletter approval. Do not populate newsletter approval fields or widen the existing email-send gates.
 

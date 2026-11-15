@@ -1,13 +1,15 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import { findEditionForStory, getContentMode, getCves, getStoriesForCve } from '../../lib/content';
-import { findVulnerabilityWatchEntry, getVulnerabilityWatchCves } from '../../lib/vulnerability-watch';
+import { findVulnerabilityWatchEntry, getLatestVulnerabilityWatch, getVulnerabilityWatchCves } from '../../lib/vulnerability-watch';
 import { cvePath, storyDestination } from '../../lib/routes';
 import { formatProbability, formatShortDate } from '../../lib/format';
 export function getStaticPaths() { return [...new Set([...getCves(), ...getVulnerabilityWatchCves()])].map((cve) => ({ params: { cve }, props: { cve } })); }
 const { cve } = Astro.props;
 const stories = getStoriesForCve(cve);
 const watch = findVulnerabilityWatchEntry(cve);
+const latestWatch = getLatestVulnerabilityWatch();
+const historicalWatch = watch && latestWatch && !latestWatch.entries.some((entry) => entry.cve === cve);
 const storyVulnerability = stories[0]?.vulnerabilities.find((item) => item.cve === cve);
 const edition = stories[0] ? findEditionForStory(stories[0].slug) : undefined;
 const sources = watch?.entry.references ?? [...new Map(stories.flatMap((story) => story.sources).map((source) => [source.id, source])).values()];
@@ -29,6 +31,7 @@ const fixture = getContentMode() === 'fixture';
       <h1 translate="no">{cve}</h1>
       <p class="dek">{fixture ? 'A dated fixture record separating severity, probability, exploitation evidence, and remediation information. It is not a current alert.' : 'A dated record separating severity, probability, exploitation evidence, and remediation information.'}</p>
       <p class="article-meta">Evidence as of {evidenceDate ? <time datetime={evidenceDate}>{formatShortDate(evidenceDate)}</time> : 'unknown'}</p>
+      {historicalWatch && <p class="article-meta">Historical Watch record · Not included in the <a href="/#vulnerability-watch">latest Watch selection</a> ({formatShortDate(latestWatch.date)}). This does not establish whether affected systems have been remediated.</p>}
     </header>
     <div class="article-body">
       <dl class="cve-facts">

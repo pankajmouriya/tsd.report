@@ -50,6 +50,17 @@ def publication_destination(incident, root=ROOT):
     return f"/article/{incident}"
 
 
+def homepage_destination(incident, root=ROOT):
+    editions = [json.loads(path.read_text()) for path in (root / "data/production/editions").glob("*.json")]
+    if not editions:
+        raise ValueError("No reviewed homepage edition")
+    latest = max(editions, key=lambda edition: edition["date"])
+    story = next((story for story in latest["stories"] if story["id"] == f"incident-{incident}"), None)
+    if not story:
+        return None
+    return story.get("destination_url") or f"/article/{story['slug']}"
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--incident", required=True)
@@ -63,12 +74,16 @@ def main():
         raise ValueError("Invalid publication identity")
     article = f"/article/{args.incident}"
     destination = publication_destination(args.incident)
+    home_destination = homepage_destination(args.incident)
     with httpx.Client(verify=system_ssl_context()) as client:
         for attempt in range(12):
             try:
                 for path in ("/", article):
                     body, _, _ = fetch(client, f"https://tsd.report{path}", hosts={"tsd.report"}, redirects=2)
-                    expected = destination if path == "/" or destination.startswith("https://") else None
+                    if path == "/":
+                        expected = home_destination
+                    else:
+                        expected = destination if destination.startswith("https://") else None
                     verify_page(body, args.sha, expected)
                 print(f"Verified public article and homepage at {args.sha}")
                 return

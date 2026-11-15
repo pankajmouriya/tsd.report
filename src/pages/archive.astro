@@ -6,5 +6,5 @@ import { formatEditionDate } from '../lib/format';
 const editions = getEditions();
 ---
 <BrowseLayout title="Archive" canonical="/archive">
-  <main id="main" class="reading-article"><header class="article-opening"><h1>Daily editions</h1><p class="dek">A permanent, dated record of what the publication showed readers.</p></header><div class="article-body"><ul class="archive-list">{editions.map((edition) => <li><a href={editionPath(edition.date)}>{formatEditionDate(edition.date)}</a><span>{edition.stories.length} {edition.stories.length === 1 ? 'story' : 'stories'}</span></li>)}</ul></div></main>
+  <main id="main" class="reading-article"><header class="article-opening"><h1>Edition archive</h1><p class="dek">A permanent, dated record of what the publication showed readers.</p></header><div class="article-body"><ul class="archive-list">{editions.map((edition) => <li><a href={editionPath(edition.date)}>{formatEditionDate(edition.date)}</a><span>{edition.stories.length} {edition.stories.length === 1 ? 'story' : 'stories'}</span></li>)}</ul></div></main>
 </BrowseLayout>
