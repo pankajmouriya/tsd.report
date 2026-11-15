@@ -1,0 +1,25 @@
+{
+  "id": "post-training-coding-agent-backdoors-2026",
+  "lane": "research",
+  "status": "unreviewed",
+  "source": {
+    "id": "agent-microsoft",
+    "name": "Microsoft Security Research and AI Red Team",
+    "url": "https://www.microsoft.com/en-us/security/blog/2026/11/12/trained-to-betray-how-post-training-supply-chain-attacks-hijack-coding-agents/",
+    "type": "research",
+    "published_at": "2026-11-12T17:00:00Z",
+    "retrieved_at": "2026-11-15T13:31:28.853964Z",
+    "data_date": "2026-11-12"
+  },
+  "score": [
+    3,
+    2,
+    2,
+    2
+  ],
+  "editorial": {
+    "title": "Research: coding-agent backdoors can survive ordinary evaluation",
+    "summary": "Microsoft’s November 12 research demonstrates poisoned fine-tuning data and backdoored checkpoints causing coding agents to misuse tools. These are controlled studies, not a disclosed customer breach. Dataset governance, checkpoint provenance and tool permissions remain separate controls.",
+    "action": "Pin and review training inputs, evaluate the exact deployed agent configuration, and restrict tool permissions and credentials outside the model."
+  }
+}

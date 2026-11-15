@@ -1,0 +1,1095 @@
+{
+  "schema_version": 1,
+  "status": "editorial-triage-not-publication",
+  "scope": {
+    "start_inclusive": "2026-11-07T18:30:00Z",
+    "end_exclusive": "2026-11-14T18:30:00Z",
+    "timezone": "Asia/Kolkata",
+    "selection_basis": "Original reporting date; older activity disclosed this week can qualify."
+  },
+  "monitor": {
+    "latest_run": 43709060665,
+    "latest_run_url": "https://github.com/pankajmouriya/tsd.report/actions/runs/43709060665",
+    "latest_checkpoint_leads": 190,
+    "article_leads": 90,
+    "daily_checkpoint_runs": [
+      {
+        "createdAt": "2026-11-15T11:28:10Z",
+        "databaseId": 43709060665
+      },
+      {
+        "createdAt": "2026-11-15T03:02:20Z",
+        "databaseId": 43670503144
+      },
+      {
+        "createdAt": "2026-11-14T23:21:52Z",
+        "databaseId": 43652870211
+      },
+      {
+        "createdAt": "2026-11-14T19:27:33Z",
+        "databaseId": 43632193663
+      },
+      {
+        "createdAt": "2026-11-14T14:29:26Z",
+        "databaseId": 43605113204
+      },
+      {
+        "createdAt": "2026-11-14T06:59:03Z",
+        "databaseId": 43568913334
+      },
+      {
+        "createdAt": "2026-11-13T23:51:01Z",
+        "databaseId": 43530127035
+      },
+      {
+        "createdAt": "2026-11-13T18:01:39Z",
+        "databaseId": 43478552589
+      },
+      {
+        "createdAt": "2026-11-13T09:56:51Z",
+        "databaseId": 43405313122
+      },
+      {
+        "createdAt": "2026-11-13T02:06:59Z",
+        "databaseId": 43349816706
+      },
+      {
+        "createdAt": "2026-11-12T21:04:53Z",
+        "databaseId": 43306644308
+      },
+      {
+        "createdAt": "2026-11-12T13:13:32Z",
+        "databaseId": 43225252342
+      },
+      {
+        "createdAt": "2026-11-12T04:10:04Z",
+        "databaseId": 43152991415
+      },
+      {
+        "createdAt": "2026-11-11T23:01:20Z",
+        "databaseId": 43116523795
+      },
+      {
+        "createdAt": "2026-11-11T16:34:58Z",
+        "databaseId": 43059745719
+      },
+      {
+        "createdAt": "2026-11-11T08:21:42Z",
+        "databaseId": 42986412542
+      },
+      {
+        "createdAt": "2026-11-11T01:28:01Z",
+        "databaseId": 42939150892
+      },
+      {
+        "createdAt": "2026-11-10T20:59:01Z",
+        "databaseId": 42900527812
+      },
+      {
+        "createdAt": "2026-11-10T13:44:58Z",
+        "databaseId": 42827354406
+      },
+      {
+        "createdAt": "2026-11-10T04:46:12Z",
+        "databaseId": 42757940236
+      },
+      {
+        "createdAt": "2026-11-09T22:41:08Z",
+        "databaseId": 42714063519
+      },
+      {
+        "createdAt": "2026-11-09T12:04:23Z",
+        "databaseId": 42613969172
+      },
+      {
+        "createdAt": "2026-11-09T02:57:09Z",
+        "databaseId": 42553691057
+      },
+      {
+        "createdAt": "2026-11-08T23:07:11Z",
+        "databaseId": 42533596702
+      },
+      {
+        "createdAt": "2026-11-08T19:05:28Z",
+        "databaseId": 42513252577
+      },
+      {
+        "createdAt": "2026-11-08T13:51:40Z",
+        "databaseId": 42486954603
+      },
+      {
+        "createdAt": "2026-11-08T06:40:03Z",
+        "databaseId": 42455682102
+      },
+      {
+        "createdAt": "2026-11-07T23:56:32Z",
+        "databaseId": 42427487403
+      }
+    ],
+    "additional_article_urls_from_daily_checkpoints": 0,
+    "structured_commit_signals": {
+      "openssf-malicious": 141,
+      "github-advisories": 225
+    }
+  },
+  "articles": [
+    {
+      "lead_id": "1e9b0385563f9a9d777d0eea",
+      "url": "https://blog.pypi.org/posts/2023-06-22-malware-detection-project/",
+      "source": "PyPI updates",
+      "queue_published_at": "2026-11-06T17:50:20Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "resurfaced-background",
+      "story": null,
+      "reason": "URL identifies a 2023/2024 original; feed update/changed_at does not establish a new disclosure this week."
+    },
+    {
+      "lead_id": "4154978bada8fc1104fdbe43",
+      "url": "https://blog.pypi.org/posts/2023-09-18-inbound-malware-reporting/",
+      "source": "PyPI updates",
+      "queue_published_at": "2026-11-06T17:50:20Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "resurfaced-background",
+      "story": null,
+      "reason": "URL identifies a 2023/2024 original; feed update/changed_at does not establish a new disclosure this week."
+    },
+    {
+      "lead_id": "1fe232205df409bd32e0b915",
+      "url": "https://blog.pypi.org/posts/2023-12-04-account-takeover/",
+      "source": "PyPI updates",
+      "queue_published_at": "2026-11-06T17:50:20Z",
+      "first_seen": "2026-11-02T20:52:49.029598Z",
+      "disposition": "resurfaced-background",
+      "story": null,
+      "reason": "URL identifies a 2023/2024 original; feed update/changed_at does not establish a new disclosure this week."
+    },
+    {
+      "lead_id": "ea23b311737ebcf04d2190a7",
+      "url": "https://socket.dev/blog/shai-hulud-descendant-malicious-ruby-gem",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T20:17:53.249000Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "9e4faaa955a50caf2a34f56a",
+      "url": "https://socket.dev/blog/rails-active-storage-patch",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "0c4aa332b19f8a0c9bcfac71",
+      "url": "https://tldrsec.com/p/tldr-sec-353",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "a18e01b8666e588679dd00a9",
+      "url": "https://tldrsec.com/p/tldr-sec-352",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "13795cede94d7d9d347c2516",
+      "url": "https://tldrsec.com/p/tldr-sec-351",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "6e75fccbd5a9baf8de3c7bae",
+      "url": "https://tldrsec.com/p/tldr-sec-350",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "6f785a1a88268bdbcaa30e34",
+      "url": "https://tldrsec.com/p/tldr-sec-349",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "394dde11ad7b26b8793d3294",
+      "url": "https://tldrsec.com/p/tldr-sec-348",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "6f57adcd98c3cb2bc1f5c3f3",
+      "url": "https://tldrsec.com/p/tldr-sec-347",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "347b204dd3e0a7bdc20ad6af",
+      "url": "https://tldrsec.com/p/tldr-sec-346",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "0652d3e509d43cde3993cf39",
+      "url": "https://tldrsec.com/p/tldr-sec-345",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "d49be4537ed4c01b86a3da77",
+      "url": "https://tldrsec.com/p/tldr-sec-344",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "62d5e0a02d4bf06a9db25b08",
+      "url": "https://tldrsec.com/p/tldr-sec-343",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "6c8425d47e91583e2d37f61e",
+      "url": "https://tldrsec.com/p/tldr-sec-342",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-06T23:29:51.155287Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "130d9bc72a1a0f48649a0bf1",
+      "url": "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
+      "source": "Node.js",
+      "queue_published_at": "2026-11-11T00:00:00Z",
+      "first_seen": "2026-11-04T18:51:38.026852Z",
+      "disposition": "selected",
+      "story": "nodejs-november-2026-security-release",
+      "reason": "Original source captured and grouped in selection.json."
+    },
+    {
+      "lead_id": "e4835ce9383f4832f2bd0b23",
+      "url": "https://socket.dev/blog/claude-code-extension-compromise",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T14:30:27.173162Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "e581154108f523de51d2d0ab",
+      "url": "https://blog.cloudflare.com/zero-wire/",
+      "source": "Cloudflare",
+      "queue_published_at": "2026-11-03T14:00:00Z",
+      "first_seen": "2026-11-03T18:38:54.741160Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "d4a79711cc128fce5d4f2aa0",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/11/02/exploited-vulnerabilities-common-data-driven-analysis-real-world-attacks/",
+      "source": "Microsoft Security",
+      "queue_published_at": "2026-11-02T20:20:59Z",
+      "first_seen": "2026-11-03T03:03:46.950343Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "a9518608375ec95afdb1e7c3",
+      "url": "https://www.aikido.dev/blog/linux-kernel-tcp-rce-vulnerability-cve-2026-98432",
+      "source": "Aikido",
+      "queue_published_at": "2026-11-02T09:00:00Z",
+      "first_seen": "2026-11-02T11:39:35.991899Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "16ef103f7a12655dcf92e427",
+      "url": "https://www.aikido.dev/blog/emudhra-ca-compromise",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-22T11:53:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "c81162a603729696df8bf419",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/10/30/inside-malicious-claude-code-branded-cursor-extension-persistent-ssh-backdoor/",
+      "source": "Microsoft Security",
+      "queue_published_at": "2026-10-31T01:02:57Z",
+      "first_seen": "2026-10-31T09:24:41.094741Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "86a821a15fce59fd49b773f7",
+      "url": "https://www.aikido.dev/blog/critical-vulnerabilities-in-php-php2shell",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-21T01:54:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "46377df52764d6fd77d39f31",
+      "url": "https://blog.cloudflare.com/emudhra-patching/",
+      "source": "Cloudflare",
+      "queue_published_at": "2026-10-30T17:38:50Z",
+      "first_seen": "2026-10-30T19:40:34.889782Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "e95ec9791fbdc4eb3b9602fe",
+      "url": "https://www.aikido.dev/blog/binance-hack-developer-laptop",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-30T13:13:00Z",
+      "first_seen": "2026-10-30T14:30:27.173162Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "ef3580109e35a52d80a360c5",
+      "url": "https://socket.dev/blog/firefox-wallet-impersonators",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "f9b58b9767fc738913a4b98e",
+      "url": "https://socket.dev/blog/threat-intel-campaign-impact",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "c966c124146b8dbb57ad676e",
+      "url": "https://socket.dev/blog/litellm-attack-timeline",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "e75be43c9f9cc162a07720bb",
+      "url": "https://socket.dev/blog/php-critical-rce-patches",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "af9fb53128fc3f1cf888fe78",
+      "url": "https://socket.dev/blog/litellm-compromise",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "b0664ff7d272430c8d019956",
+      "url": "https://socket.dev/blog/anthropic-oss-scanner",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "26051426ffd56ea1d502cacc",
+      "url": "https://socket.dev/blog/ghostaction-cloud-credentials",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "4a08ddd45c665866b78e9ab5",
+      "url": "https://socket.dev/blog/tensorlake-compromise",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "1b1b07003734f8f3a4a2c660",
+      "url": "https://socket.dev/blog/firefox-crypto-wallet-stealers",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "b9076b3f8b78daf8e5e9a408",
+      "url": "https://socket.dev/blog/astra-supply-chain-attacks",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "b85937388e850a4de453f9bf",
+      "url": "https://socket.dev/blog/firefox-google-account-takeover",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "263c23fc192f685089bb57ff",
+      "url": "https://socket.dev/blog/memtensor-compromise",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "5845c03adb95361d6845ef55",
+      "url": "https://socket.dev/blog/polinrider-github-packagist",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "7f67f435959bd7bf632ec0b6",
+      "url": "https://socket.dev/blog/chrome-firefox-crypto-data-theft",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "eeebe5b66271bff98b73aa7f",
+      "url": "https://socket.dev/blog/gpt-6-astra-cybersecurity",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "0f454b518af47dda9496adce",
+      "url": "https://socket.dev/blog/oss-supplyl-chain-security-blackhat",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "71af8f6167bc96f171beaffc",
+      "url": "https://socket.dev/blog/packagist-themes-ios-spyware",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "a6f540beeaaf63a1c007fd0d",
+      "url": "https://socket.dev/blog/openapi-react-query-codegen-npm-compromise",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "9aaba0e2defc78775eda5c20",
+      "url": "https://socket.dev/blog/chrome-edge-extension-wallet-drainer",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:26:08.774786Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "9512570d276d186fa3f8b9a4",
+      "url": "https://www.aikido.dev/blog/what-are-shell-vulnerabilities",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-29T19:07:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "e963cc7cefc98a3b4cf55317",
+      "url": "https://www.aikido.dev/blog/node2shell-nodejs-brotli-rce-cve-2026-111497",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-22T18:11:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "ec57ef5a1bfc61785ddc5e0d",
+      "url": "https://www.aikido.dev/blog/software-supply-chain-security-best-practices",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-21T13:25:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "4bd24ee620938ebed7471278",
+      "url": "https://www.aikido.dev/blog/litellm-compromised-infostealer-rat",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-21T13:05:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "275f43be26303d5890b4379e",
+      "url": "https://www.aikido.dev/blog/cve-reachable-vs-exploitable",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-17T22:19:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "bea804398975572d48dc62c4",
+      "url": "https://www.aikido.dev/blog/vulnerability-remediation",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-09T16:41:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "bf48eb472a9ef7fc251d8165",
+      "url": "https://www.aikido.dev/blog/tensorlake-npm-package-compromised",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-08T03:32:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "f41923480be2ac2d24b30a86",
+      "url": "https://www.aikido.dev/blog/top-vulnerability-remediation-tools",
+      "source": "Aikido",
+      "queue_published_at": "2026-10-02T12:58:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "4a59615041b968ae61d1e051",
+      "url": "https://blog.cloudflare.com/php-vulnerabilities-waf-protection/",
+      "source": "Cloudflare",
+      "queue_published_at": "2026-10-21T13:56:45Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "c78cf468160e1a45508001b3",
+      "url": "https://blog.cloudflare.com/emudhra-certificate-compromise/",
+      "source": "Cloudflare",
+      "queue_published_at": "2026-10-20T22:20:16Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "72477d086944244f5e4b9fd6",
+      "url": "https://blog.cloudflare.com/protect-your-netscaler-gateway/",
+      "source": "Cloudflare",
+      "queue_published_at": "2026-10-19T13:00:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "049f752dea89d9de43df6a2f",
+      "url": "https://blog.cloudflare.com/yandex-outage/",
+      "source": "Cloudflare",
+      "queue_published_at": "2026-10-14T20:24:19Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "de7fa073bfcefc4b6cb9b26f",
+      "url": "https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/",
+      "source": "Mozilla Security",
+      "queue_published_at": "2026-10-20T12:54:54Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "46b2c78fb5f40f0b46aaffd0",
+      "url": "https://blog.pypi.org/posts/2024-11-25-aiocpa-attack-analysis/",
+      "source": "PyPI updates",
+      "queue_published_at": "2026-10-27T17:28:06Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "resurfaced-background",
+      "story": null,
+      "reason": "URL identifies a 2023/2024 original; feed update/changed_at does not establish a new disclosure this week."
+    },
+    {
+      "lead_id": "ec14786212f2e284b00713cc",
+      "url": "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+      "source": "Node.js",
+      "queue_published_at": "2026-10-21T22:00:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "34620bf4f89e279533af7abf",
+      "url": "https://docs.litellm.ai/blog/security-incident-oct-21-2026",
+      "source": "LiteLLM",
+      "queue_published_at": "2026-10-21T10:00:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "e59453f60e664209b160a583",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/10/23/inside-the-litellm-1-107-0-supply-chain-compromise-credential-theft-through-python-startup-hooks/",
+      "source": "Microsoft Security",
+      "queue_published_at": "2026-10-23T18:12:19Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "f111d392dd54d86d297c32ca",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/10/21/storm-0940-uses-artex-agentic-ai-connectwise-supply-chain-compromise/",
+      "source": "Microsoft Security",
+      "queue_published_at": "2026-10-21T18:23:55Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "1469583c933e8660ebb761a2",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/10/08/post-quantum-authentication-why-organizations-should-start-testing-certificate-ecosystems-now/",
+      "source": "Microsoft Security",
+      "queue_published_at": "2026-10-08T20:44:28Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "88f938d50228b85ddb96ce20",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/10/07/3-lessons-from-frontier-ai-vulnerability-research/",
+      "source": "Microsoft Security",
+      "queue_published_at": "2026-10-07T16:00:00Z",
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "08e339a02a455926828f4cc3",
+      "url": "https://www.stepsecurity.io/blog/state-of-open-source-supply-chain-attacks",
+      "source": "StepSecurity",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "8728a3e2cf7954dbab9a5949",
+      "url": "https://www.wiz.io/blog/php2shell-exploitation-so-far",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "43db36580b0eee07f550c4cb",
+      "url": "https://www.wiz.io/blog/cve-2026-111497-brotli-rce-node-js",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "8b6a8a14bd9443e0334f756a",
+      "url": "https://www.wiz.io/blog/aspm-ai-era-pt-2-prioritize-appsec-risk",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "7067eadac3a0d563c982b5de",
+      "url": "https://www.wiz.io/blog/php2shell-php-rce",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "859a2ca12c0c52e968814d9c",
+      "url": "https://www.wiz.io/blog/litellm-compromised-steals-credentials",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "cf7f13b972b23a3857cf4486",
+      "url": "https://www.wiz.io/blog/detect-supply-chain-zero-days-at-publication",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "f348ac3fb147bde210514aeb",
+      "url": "https://www.wiz.io/blog/wizos-helm-charts",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "26b4e63257381ca8622e7c2c",
+      "url": "https://www.wiz.io/blog/infostealer-incursion-cloud-ai-credentials",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "8b1edb9e3e644dbb2c50099b",
+      "url": "https://securitylabs.datadoghq.com/articles/php2shell-critical-vulnerabilities-in-php/",
+      "source": "Datadog Security Labs",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "0497ca2e3ec6222e204c8fec",
+      "url": "https://securitylabs.datadoghq.com/articles/?tag=emerging_vulnerability",
+      "source": "Datadog Security Labs",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "eb05954401e98d2abfc5eac7",
+      "url": "https://securitylabs.datadoghq.com/articles/?tag=software_supply-chain_security",
+      "source": "Datadog Security Labs",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "5f26da1fa59c7063e2309123",
+      "url": "https://securitylabs.datadoghq.com/articles/litellm-compromised-pypi-docker/",
+      "source": "Datadog Security Labs",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "e79918c0f144e34a99147042",
+      "url": "https://securitylabs.datadoghq.com/articles/?category=emerging+threats+and+vulnerabilities",
+      "source": "Datadog Security Labs",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "d763ab895a166bbb2e9676eb",
+      "url": "https://securitylabs.datadoghq.com/articles/beyond-valid-credentials-how-exposed-aws-keys-are-tested-for-amazon-bedrock-access/",
+      "source": "Datadog Security Labs",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "7699dbc607ab9d6e6aae1b30",
+      "url": "https://www.reversinglabs.com/blog/a-software-supply-chain-attack-retrospective",
+      "source": "ReversingLabs",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "54a7e04fd6d7b254a6efa924",
+      "url": "https://www.reversinglabs.com/blog/tag/appsec-supply-chain-security",
+      "source": "ReversingLabs",
+      "queue_published_at": null,
+      "first_seen": "2026-10-30T07:23:28.382056Z",
+      "disposition": "background-not-requalified",
+      "story": null,
+      "reason": "No newly verified Nov 8-14 original disclosure established in this pass. Retained as background, not asserted safe or fully investigated."
+    },
+    {
+      "lead_id": "ced95a92643f518ac28d151d",
+      "url": "https://socket.dev/blog/bee-js-compromise",
+      "source": "Socket",
+      "queue_published_at": null,
+      "first_seen": "2026-11-09T22:41:18.544783Z",
+      "disposition": "selected",
+      "story": "ethersphere-bee-js-swarm-desktop-compromise-2026",
+      "reason": "Original source captured and grouped in selection.json."
+    },
+    {
+      "lead_id": "7c413c5b5223a5760079bec0",
+      "url": "https://www.wiz.io/blog/cve-2026-119618-rce-apache-http-server-vulnerability",
+      "source": "Wiz",
+      "queue_published_at": null,
+      "first_seen": "2026-11-11T23:01:35.453066Z",
+      "disposition": "selected",
+      "story": "apache-http2-assign-headers-rce-2026",
+      "reason": "Original source captured and grouped in selection.json."
+    },
+    {
+      "lead_id": "bbefabbc2117ee36e13a58b9",
+      "url": "https://securitylabs.datadoghq.com/articles/cve-2026-118383-mongodb-server-use-after-free/",
+      "source": "Datadog Security Labs",
+      "queue_published_at": null,
+      "first_seen": "2026-11-11T23:01:35.453066Z",
+      "disposition": "selected",
+      "story": "mongodb-replica-primary-catchup-use-after-free-2026",
+      "reason": "Original source captured and grouped in selection.json."
+    },
+    {
+      "lead_id": "f426b022768c15118c5829be",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/11/12/trained-to-betray-how-post-training-supply-chain-attacks-hijack-coding-agents/",
+      "source": "Microsoft Security",
+      "queue_published_at": "2026-11-12T17:00:00Z",
+      "first_seen": "2026-11-12T21:05:04.497649Z",
+      "disposition": "selected",
+      "story": "post-training-coding-agent-backdoors-2026",
+      "reason": "Original source captured and grouped in selection.json."
+    },
+    {
+      "lead_id": "e18afd4bc4b7e5971e2125cb",
+      "url": "https://tldrsec.com/p/tldr-sec-354",
+      "source": "TL;DR sec newsletter leads",
+      "queue_published_at": null,
+      "first_seen": "2026-11-12T21:05:04.497649Z",
+      "disposition": "discovery-only",
+      "story": null,
+      "reason": "Nov 12 roundup. Followed ARTEX to its Oct 30 original, excluded as old reporting; research/explainer links stay in their own lanes."
+    },
+    {
+      "lead_id": "8f22bc6983f6e0f3f01cf531",
+      "url": "https://www.aikido.dev/blog/compromised-github-accounts-push-ci-secret-stealer-to-tens-of-thousands-of-repositories",
+      "source": "Aikido",
+      "queue_published_at": "2026-11-12T01:45:00Z",
+      "first_seen": "2026-11-12T04:10:15.398770Z",
+      "disposition": "selected",
+      "story": "wfx-loot-github-ci-secret-theft-2026",
+      "reason": "Original source captured and grouped in selection.json."
+    },
+    {
+      "lead_id": "d6fabe7af75f61ea95eb6c45",
+      "url": "https://www.aikido.dev/blog/cve-2026-119618-apache-http-server-rce",
+      "source": "Aikido",
+      "queue_published_at": "2026-11-13T08:49:00Z",
+      "first_seen": "2026-11-13T09:57:01.277838Z",
+      "disposition": "selected",
+      "story": "apache-http2-assign-headers-rce-2026",
+      "reason": "Original source captured and grouped in selection.json."
+    }
+  ],
+  "supplemental_sources": [
+    {
+      "url": "https://safedep.io/blog/ethersphere-bee-js-npm-compromise",
+      "story": "ethersphere-bee-js-swarm-desktop-compromise-2026"
+    },
+    {
+      "url": "https://httpd.apache.org/security/vulnerabilities_24.html",
+      "story": "apache-http2-assign-headers-rce-2026"
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-fjxh-6vgh-cx2c",
+      "story": "mongodb-replica-primary-catchup-use-after-free-2026"
+    },
+    {
+      "url": "https://www.wiz.io/blog/qubole-cross-account-access-abused-in-the-wild",
+      "story": "qubole-aws-cross-account-trust-abuse-2026"
+    },
+    {
+      "url": "https://cloud.google.com/blog/topics/threat-intelligence/artex-and-friends-enter-agentic-offensive-frameworks",
+      "story": null
+    },
+    {
+      "url": "https://www.mongodb.com/community/forums/t/important-mongodb-security-update-available-action-required-november-10-2026/344843",
+      "story": "mongodb-replica-primary-catchup-use-after-free-2026"
+    },
+    {
+      "url": "https://sentra.io/blog/breaches/inside-the-qubole-supply-chain-attack",
+      "story": "qubole-aws-cross-account-trust-abuse-2026"
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-hh7j-5m3j-23pf",
+      "story": "ethersphere-bee-js-swarm-desktop-compromise-2026"
+    },
+    {
+      "url": "https://cveawg.mitre.org/api/cve/CVE-2026-118383",
+      "story": null
+    }
+  ],
+  "structured_advisory_review": {
+    "api": "https://api.github.com/advisories?type=malware&published=2026-11-08..2026-11-14&per_page=100",
+    "pagination_complete": true,
+    "returned_records": 1248,
+    "boundary_api": "https://api.github.com/advisories?type=malware&published=2026-11-07&per_page=100",
+    "boundary_response_sha256": "8dff252fa533083b3130a997486cc391f04e2ebecbd1c75e167328638f0fd4b1",
+    "inside_exact_window": 1242,
+    "outside_exact_window": 6,
+    "scope_limit": "Supplemented the Nov 8-14 UTC API search with the Nov 7 UTC boundary page; filtered original published_at into the exact local-calendar window.",
+    "full_response_sha256": "976a7fb4ec5cd5958ed623e7b12d431d855c5f0379dbe20d0590257c83e6773c",
+    "local_records": "/private/tmp/tsd-weekly-research/malware-records.json",
+    "disposition": "Lead-level screening only. Malware labels and repository commits are not campaign counts. Bee-js has original reports and is selected; strutil-core repeats last week. Other package records remain unverified leads, not individually cleared incidents."
+  },
+  "limits": [
+    "The rolling issue is bounded to 40 article groups; the retained state is bounded too. No claim of exhaustive global incident coverage.",
+    "Daily checkpoints are samples, not every hourly run; no additional article URLs were found in those samples.",
+    "The 366 retained in-window commit signals were inventoried, not all individually investigated. The malware advisory export is supplemental and does not cover all vulnerability advisories.",
+    "None of the six new incident/vulnerability candidates is a current canonical publication. They cannot be inserted into the bot weekly candidate before real review and publication.",
+    "The research brief remains outside the incident publisher; no workflow/schema change is part of preparation."
+  ]
+}
